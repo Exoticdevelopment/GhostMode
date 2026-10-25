@@ -52,6 +52,36 @@
                 </StackPanel>
             </ui:NavigationView.PaneHeader>
 
+            <!-- Pie de la barra: estado de los cambios, Deshacer todo y el hardware del equipo.
+                 Los textos se rellenan desde MainWindow.xaml.cs con datos reales -->
+            <ui:NavigationView.PaneFooter>
+                <StackPanel Margin="14,0,14,16">
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,6">
+                        <ui:SymbolIcon x:Name="IconoCambios" Symbol="CheckmarkCircle20" FontSize="16"
+                                       Foreground="{StaticResource ActivoBrush}" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="TxtCambios" FontSize="13" VerticalAlignment="Center"
+                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    </StackPanel>
+
+                    <!-- Appearance="Transparent" = botón sin fondo, como un enlace -->
+                    <ui:Button x:Name="BtnDeshacerTodo" Content="Deshacer todo" Appearance="Transparent"
+                               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                               Padding="4,6" Click="BtnDeshacerTodo_Click">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="ArrowUndo20"/>
+                        </ui:Button.Icon>
+                    </ui:Button>
+
+                    <!-- Línea separadora -->
+                    <Border Height="1" Background="{StaticResource BordeBrush}" Margin="0,12"/>
+
+                    <TextBlock x:Name="TxtEquipo" Text="EQUIPO LOCAL" FontSize="10"
+                               Foreground="{StaticResource TextoTenueBrush}" Margin="4,0,0,6"/>
+                    <TextBlock x:Name="TxtHardware" Text="Leyendo hardware…" FontSize="12"
+                               TextWrapping="Wrap" Foreground="{StaticResource TextoSecundarioBrush}" Margin="4,0,0,0"/>
+                </StackPanel>
+            </ui:NavigationView.PaneFooter>
+
             <!-- Las secciones. TargetPageType = qué página abre al pulsarla -->
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Inicio" TargetPageType="{x:Type paginas:InicioPagina}">

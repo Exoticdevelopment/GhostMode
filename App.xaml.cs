@@ -41,7 +41,7 @@ namespace OptimizadorPC
             // Si no, usaría el color de acento que el usuario tenga en Windows.
             ApplicationAccentColorManager.Apply(Color.FromRgb(0x22, 0xC5, 0x5E), ApplicationTheme.Dark);
 
-            Logger.Info("=== OptimizadorPC iniciado ===");
+            Logger.Info("=== Ghost Mode iniciado ===");
             base.OnStartup(e);
         }
     }
