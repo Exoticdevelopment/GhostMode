@@ -1,0 +1,95 @@
+<!-- Tarjeta de una optimización: nombre + interruptor, descripción y pastillas.
+     Su DataContext es un OptimizacionVM: por eso {Binding Nombre} encuentra el nombre. -->
+<UserControl x:Class="OptimizadorPC.Componentes.TarjetaOptimizacion"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:componentes="clr-namespace:OptimizadorPC.Componentes">
+
+    <Border Style="{StaticResource TarjetaEstilo}">
+        <StackPanel>
+            <!-- Fila de arriba: nombre a la izquierda, interruptor a la derecha -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="{Binding Nombre}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"
+                           Foreground="{StaticResource TextoBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                <!-- Mode=TwoWay en IsChecked: al pulsar, el cambio vuelve al VM (Deseada) -->
+                <componentes:InterruptorEstado Grid.Column="1" VerticalAlignment="Top"
+                                               IsChecked="{Binding Deseada, Mode=TwoWay}"
+                                               Estado="{Binding Estado}"
+                                               ToolTip="{Binding Nombre}"/>
+            </Grid>
+
+            <TextBlock Text="{Binding Descripcion}" FontSize="13" TextWrapping="Wrap" Margin="0,10,0,14"
+                       Foreground="{StaticResource TextoSecundarioBrush}"/>
+
+            <!-- Pastillas. Los DataTrigger cambian el color según el VM -->
+            <StackPanel Orientation="Horizontal">
+                <Border>
+                    <Border.Style>
+                        <Style TargetType="Border" BasedOn="{StaticResource PastillaEstilo}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ImpactoAlto}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource ActivoSuaveBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="{Binding TextoImpacto}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource PastillaTextoEstilo}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ImpactoAlto}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource ActivoBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Border>
+
+                <Border>
+                    <Border.Style>
+                        <Style TargetType="Border" BasedOn="{StaticResource PastillaEstilo}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding EsModerado}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource AvisoSuaveBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <TextBlock Text="{Binding TextoRiesgo}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource PastillaTextoEstilo}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding EsModerado}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Border>
+            </StackPanel>
+
+            <!-- Solo se ve si el último intento falló -->
+            <TextBlock Text="No se pudo aplicar. Pulsa «Aplicar» para reintentar." FontSize="12"
+                       TextWrapping="Wrap" Margin="0,12,0,0" Foreground="{StaticResource ErrorBrush}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Estado}" Value="Error">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

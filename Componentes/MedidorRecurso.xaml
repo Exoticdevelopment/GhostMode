@@ -1,0 +1,28 @@
+<!-- Medidor de un recurso (CPU, RAM, GPU...): etiqueta + icono, valor grande, barra y dato secundario.
+     x:Name="Raiz" = nombre del propio control, para enlazar con sus propiedades: {Binding X, ElementName=Raiz} -->
+<UserControl x:Class="OptimizadorPC.Componentes.MedidorRecurso"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             x:Name="Raiz">
+
+    <Border Style="{StaticResource TarjetaEstilo}">
+        <StackPanel>
+            <Grid>
+                <TextBlock Text="{Binding Etiqueta, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"
+                           FontSize="13" VerticalAlignment="Center"/>
+                <ui:SymbolIcon Symbol="{Binding Icono, ElementName=Raiz}" FontSize="18" HorizontalAlignment="Right"
+                               Foreground="{StaticResource TextoSecundarioBrush}"/>
+            </Grid>
+
+            <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontSize="28" FontWeight="SemiBold" Margin="0,10,0,14"
+                       Foreground="{StaticResource TextoBrush}"/>
+
+            <ProgressBar Style="{StaticResource BarraRecursoEstilo}" Value="{Binding Porcentaje, ElementName=Raiz}"/>
+
+            <TextBlock Text="{Binding Detalle, ElementName=Raiz}" FontSize="12" Margin="0,12,0,0"
+                       TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextoTenueBrush}"
+                       ToolTip="{Binding Detalle, ElementName=Raiz}"/>
+        </StackPanel>
+    </Border>
+</UserControl>

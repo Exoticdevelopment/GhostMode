@@ -13,6 +13,8 @@
                 <ui:ControlsDictionary/>
                 <!-- 3. Nuestra paleta. Va al final para que sus colores ganen a los de WPF-UI -->
                 <ResourceDictionary Source="Estilos/Colores.xaml"/>
+                <!-- 4. Estilos compartidos: tarjetas, pastillas, botones, interruptor... -->
+                <ResourceDictionary Source="Estilos/Controles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
