@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using OptimizadorPC.Core;
+using Wpf.Ui.Appearance;   // ApplicationAccentColorManager, ApplicationTheme
 
 namespace OptimizadorPC
 {
@@ -33,6 +35,11 @@ namespace OptimizadorPC
                 Logger.Error("Error en tarea sin revisar", ex.Exception);
                 ex.SetObserved();
             };
+
+            // Color de acento = el verde del diseño (#22C55E). WPF-UI lo usa en la barrita
+            // del elemento activo de la barra lateral, los interruptores, etc.
+            // Si no, usaría el color de acento que el usuario tenga en Windows.
+            ApplicationAccentColorManager.Apply(Color.FromRgb(0x22, 0xC5, 0x5E), ApplicationTheme.Dark);
 
             Logger.Info("=== OptimizadorPC iniciado ===");
             base.OnStartup(e);

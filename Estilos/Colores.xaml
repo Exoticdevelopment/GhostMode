@@ -1,0 +1,42 @@
+<!-- Paleta del diseño (PDF "Elementos y estados").
+     Se define UNA vez aquí y se usa en todas partes con {StaticResource NombreBrush}.
+     Color = el color "puro"; Brush = la "pintura" que usan fondos y textos. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Superficies -->
+    <Color x:Key="FondoColor">#0F1115</Color>         <!-- fondo de la ventana -->
+    <Color x:Key="TarjetaColor">#1A1D24</Color>       <!-- fondo de cada tarjeta -->
+    <Color x:Key="BordeColor">#2A2E37</Color>         <!-- bordes de 1 px y separadores -->
+
+    <!-- Estados -->
+    <Color x:Key="ActivoColor">#22C55E</Color>        <!-- verde: activo, botón principal -->
+    <Color x:Key="AvisoColor">#F59E0B</Color>         <!-- naranja: riesgo moderado, "Aplicando" -->
+    <Color x:Key="ErrorColor">#EF4444</Color>         <!-- rojo: errores -->
+
+    <!-- Textos -->
+    <Color x:Key="TextoColor">#F3F4F6</Color>           <!-- títulos y valores -->
+    <Color x:Key="TextoSecundarioColor">#9CA3AF</Color> <!-- descripciones -->
+    <Color x:Key="TextoTenueColor">#6B7280</Color>      <!-- datos pequeños, "de 100" -->
+
+    <SolidColorBrush x:Key="FondoBrush" Color="{StaticResource FondoColor}"/>
+    <SolidColorBrush x:Key="TarjetaBrush" Color="{StaticResource TarjetaColor}"/>
+    <SolidColorBrush x:Key="BordeBrush" Color="{StaticResource BordeColor}"/>
+    <SolidColorBrush x:Key="ActivoBrush" Color="{StaticResource ActivoColor}"/>
+    <SolidColorBrush x:Key="AvisoBrush" Color="{StaticResource AvisoColor}"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="TextoBrush" Color="{StaticResource TextoColor}"/>
+    <SolidColorBrush x:Key="TextoSecundarioBrush" Color="{StaticResource TextoSecundarioColor}"/>
+    <SolidColorBrush x:Key="TextoTenueBrush" Color="{StaticResource TextoTenueColor}"/>
+
+    <!-- Versiones translúcidas para el fondo de las "pastillas" (Impacto Alto, Moderado...).
+         Los dos primeros dígitos son la opacidad: 26 ≈ 15 % -->
+    <SolidColorBrush x:Key="ActivoSuaveBrush" Color="#2622C55E"/>
+    <SolidColorBrush x:Key="AvisoSuaveBrush" Color="#26F59E0B"/>
+    <SolidColorBrush x:Key="ErrorSuaveBrush" Color="#26EF4444"/>
+
+    <!-- Reemplazamos el fondo por defecto de WPF-UI por el de nuestro diseño.
+         Funciona porque este archivo se carga DESPUÉS del tema de WPF-UI (el último gana). -->
+    <Color x:Key="ApplicationBackgroundColor">#0F1115</Color>
+    <SolidColorBrush x:Key="ApplicationBackgroundBrush" Color="#0F1115"/>
+</ResourceDictionary>
