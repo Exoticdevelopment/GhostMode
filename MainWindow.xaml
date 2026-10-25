@@ -5,7 +5,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:paginas="clr-namespace:OptimizadorPC.Paginas"
-                 Title="OptimizadorPC"
+                 Title="Ghost Mode"
                  Width="1100" Height="700" MinWidth="900" MinHeight="600"
                  WindowStartupLocation="CenterScreen"
                  ExtendsContentIntoTitleBar="True"
@@ -21,7 +21,7 @@
 
         <!-- Barra de título: rayo verde + nombre + botones minimizar/maximizar/cerrar -->
         <Border Grid.Row="0" BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
-            <ui:TitleBar Title="OptimizadorPC">
+            <ui:TitleBar Title="Ghost Mode">
                 <ui:TitleBar.Icon>
                     <ui:SymbolIcon Symbol="Flash24" Foreground="{StaticResource ActivoBrush}"/>
                 </ui:TitleBar.Icon>
@@ -44,7 +44,7 @@
                         <ui:SymbolIcon Symbol="Flash24" FontSize="22" Foreground="{StaticResource ActivoBrush}"/>
                     </Border>
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="OptimizadorPC" FontSize="16" FontWeight="SemiBold"
+                        <TextBlock Text="Ghost Mode" FontSize="16" FontWeight="SemiBold"
                                    Foreground="{StaticResource TextoBrush}"/>
                         <TextBlock Text="RENDIMIENTO BAJO CONTROL" FontSize="9"
                                    Foreground="{StaticResource TextoSecundarioBrush}"/>
