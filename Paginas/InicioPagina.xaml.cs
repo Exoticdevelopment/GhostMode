@@ -1,12 +1,261 @@
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using OptimizadorPC.Core;
+using OptimizadorPC.Servicios;
+// Alias: WPF y WPF-UI tienen los dos una clase "MessageBox". Así dejamos claro cuál usamos
+using MessageBoxUi = Wpf.Ui.Controls.MessageBox;
+using MessageBoxResultUi = Wpf.Ui.Controls.MessageBoxResult;
 
 namespace OptimizadorPC.Paginas
 {
     public partial class InicioPagina : Page
     {
+        // "Ghost Mode" = todas las optimizaciones de riesgo Seguro. Las Moderadas se eligen a mano en Optimizaciones
+        private static readonly List<IOptimizacion> Seguras =
+            AplicadorOptimizaciones.Todas.Where(o => o.Riesgo == Riesgo.Seguro).ToList();
+
+        private readonly MonitorRecursos monitor = new();
+        private DatosEquipo? equipo;      // hardware fijo (núcleos, GHz, RAM instalada, nombre de la GPU)
+        private bool ghostActivo = false; // ¿están aplicadas todas las seguras?
+        private bool trabajando = false;  // aplicando o revirtiendo ahora mismo
+
         public InicioPagina()
         {
             InitializeComponent();
+
+            TxtCuantasSeguras.Text = Seguras.Count == 1 ? "1 optimización segura" : $"{Seguras.Count} optimizaciones seguras";
+            monitor.Actualizado += MostrarMuestra;
+
+            Loaded += async (s, e) =>
+            {
+                AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstado;
+                monitor.Iniciar();
+                await LeerEstadoGhostAsync();
+                equipo = await InfoSistema.ObtenerAsync();
+                MostrarDatosFijos();
+            };
+            Unloaded += (s, e) =>
+            {
+                // Fuera de la pantalla no medimos nada: cero consumo
+                monitor.Detener();
+                AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstado;
+            };
+        }
+
+        // ===== Medidores =====
+
+        // Lo que no cambia: textos de abajo de CPU y GPU
+        private void MostrarDatosFijos()
+        {
+            if (equipo == null)
+            {
+                return;
+            }
+
+            var cpu = new List<string>();
+            if (equipo.Nucleos != null)
+            {
+                cpu.Add($"{equipo.Nucleos} núcleos");
+            }
+            if (equipo.Ghz != null)
+            {
+                // "F2" = dos decimales; InfoSistema.Es = con coma, como en español: "2,40 GHz"
+                cpu.Add($"{equipo.Ghz.Value.ToString("F2", InfoSistema.Es)} GHz");
+            }
+            MedCpu.Detalle = string.Join(" · ", cpu);
+
+            MedGpu.Detalle = equipo.Gpu ?? "GPU no detectada";
+        }
+
+        // Llega cada 2 segundos desde MonitorRecursos
+        private void MostrarMuestra(MuestraRecursos m)
+        {
+            var es = InfoSistema.Es;
+
+            MedCpu.Valor = m.CpuPorcentaje != null ? $"{m.CpuPorcentaje.Value.ToString("F0", es)} %" : "—";
+            MedCpu.Porcentaje = m.CpuPorcentaje ?? 0;
+
+            if (m.RamUsadaGb != null && m.RamLibreGb != null && m.RamPorcentaje != null)
+            {
+                // Total = la RAM instalada (8 GB) si la conocemos; si no, la que Windows puede usar
+                string total = equipo?.RamGb != null
+                    ? equipo.RamGb.Value.ToString(es)
+                    : (m.RamUsadaGb.Value + m.RamLibreGb.Value).ToString("F1", es);
+                MedRam.Valor = $"{m.RamUsadaGb.Value.ToString("F1", es)} / {total} GB";
+                MedRam.Porcentaje = m.RamPorcentaje.Value;
+                MedRam.Detalle = $"{m.RamPorcentaje.Value.ToString("F0", es)} % en uso · {m.RamLibreGb.Value.ToString("F1", es)} GB libres";
+            }
+            else
+            {
+                MedRam.Valor = "—";
+                MedRam.Porcentaje = 0;
+            }
+
+            MedGpu.Valor = m.GpuPorcentaje != null ? $"{m.GpuPorcentaje.Value.ToString("F0", es)} %" : "—";
+            MedGpu.Porcentaje = m.GpuPorcentaje ?? 0;
+        }
+
+        // ===== Ghost Mode =====
+
+        // Ghost Mode está "ON" si TODAS las seguras están aplicadas en Windows
+        private async Task LeerEstadoGhostAsync()
+        {
+            ghostActivo = await Task.Run(() => Seguras.All(EstaActivaSinFallar));
+            MostrarEstadoGhost();
+        }
+
+        private static bool EstaActivaSinFallar(IOptimizacion optimizacion)
+        {
+            try
+            {
+                return optimizacion.EstaActiva();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"No se pudo leer el estado de {optimizacion.Id}", ex);
+                return false;
+            }
+        }
+
+        private void MostrarEstadoGhost()
+        {
+            BtnGhost.IsEnabled = !trabajando && Seguras.Count > 0;
+
+            if (trabajando)
+            {
+                TxtBotonGhost.Text = "APLICANDO…";
+                TxtBotonGhostDetalle.Text = "No cierres la app";
+                return;
+            }
+
+            // TryFindResource = buscar un color de Colores.xaml por su nombre
+            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "ActivoBrush" : "TextoTenueBrush");
+            TxtEstado.Text = ghostActivo ? "GHOST MODE · ON" : "GHOST MODE · OFF";
+            TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "ActivoBrush" : "TextoSecundarioBrush");
+
+            TxtBotonGhost.Text = ghostActivo ? "GHOST MODE ACTIVO" : "ACTIVAR GHOST MODE";
+            TxtBotonGhostDetalle.Text = ghostActivo ? "Clic para desactivar" : "Un clic para optimizar";
+        }
+
+        // Se aplicó o deshizo algo desde otra parte (Optimizaciones, "Deshacer todo")
+        private async void AlCambiarEstado()
+        {
+            if (!trabajando)
+            {
+                await LeerEstadoGhostAsync();
+            }
+        }
+
+        private async void BtnGhost_Click(object sender, RoutedEventArgs e)
+        {
+            if (ghostActivo)
+            {
+                await DesactivarAsync();
+            }
+            else
+            {
+                await ActivarAsync();
+            }
+        }
+
+        private async Task ActivarAsync()
+        {
+            // Solo las que faltan: las que ya están activas no cuentan como cambio
+            List<IOptimizacion> pendientes = await Task.Run(() => Seguras.Where(o => !EstaActivaSinFallar(o)).ToList());
+            if (pendientes.Count == 0)
+            {
+                await LeerEstadoGhostAsync();
+                return;
+            }
+
+            string lista = string.Join("\n", pendientes.Select(o => $"• {o.Nombre}"));
+            var confirmar = new MessageBoxUi
+            {
+                Title = "¿Activar Ghost Mode?",
+                Content = $"Se aplicarán {pendientes.Count} optimizaciones seguras:\n{lista}\n\n" +
+                          "Antes se creará un punto de restauración. Podrás deshacerlas en cualquier momento.",
+                PrimaryButtonText = "Activar Ghost Mode",
+                CloseButtonText = "Cancelar"
+            };
+            if (await confirmar.ShowDialogAsync() != MessageBoxResultUi.Primary)
+            {
+                return;
+            }
+
+            ResultadoAplicacion resultado;
+            trabajando = true;
+            MostrarEstadoGhost();
+            try
+            {
+                resultado = await AplicadorOptimizaciones.AplicarAsync(pendientes, Avisos.PreguntarContinuarSinPuntoAsync);
+            }
+            finally
+            {
+                trabajando = false;
+                await LeerEstadoGhostAsync();
+            }
+
+            if (resultado.Cancelado)
+            {
+                return;
+            }
+            if (resultado.Fallidas.Count > 0)
+            {
+                string nombres = string.Join(", ", resultado.Fallidas.Select(o => o.Nombre));
+                Avisos.Error($"No se pudieron aplicar {resultado.Fallidas.Count} de {pendientes.Count} optimizaciones",
+                             $"{nombres}. Revisa el log para más detalles.");
+            }
+            else
+            {
+                Avisos.Exito($"Ghost Mode activado — {pendientes.Count} optimizaciones aplicadas",
+                             "Puedes revertir los cambios desde «Deshacer todo».");
+            }
+        }
+
+        private async Task DesactivarAsync()
+        {
+            var confirmar = new MessageBoxUi
+            {
+                Title = "¿Desactivar Ghost Mode?",
+                Content = "Se desharán los cambios seguros que aplicó Ghost Mode. " +
+                          "Lo que ya venía así en Windows antes de usar la app no se toca.",
+                PrimaryButtonText = "Desactivar",
+                CloseButtonText = "Cancelar"
+            };
+            if (await confirmar.ShowDialogAsync() != MessageBoxResultUi.Primary)
+            {
+                return;
+            }
+
+            ResultadoAplicacion resultado;
+            trabajando = true;
+            MostrarEstadoGhost();
+            try
+            {
+                resultado = await AplicadorOptimizaciones.RevertirAsync(Seguras);
+            }
+            finally
+            {
+                trabajando = false;
+                await LeerEstadoGhostAsync();
+            }
+
+            if (resultado.Fallidas.Count > 0)
+            {
+                string nombres = string.Join(", ", resultado.Fallidas.Select(o => o.Nombre));
+                Avisos.Error("No se pudo desactivar todo", $"{nombres}. Revisa el log para más detalles.");
+            }
+            else if (ghostActivo)
+            {
+                // Todo sigue activo porque ya venía así en Windows: lo decimos en vez de fingir
+                Avisos.Info("Ghost Mode sigue activo",
+                            "Estas optimizaciones ya estaban activadas en Windows antes de usar Ghost Mode, así que no se tocan.");
+            }
+            else
+            {
+                Avisos.Exito("Ghost Mode desactivado", "Se restauró la configuración que tenías antes.");
+            }
         }
     }
 }
