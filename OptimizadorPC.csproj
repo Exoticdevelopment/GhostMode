@@ -9,6 +9,12 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- Incrusta app.manifest en el .exe (pide permisos de administrador) -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- Solo afectan a "dotnet publish" con PublishSingleFile=true: -->
+    <!-- mete también las DLL nativas de WPF dentro del .exe (si no, quedan sueltas al lado) -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- comprime el contenido: .exe mucho más pequeño, arranca un poco más lento -->
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
 </Project>
