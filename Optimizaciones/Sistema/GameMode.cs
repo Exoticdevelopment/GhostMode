@@ -7,6 +7,10 @@ namespace OptimizadorPC.Optimizaciones.Sistema
         public string Id => "game-mode";
         public string Nombre => "Modo Juego sin grabación de fondo";
         public string Descripcion => "Activa el Modo Juego de Windows y apaga Game DVR, que graba clips en segundo plano y gasta CPU y GPU.";
+        // Gráficos: en el diseño, "capturas en segundo plano" va en esa columna
+        public Categoria Categoria => Categoria.Graficos;
+        public Impacto Impacto => Impacto.Alto;
+        public Riesgo Riesgo => Riesgo.Seguro;
 
         // La lista de cambios. Todo lo difícil (guardar el original, revertir)
         // lo hace la clase Registro: aquí solo decimos QUÉ cambiar.

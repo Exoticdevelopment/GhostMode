@@ -8,6 +8,9 @@ namespace OptimizadorPC.Optimizaciones.Sistema
         public string Id => "efectos-visuales";
         public string Nombre => "Menos animaciones y transparencias";
         public string Descripcion => "Quita animaciones, sombras y transparencias de Windows. Algunos cambios se notan al cerrar sesión.";
+        public Categoria Categoria => Categoria.Graficos;
+        public Impacto Impacto => Impacto.Medio;
+        public Riesgo Riesgo => Riesgo.Seguro;
 
         private const string Advanced = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
 

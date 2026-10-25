@@ -10,6 +10,11 @@ namespace OptimizadorPC.Core
         string Nombre { get; }        // Lo que ve el usuario
         string Descripcion { get; }   // Explicación corta
 
+        // Clasificación (los enum están en Clasificacion.cs)
+        Categoria Categoria { get; }  // En qué columna aparece
+        Impacto Impacto { get; }      // Alto, Medio o Bajo
+        Riesgo Riesgo { get; }        // Seguro o Moderado
+
         // Métodos
         bool EstaActiva();   // ¿Ya está aplicada? Devuelve true o false
         void Aplicar();      // Aplica el cambio (void = no devuelve nada)

@@ -15,6 +15,9 @@ namespace OptimizadorPC.Optimizaciones.Sistema
         public string Id => "plan-energia";
         public string Nombre => "Plan de alto rendimiento";
         public string Descripcion => "Evita que el procesador baje su velocidad para ahorrar energía.";
+        public Categoria Categoria => Categoria.Energia;
+        public Impacto Impacto => Impacto.Alto;
+        public Riesgo Riesgo => Riesgo.Seguro;
 
         public bool EstaActiva()
         {
