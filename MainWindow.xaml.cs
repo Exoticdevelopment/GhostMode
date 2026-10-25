@@ -16,6 +16,9 @@ namespace OptimizadorPC
         {
             InitializeComponent();
 
+            // Decirle a Avisos dónde mostrar los toasts
+            Avisos.Presentador = PresentadorAvisos;
+
             // Loaded = cuando la ventana ya está construida y lista para dibujarse
             Loaded += async (s, e) =>
             {

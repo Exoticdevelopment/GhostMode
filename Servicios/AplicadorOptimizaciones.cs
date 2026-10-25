@@ -28,6 +28,9 @@ namespace OptimizadorPC.Servicios
         // El punto de restauración se crea UNA vez por sesión, antes de lo primero que se aplique
         private static bool puntoRestauracionListo = false;
 
+        // Para que la pantalla sepa si mostrar "Se creará un punto de restauración..."
+        public static bool PuntoRestauracionListo => puntoRestauracionListo;
+
         // Candado: solo una operación a la vez (por si se pulsan dos botones seguidos).
         // SemaphoreSlim(1, 1) = deja pasar a uno; los demás esperan su turno.
         private static readonly SemaphoreSlim Candado = new(1, 1);

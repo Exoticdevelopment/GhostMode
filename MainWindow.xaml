@@ -114,5 +114,10 @@
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
         </ui:NavigationView>
+
+        <!-- Aquí aparecen los "toasts" de confirmación o error (Servicios/Avisos.cs).
+             Va en la misma fila que NavigationView, encima, pegado abajo y a la derecha de la barra lateral -->
+        <ui:SnackbarPresenter x:Name="PresentadorAvisos" Grid.Row="1" VerticalAlignment="Bottom"
+                              Margin="254,0,24,24"/>
     </Grid>
 </ui:FluentWindow>
