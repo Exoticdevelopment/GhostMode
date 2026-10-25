@@ -1,23 +1,36 @@
 ﻿<Window x:Class="OptimizadorPC.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OptimizadorPC - Prueba" Height="350" Width="500"
+        Title="OptimizadorPC - Prueba" Height="520" Width="760"
+        WindowStartupLocation="CenterScreen"
         Background="#0F1115">
 
-    <StackPanel Margin="24">
-        <TextBlock Text="OptimizadorPC" FontSize="24" FontWeight="SemiBold"
+    <!-- DockPanel = cada hijo se "pega" a un borde; el último ocupa lo que sobra -->
+    <DockPanel Margin="24">
+
+        <!-- Arriba: título -->
+        <TextBlock DockPanel.Dock="Top" Text="OptimizadorPC" FontSize="24" FontWeight="SemiBold"
                    Foreground="White" Margin="0,0,0,16"/>
 
-        <TextBlock x:Name="TxtNombre" Foreground="White" FontSize="16"/>
-        <TextBlock x:Name="TxtDescripcion" Foreground="#9CA3AF" Margin="0,4,0,16"/>
+        <!-- Abajo: botones generales y mensaje de estado -->
+        <Grid DockPanel.Dock="Bottom" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>   <!-- Auto = lo que ocupe el botón -->
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>      <!-- * = todo el espacio restante -->
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="BtnAplicar" Content="Aplicar" Width="120" Height="36"
-                    Margin="0,0,10,0" Click="BtnAplicar_Click"/>
-            <Button x:Name="BtnRevertir" Content="Revertir" Width="120" Height="36"
-                    Click="BtnRevertir_Click"/>
-        </StackPanel>
+            <Button x:Name="BtnAplicarTodo" Grid.Column="0" Content="Aplicar todo"
+                    Width="140" Height="36" Margin="0,0,10,0" Click="BtnAplicarTodo_Click"/>
+            <Button x:Name="BtnDeshacerTodo" Grid.Column="1" Content="Deshacer todo"
+                    Width="140" Height="36" Click="BtnDeshacerTodo_Click"/>
+            <TextBlock x:Name="TxtMensaje" Grid.Column="2" Foreground="#9CA3AF"
+                       VerticalAlignment="Center" TextWrapping="Wrap" Margin="16,0,0,0"/>
+        </Grid>
 
-        <TextBlock x:Name="TxtEstado" FontSize="16" Margin="0,20,0,0"/>
-    </StackPanel>
+        <!-- Centro: la lista de optimizaciones. Empieza vacía; las filas se crean desde el código -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="PanelLista"/>
+        </ScrollViewer>
+    </DockPanel>
 </Window>

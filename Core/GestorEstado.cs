@@ -63,6 +63,9 @@ namespace OptimizadorPC.Core
         // ¿Quedó algún cambio sin revertir? Sirve para el botón "Deshacer todo"
         public static bool HayCambiosPendientes => datos.Count > 0;
 
+        // ¿Este módulo en concreto tiene algo que revertir? Sirve para su botón "Revertir"
+        public static bool TieneCambios(string modulo) => datos.ContainsKey(modulo);
+
         // Lee el archivo JSON al iniciar la app
         private static Dictionary<string, Dictionary<string, string?>> Cargar()
         {
