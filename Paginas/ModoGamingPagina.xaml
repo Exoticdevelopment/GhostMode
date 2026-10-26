@@ -198,6 +198,22 @@
                                                        Click="Opcion_Click"/>
                     </Grid>
                 </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="GPU NVIDIA a máximo rendimiento (FiveM)" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock x:Name="TxtNvidia" Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="«Preferir máximo rendimiento» en el perfil del driver de FiveM: menos tirones por bajadas de reloj. En portátil gasta más batería. Se quita al cerrar el juego."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntNvidia" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
             </UniformGrid>
 
             <!-- ===== Lista editable de apps a pausar ===== -->

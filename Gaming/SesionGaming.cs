@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using OptimizadorPC.Core;
+using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Servicios;
 
 namespace OptimizadorPC.Gaming
@@ -87,7 +88,8 @@ namespace OptimizadorPC.Gaming
 
         public static bool QuedoAlgoPendiente() =>
             GestorEstado.TieneCambios(Modulo) || GestorEstado.TieneCambios(SuspensorApps.Modulo) ||
-            GestorEstado.TieneCambios(PrioridadJuego.Modulo) || GestorEstado.TieneCambios(GrabacionFondo.Modulo);
+            GestorEstado.TieneCambios(PrioridadJuego.Modulo) || GestorEstado.TieneCambios(GrabacionFondo.Modulo) ||
+            GestorEstado.TieneCambios(PerfilNvidia.Modulo);
 
         // ===== Lista de juegos =====
 
@@ -232,6 +234,24 @@ namespace OptimizadorPC.Gaming
                     hecho.Add("grabación de Game DVR en pausa");
                 }
 
+                // 6. Solo FiveM con GPU NVIDIA: "preferir máximo rendimiento" en el perfil del driver de sus .exe.
+                //    Se aplica ahora (FiveM.exe es el lanzador): el proceso del juego arranca después y ya lo toma
+                if (c.EnergiaNvidia && juego.Origen == OrigenJuego.FiveM && PerfilNvidia.Sistema.Disponible)
+                {
+                    try
+                    {
+                        IEnumerable<string> exes = UbicacionFiveM.EjecutablesJuego(juego.Exe).Append("FiveM_GTAProcess.exe");
+                        if (await Task.Run(() => PerfilNvidia.Sistema.Aplicar(exes)))
+                        {
+                            hecho.Add("GPU NVIDIA a máximo rendimiento");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error("Modo gaming: no se pudo aplicar el perfil de energía de NVIDIA", ex);
+                    }
+                }
+
                 string resumen = hecho.Count > 0 ? string.Join(" · ", hecho) : "nada que cambiar con las opciones elegidas";
                 Logger.Info($"> ghost_mode activado para {juego.Nombre}: {resumen}");
                 Avisos.Info($"> ghost_mode activado para {juego.Nombre}", $"{resumen}. Al cerrar el juego se deshace solo.");
@@ -302,6 +322,14 @@ namespace OptimizadorPC.Gaming
             {
                 SuspensorApps.ReanudarTodas();
                 PrioridadJuego.RestaurarTodas();
+                try
+                {
+                    PerfilNvidia.Sistema.Revertir();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Modo gaming: no se pudo restaurar el perfil de energía de NVIDIA", ex);
+                }
                 try
                 {
                     GrabacionFondo.Restaurar();   // antes que las optimizaciones (orden inverso al de aplicar)

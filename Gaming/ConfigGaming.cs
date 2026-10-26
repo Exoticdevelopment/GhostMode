@@ -20,6 +20,7 @@ namespace OptimizadorPC.Gaming
         public bool LiberarRam { get; set; } = true;
         public bool OptimizacionesInicio { get; set; } = true;
         public bool PausarGrabacion { get; set; } = true;   // Game DVR / Xbox Game Bar
+        public bool EnergiaNvidia { get; set; } = true;     // solo FiveM con GPU NVIDIA
 
         // Nombres de .exe que se pausan durante la partida (editable desde la pantalla)
         public List<string> AppsSuspender { get; set; } = [.. SuspensorApps.PorDefecto];

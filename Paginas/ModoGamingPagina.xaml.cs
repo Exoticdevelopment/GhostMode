@@ -8,6 +8,7 @@ using OptimizadorPC.Componentes;
 using OptimizadorPC.Core;
 using OptimizadorPC.Gaming;
 using OptimizadorPC.ModelosVista;
+using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Servicios;
 
 namespace OptimizadorPC.Paginas
@@ -142,6 +143,12 @@ namespace OptimizadorPC.Paginas
             IntLiberar.IsChecked = c.LiberarRam;
             IntOptimizaciones.IsChecked = c.OptimizacionesInicio;
             IntGrabacion.IsChecked = c.PausarGrabacion;
+            IntNvidia.IsChecked = c.EnergiaNvidia;
+            if (!PerfilNvidia.Sistema.Disponible)
+            {
+                IntNvidia.IsEnabled = false;
+                TxtNvidia.Text = "No hay GPU NVIDIA (o su driver) en este equipo: esta opción no se usa.";
+            }
 
             apps.Clear();
             foreach (string app in c.AppsSuspender)
@@ -159,6 +166,7 @@ namespace OptimizadorPC.Paginas
             c.LiberarRam = IntLiberar.IsChecked == true;
             c.OptimizacionesInicio = IntOptimizaciones.IsChecked == true;
             c.PausarGrabacion = IntGrabacion.IsChecked == true;
+            c.EnergiaNvidia = IntNvidia.IsChecked == true;
             GuardarOpciones();
 
             if (sender is InterruptorEstado interruptor)
@@ -171,7 +179,8 @@ namespace OptimizadorPC.Paginas
             i == IntPrioridad ? "prioridad alta" :
             i == IntSuspender ? "pausar apps" :
             i == IntLiberar ? "liberar memoria" :
-            i == IntGrabacion ? "pausar la grabación de Game DVR" : "optimizaciones de Inicio";
+            i == IntGrabacion ? "pausar la grabación de Game DVR" :
+            i == IntNvidia ? "GPU NVIDIA a máximo rendimiento" : "optimizaciones de Inicio";
 
         private void BtnAgregarApp_Click(object sender, RoutedEventArgs e) => AgregarApp();
 
