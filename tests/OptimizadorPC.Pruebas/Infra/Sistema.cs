@@ -65,8 +65,11 @@ namespace OptimizadorPC.Pruebas.Infra
         }
 
         // La lista privada "Ajustes" de un módulo: así las pruebas usan exactamente la de la app
-        public static AjusteRegistro[] AjustesDe<T>() =>
-            (AjusteRegistro[])typeof(T).GetField("Ajustes", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        public static AjusteRegistro[] AjustesDe<T>() => AjustesDe(typeof(T));
+
+        // Para clases estáticas (no se pueden usar como <T>)
+        public static AjusteRegistro[] AjustesDe(Type tipo) =>
+            (AjusteRegistro[])tipo.GetField("Ajustes", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
 
         public static ValorRegistro LeerCrudo(string ruta, string nombre)
         {

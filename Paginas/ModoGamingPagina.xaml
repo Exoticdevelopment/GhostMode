@@ -182,6 +182,22 @@
                                                        Click="Opcion_Click"/>
                     </Grid>
                 </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Pausar la grabación de Game DVR" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="La grabación en segundo plano de Xbox Game Bar codifica vídeo sin parar. Vuelve a como estaba al cerrar el juego."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntGrabacion" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
             </UniformGrid>
 
             <!-- ===== Lista editable de apps a pausar ===== -->

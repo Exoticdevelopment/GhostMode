@@ -87,7 +87,7 @@ namespace OptimizadorPC.Gaming
 
         public static bool QuedoAlgoPendiente() =>
             GestorEstado.TieneCambios(Modulo) || GestorEstado.TieneCambios(SuspensorApps.Modulo) ||
-            GestorEstado.TieneCambios(PrioridadJuego.Modulo);
+            GestorEstado.TieneCambios(PrioridadJuego.Modulo) || GestorEstado.TieneCambios(GrabacionFondo.Modulo);
 
         // ===== Lista de juegos =====
 
@@ -225,6 +225,13 @@ namespace OptimizadorPC.Gaming
                     }
                 }
 
+                // 5. Grabación de Game DVR en pausa. Va DESPUÉS de las optimizaciones (y se deshace antes):
+                //    las dos tocan GameDVR_Enabled y así cada una devuelve el valor que encontró
+                if (c.PausarGrabacion && await Task.Run(GrabacionFondo.Apagar))
+                {
+                    hecho.Add("grabación de Game DVR en pausa");
+                }
+
                 string resumen = hecho.Count > 0 ? string.Join(" · ", hecho) : "nada que cambiar con las opciones elegidas";
                 Logger.Info($"> ghost_mode activado para {juego.Nombre}: {resumen}");
                 Avisos.Info($"> ghost_mode activado para {juego.Nombre}", $"{resumen}. Al cerrar el juego se deshace solo.");
@@ -295,6 +302,14 @@ namespace OptimizadorPC.Gaming
             {
                 SuspensorApps.ReanudarTodas();
                 PrioridadJuego.RestaurarTodas();
+                try
+                {
+                    GrabacionFondo.Restaurar();   // antes que las optimizaciones (orden inverso al de aplicar)
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("Modo gaming: no se pudo restaurar la grabación de Game DVR", ex);
+                }
             });
 
             string ids = GestorEstado.ObtenerOriginal(Modulo, "optimizaciones") ?? "";

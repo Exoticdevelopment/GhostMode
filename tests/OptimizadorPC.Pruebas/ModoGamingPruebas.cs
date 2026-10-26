@@ -392,6 +392,49 @@ namespace OptimizadorPC.Pruebas
             Assert.True(MemoriaStandby.Liberar(), "Windows no dio permiso para vaciar la memoria en espera");
         }
 
+        // ---------- Grabación de Game DVR ----------
+
+        [Fact]
+        public void Grabacion_SeApagaYVuelveExactaAunqueModoJuegoTambienLaToque()
+        {
+            AjusteRegistro[] grabacion = Ayudas.AjustesDe(typeof(GrabacionFondo));
+            AjusteRegistro[] modoJuego = Ayudas.AjustesDe<GameMode>();
+            AjusteRegistro[] todos = grabacion.Concat(modoJuego).DistinctBy(a => (a.Ruta, a.Nombre)).ToArray();   // comparten GameDVR_Enabled
+            Dictionary<string, ValorRegistro> real = Ayudas.Foto(todos);   // lo que tiene el usuario: se deja al final
+            try
+            {
+                // Punto de partida conocido: Game DVR grabando (como un Windows recién instalado con Game Bar activo)
+                GestorEstado.Limpiar(GrabacionFondo.Modulo);
+                GestorEstado.Limpiar("game-mode");
+                Registro.Escribir(@"System\GameConfigStore", "GameDVR_Enabled", "1", Microsoft.Win32.RegistryValueKind.DWord);
+                Registro.Escribir(@"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AppCaptureEnabled", "1", Microsoft.Win32.RegistryValueKind.DWord);
+                Registro.Escribir(@"Software\Microsoft\Windows\CurrentVersion\GameDVR", "HistoricalCaptureEnabled", "1", Microsoft.Win32.RegistryValueKind.DWord);
+                Dictionary<string, ValorRegistro> inicio = Ayudas.Foto(todos);
+
+                // Solo la grabación
+                Assert.True(GrabacionFondo.Apagar());
+                Assert.True(GrabacionFondo.EstaApagada());
+                Assert.False(GrabacionFondo.Apagar());   // ya apagada: no se vuelve a anotar
+                GrabacionFondo.Restaurar();
+                Assert.Equal(inicio, Ayudas.Foto(todos));
+                Assert.False(GestorEstado.TieneCambios(GrabacionFondo.Modulo));
+
+                // Como en la sesión: optimización de Modo Juego primero, grabación después; se deshace al revés
+                var gameMode = new GameMode();
+                gameMode.Aplicar();
+                GrabacionFondo.Apagar();
+                GrabacionFondo.Restaurar();
+                gameMode.Revertir();
+                Assert.Equal(inicio, Ayudas.Foto(todos));
+            }
+            finally
+            {
+                Ayudas.RestaurarFoto(todos, real);
+                GestorEstado.Limpiar(GrabacionFondo.Modulo);
+                // (los originales del usuario de "game-mode" vuelven con estado.json al terminar las pruebas)
+            }
+        }
+
         // ---------- La sesión completa ----------
 
         [Fact]

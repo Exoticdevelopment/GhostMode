@@ -13,12 +13,13 @@ namespace OptimizadorPC.Gaming
     {
         public static readonly string ArchivoPorDefecto = Path.Combine(Logger.Carpeta, "modo_gaming.json");
 
-        // Las cuatro opciones de "Al iniciar una partida".
+        // Las opciones de "Al iniciar una partida".
         // Suspender empieza apagada: pausar el navegador corta la música o el vídeo que tengas abierto
         public bool PrioridadAlta { get; set; } = true;
         public bool SuspenderApps { get; set; } = false;
         public bool LiberarRam { get; set; } = true;
         public bool OptimizacionesInicio { get; set; } = true;
+        public bool PausarGrabacion { get; set; } = true;   // Game DVR / Xbox Game Bar
 
         // Nombres de .exe que se pausan durante la partida (editable desde la pantalla)
         public List<string> AppsSuspender { get; set; } = [.. SuspensorApps.PorDefecto];

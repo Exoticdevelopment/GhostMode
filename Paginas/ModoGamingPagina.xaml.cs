@@ -141,6 +141,7 @@ namespace OptimizadorPC.Paginas
             IntSuspender.IsChecked = c.SuspenderApps;
             IntLiberar.IsChecked = c.LiberarRam;
             IntOptimizaciones.IsChecked = c.OptimizacionesInicio;
+            IntGrabacion.IsChecked = c.PausarGrabacion;
 
             apps.Clear();
             foreach (string app in c.AppsSuspender)
@@ -157,6 +158,7 @@ namespace OptimizadorPC.Paginas
             c.SuspenderApps = IntSuspender.IsChecked == true;
             c.LiberarRam = IntLiberar.IsChecked == true;
             c.OptimizacionesInicio = IntOptimizaciones.IsChecked == true;
+            c.PausarGrabacion = IntGrabacion.IsChecked == true;
             GuardarOpciones();
 
             if (sender is InterruptorEstado interruptor)
@@ -168,7 +170,8 @@ namespace OptimizadorPC.Paginas
         private string NombreOpcion(InterruptorEstado i) =>
             i == IntPrioridad ? "prioridad alta" :
             i == IntSuspender ? "pausar apps" :
-            i == IntLiberar ? "liberar memoria" : "optimizaciones de Inicio";
+            i == IntLiberar ? "liberar memoria" :
+            i == IntGrabacion ? "pausar la grabación de Game DVR" : "optimizaciones de Inicio";
 
         private void BtnAgregarApp_Click(object sender, RoutedEventArgs e) => AgregarApp();
 
