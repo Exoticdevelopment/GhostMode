@@ -118,6 +118,39 @@
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- ===== Diagnóstico de gráficos (solo lectura): vale aunque FiveM aún no esté instalado ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="20,16">
+                <StackPanel>
+                    <Grid>
+                        <TextBlock Text="[ GRÁFICOS · DIAGNÓSTICO ]" Style="{StaticResource EtiquetaEstilo}"/>
+                        <Border Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Right" Margin="0">
+                            <TextBlock Text="solo lectura" Style="{StaticResource PastillaTextoEstilo}"/>
+                        </Border>
+                    </Grid>
+                    <TextBlock x:Name="TxtEquipoGraficos" Text="leyendo el equipo..." Style="{StaticResource DatoEstilo}"
+                               Margin="0,12,0,0" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="TxtSettingsGta" Style="{StaticResource EtiquetaEstilo}" Margin="0,6,0,0" TextWrapping="Wrap"/>
+
+                    <ItemsControl x:Name="ListaConsejosGraficos" Margin="0,14,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle Width="6" Height="6" Margin="0,6,10,0" VerticalAlignment="Top" Fill="{Binding Color}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Texto}" Style="{StaticResource ExplicacionEstilo}"
+                                               Foreground="{StaticResource TextoBrush}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Text="* Ghost Mode no cambia los gráficos del juego: cámbialos en Ajustes › Gráficos dentro de FiveM."/>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </Page>

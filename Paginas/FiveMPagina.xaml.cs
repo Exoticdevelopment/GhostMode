@@ -37,7 +37,7 @@ namespace OptimizadorPC.Paginas
             Loaded += async (s, e) =>
             {
                 AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstado;
-                await RefrescarAsync();
+                await Task.WhenAll(RefrescarAsync(), MostrarDiagnosticoGraficosAsync());
             };
             Unloaded += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstado;
         }
@@ -51,6 +51,41 @@ namespace OptimizadorPC.Paginas
             await gpu.LeerEstadoRealAsync();
             BtnBuscar.IsEnabled = true;
             Mostrar();
+        }
+
+        // Solo lectura: equipo + settings.xml de GTA V (si existe) → recomendaciones
+        private async Task MostrarDiagnosticoGraficosAsync()
+        {
+            try
+            {
+                Diagnostico equipo = await DiagnosticoEquipo.LeerAsync();
+                AjustesGta? juego = await Task.Run(() => DiagnosticoGraficos.LeerSettings(DiagnosticoGraficos.RutaSettings));
+                var es = InfoSistema.Es;
+                int hilos = Environment.ProcessorCount;
+
+                string grafica = equipo.Gpu == null ? "gráfica no detectada"
+                    : equipo.VramGb is double v ? $"{equipo.Gpu} · {v.ToString("0.#", es)} GB VRAM" : equipo.Gpu;
+                TxtEquipoGraficos.Text = $"{grafica} · RAM {equipo.RamGb?.ToString() ?? "?"} GB · CPU {hilos} hilos";
+                TxtSettingsGta.Text = juego != null
+                    ? "Ajustes leídos del settings.xml de GTA V. Ojo: FiveM podría no estar usando ese archivo en su versión actual."
+                    : "No hay settings.xml de GTA V: recomendaciones solo según el equipo.";
+
+                ListaConsejosGraficos.ItemsSource = DiagnosticoGraficos.Recomendaciones(equipo, hilos, juego).Select(c => new
+                {
+                    c.Texto,
+                    Color = (Brush)FindResource(c.Nivel switch
+                    {
+                        NivelConsejo.Bien => "ExitoBrush",
+                        NivelConsejo.Aviso => "AvisoBrush",
+                        _ => "TextoSecundarioBrush"
+                    })
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("No se pudo hacer el diagnóstico de gráficos de FiveM", ex);
+                TxtEquipoGraficos.Text = "No se pudo leer el equipo. Revisa el log.";
+            }
         }
 
         private static DatosFiveM LeerDatos()
