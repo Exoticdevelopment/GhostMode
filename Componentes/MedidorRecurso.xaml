@@ -15,14 +15,18 @@
                                Foreground="{StaticResource TextoSecundarioBrush}"/>
             </Grid>
 
-            <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontSize="28" FontWeight="SemiBold" Margin="0,10,0,14"
-                       Foreground="{StaticResource TextoBrush}"/>
+            <!-- Viewbox con StretchDirection="DownOnly" = si el texto no cabe a lo ancho, lo encoge
+                 (nunca lo agranda). Así "No disponible" o "6,8 / 16 GB" no se cortan en ventanas estrechas -->
+            <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" Height="38" Margin="0,8,0,12">
+                <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontSize="28" FontWeight="SemiBold"
+                           Foreground="{StaticResource TextoBrush}"/>
+            </Viewbox>
 
             <ProgressBar Style="{StaticResource BarraRecursoEstilo}" Value="{Binding Porcentaje, ElementName=Raiz}"/>
 
+            <!-- Hasta dos líneas (MinHeight = sitio para las dos, así las 4 tarjetas quedan alineadas) -->
             <TextBlock Text="{Binding Detalle, ElementName=Raiz}" FontSize="12" Margin="0,12,0,0"
-                       TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextoTenueBrush}"
-                       ToolTip="{Binding Detalle, ElementName=Raiz}"/>
+                       TextWrapping="Wrap" MinHeight="32" Foreground="{StaticResource TextoTenueBrush}"/>
         </StackPanel>
     </Border>
 </UserControl>

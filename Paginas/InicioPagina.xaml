@@ -10,8 +10,8 @@
     <Page.Resources>
         <!-- El botón redondo grande. Su plantilla dibuja dos anillos y pone el contenido en el centro -->
         <Style x:Key="BotonRedondoEstilo" TargetType="Button">
-            <Setter Property="Width" Value="250"/>
-            <Setter Property="Height" Value="250"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="Height" Value="220"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
@@ -72,7 +72,7 @@
             </UniformGrid>
 
             <!-- ===== Bloque central: Ghost Mode ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="40,28">
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="28,24">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -81,7 +81,7 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Izquierda: estado y lema -->
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,24,0">
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse x:Name="PuntoEstado" Width="8" Height="8" Fill="{StaticResource TextoTenueBrush}"/>
                             <TextBlock x:Name="TxtEstado" Text="GHOST MODE · …" FontSize="13" FontWeight="SemiBold"
@@ -96,7 +96,7 @@
                     <!-- Centro: el botón grande -->
                     <Button x:Name="BtnGhost" Grid.Column="1" Style="{StaticResource BotonRedondoEstilo}"
                             IsEnabled="False" Click="BtnGhost_Click">
-                        <StackPanel HorizontalAlignment="Center" Width="170">
+                        <StackPanel HorizontalAlignment="Center" Width="150">
                             <ui:SymbolIcon Symbol="Power28" FontSize="40" HorizontalAlignment="Center"
                                            Foreground="{StaticResource ActivoBrush}"/>
                             <TextBlock x:Name="TxtBotonGhost" Text="LEYENDO ESTADO…" FontSize="16" FontWeight="Bold"
@@ -108,23 +108,41 @@
                     </Button>
 
                     <!-- Derecha: qué pasa al activar (todo dato real) -->
-                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="32,0,0,0">
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0,0,0">
                         <TextBlock Text="AL ACTIVAR" Style="{StaticResource EtiquetaEstilo}" FontSize="13" FontWeight="SemiBold"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
-                            <ui:SymbolIcon Symbol="Flash20" FontSize="18" Foreground="{StaticResource ActivoBrush}"/>
-                            <TextBlock x:Name="TxtCuantasSeguras" FontSize="14" Margin="10,0,0,0" VerticalAlignment="Center"
-                                       Foreground="{StaticResource TextoBrush}"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" Foreground="{StaticResource ActivoBrush}"/>
-                            <TextBlock Text="Punto de restauración antes" FontSize="14" Margin="10,0,0,0" VerticalAlignment="Center"
-                                       Foreground="{StaticResource TextoBrush}"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                            <ui:SymbolIcon Symbol="ArrowUndo20" FontSize="18" Foreground="{StaticResource ActivoBrush}"/>
-                            <TextBlock Text="Cambios reversibles" FontSize="14" Margin="10,0,0,0" VerticalAlignment="Center"
-                                       Foreground="{StaticResource TextoBrush}"/>
-                        </StackPanel>
+                        <!-- Cada fila es un Grid: columna 1 el icono, columna 2 el texto.
+                             En un StackPanel horizontal el texto no puede saltar de línea (tiene ancho infinito);
+                             en la columna "*" del Grid sí, porque su ancho es el que sobra -->
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="Flash20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
+                                           VerticalAlignment="Top"/>
+                            <TextBlock x:Name="TxtCuantasSeguras" Grid.Column="1" FontSize="14" Margin="10,0,0,0"
+                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
+                        </Grid>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
+                                           VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1" Text="Punto de restauración antes" FontSize="14" Margin="10,0,0,0"
+                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
+                        </Grid>
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:SymbolIcon Symbol="ArrowUndo20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
+                                           VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1" Text="Cambios reversibles" FontSize="14" Margin="10,0,0,0"
+                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
+                        </Grid>
                         <TextBlock Text="Se pedirá confirmación antes de aplicar los cambios." FontSize="12" TextWrapping="Wrap"
                                    Margin="0,16,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
                     </StackPanel>
