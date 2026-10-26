@@ -1,8 +1,10 @@
-<!-- Página Ajustes. Por ahora solo "[ ACERCA DE ]": nombre, versión (leída del ensamblado), autor,
-     enlaces y licencia. Los textos con x:Name los rellena AjustesPagina.xaml.cs -->
+<!-- Página Ajustes: [ GENERAL ] (inicio con Windows, atajo global, bienvenida) y [ ACERCA DE ] (nombre,
+     versión leída del ensamblado, autor, enlaces y licencia). Los textos con x:Name los rellena AjustesPagina.xaml.cs -->
 <Page x:Class="OptimizadorPC.Paginas.AjustesPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
       Title="Ajustes">
 
     <Page.Resources>
@@ -20,9 +22,68 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36,28,36,32">
             <TextBlock Text="&gt; ajustes" Style="{StaticResource TituloPaginaEstilo}"/>
-            <TextBlock Text="Información de la aplicación." Style="{StaticResource SubtituloPaginaEstilo}"/>
+            <TextBlock Text="Arranque, atajo de teclado e información de la aplicación." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
+            <!-- ===== General ===== -->
             <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="0">
+                <StackPanel>
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
+                        <TextBlock Text="[ GENERAL ]" Style="{StaticResource EtiquetaEstilo}"/>
+                    </Border>
+
+                    <!-- Iniciar con Windows -->
+                    <Grid Margin="16,14,16,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Iniciar con Windows (minimizado)" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="Se abre en la bandeja al iniciar sesión, para que Modo Gaming vigile tus juegos. Usa el Programador de tareas con privilegios elevados: no pide permiso de administrador en cada arranque. Al apagarlo se borra la tarea."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntInicioWindows" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="IntInicioWindows_Click"/>
+                    </Grid>
+
+                    <!-- Atajo global -->
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="16,14">
+                        <StackPanel>
+                            <TextBlock Text="Atajo para activar/desactivar Ghost Mode" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,10"
+                                       Text="Funciona desde cualquier sitio, también dentro del juego. Haz clic en el cuadro y pulsa la combinación (con Ctrl, Alt o Win)."/>
+                            <StackPanel Orientation="Horizontal">
+                                <ui:TextBox x:Name="TxtAtajo" Width="200" IsReadOnly="True" FontFamily="{StaticResource FuenteMono}"
+                                            FontSize="12" PlaceholderText="sin atajo" PreviewKeyDown="TxtAtajo_PreviewKeyDown"/>
+                                <ui:Button x:Name="BtnGuardarAtajo" Content="[ guardar ]" Margin="8,0,0,0" IsEnabled="False"
+                                           Style="{StaticResource BotonPrincipalEstilo}" Click="BtnGuardarAtajo_Click"/>
+                                <ui:Button Content="[ quitar ]" Margin="8,0,0,0" Style="{StaticResource BotonSecundarioEstilo}"
+                                           Click="BtnQuitarAtajo_Click"/>
+                            </StackPanel>
+                            <TextBlock x:Name="TxtEstadoAtajo" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Bienvenida -->
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="16,14">
+                        <Grid>
+                            <StackPanel Margin="0,0,180,0">
+                                <TextBlock Text="Bienvenida y diagnóstico" FontSize="14" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextoBrush}"/>
+                                <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                           Text="Vuelve a ver los 3 pasos y el diagnóstico rápido de tu equipo."/>
+                            </StackPanel>
+                            <ui:Button Content="[ ver bienvenida ]" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       Style="{StaticResource BotonSecundarioEstilo}" Click="BtnBienvenida_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
                 <StackPanel>
                     <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
                         <TextBlock Text="[ ACERCA DE ]" Style="{StaticResource EtiquetaEstilo}"/>

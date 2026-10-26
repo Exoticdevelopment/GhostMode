@@ -26,25 +26,113 @@ namespace OptimizadorPC
             // Cada vez que cambia la sección elegida, poner el ">" delante de su nombre
             Navegacion.SelectionChanged += (s, e) => MarcarSeleccion();
 
-            // Loaded = cuando la ventana ya está construida y lista para dibujarse
+            // Loaded = la primera vez que la ventana se muestra (si se arrancó minimizado, al abrirla desde la bandeja).
+            // Las páginas se crean recién aquí: en la bandeja no ocupan memoria
             Loaded += async (s, e) =>
             {
                 Navegacion.Navigate(typeof(InicioPagina));   // empezar en Inicio
                 MarcarSeleccion();   // por si la primera navegación no lanza SelectionChanged
                 ActualizarPie();
-                await IniciarModoGamingAsync();
                 await MostrarHardwareAsync();
             };
 
-            // Al cerrar con una partida en marcha: primero se deshace la sesión de juego
-            // (reanudar apps pausadas, prioridades, optimizaciones temporales) y después se cierra
-            Closing += async (s, e) =>
+            // La bienvenida, cuando la ventana ya se ve (en Loaded aún no está en pantalla y quedaría detrás)
+            ContentRendered += (s, e) => MostrarBienvenidaSiHaceFalta();
+
+            Closing += AlCerrar;
+
+            // Cada vez que se aplique o revierta algo (desde cualquier pantalla), refrescar el pie.
+            // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
+            AplicadorOptimizaciones.EstadoCambiado += ActualizarPie;
+            Closed += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
+        }
+
+        // ===== Segundo plano: bandeja, atajo y Modo Gaming =====
+
+        private VentanaMensajes? mensajes;
+        private IconoBandeja? bandeja;
+        private AtajoGlobal? atajo;
+        private bool saliendo = false;            // "Salir" de verdad (no ocultar en la bandeja)
+        private bool cerrandoTrasDeshacer = false;
+
+        public AtajoGlobal? Atajo => atajo;
+
+        // Lo llama App al arrancar, se muestre o no la ventana (con --minimizado no se muestra)
+        public async Task IniciarSegundoPlanoAsync()
+        {
+            try
             {
-                SesionGaming.Actual.Detener();
-                if (cerrandoTrasDeshacer || !SesionGaming.QuedoAlgoPendiente())
+                mensajes = new VentanaMensajes();
+                bandeja = new IconoBandeja(mensajes) { GhostActivo = InterruptorGhost.EstaActivo };
+                bandeja.Abrir += Mostrar;
+                bandeja.AlternarGhost += async () => await InterruptorGhost.AlternarAsync("la bandeja");
+                bandeja.DeshacerTodo += async () =>
                 {
-                    return;
+                    Mostrar();
+                    await DeshacerTodoAsync();
+                };
+                bandeja.Salir += Salir;
+
+                atajo = new AtajoGlobal(mensajes);
+                atajo.Pulsado += async () => await InterruptorGhost.AlternarAsync("el atajo de teclado");
+                if (!atajo.Registrar(Combinacion.Leer(AjustesApp.Actual.Atajo)) && AjustesApp.Actual.Atajo != null)
+                {
+                    Avisos.Error($"El atajo {AjustesApp.Actual.Atajo} no está disponible",
+                                 "Otra app ya lo usa. Elige otro en Ajustes.");
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("No se pudo crear el icono de la bandeja o el atajo global", ex);
+            }
+
+            if (Environment.ProcessPath is string exe)
+            {
+                await Task.Run(() => InicioAutomatico.CorregirRuta(exe));
+            }
+            await IniciarModoGamingAsync();
+        }
+
+        // Abrir desde la bandeja (o desde una segunda copia de la app que se intentó abrir)
+        public void Mostrar()
+        {
+            Show();
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            Activate();
+        }
+
+        public void Salir()
+        {
+            saliendo = true;
+            Close();
+        }
+
+        // La X de la ventana:
+        //   - si Modo Gaming vigila juegos → se oculta en la bandeja y sigue vigilando
+        //   - si no (o con "Salir") → se cierra de verdad, deshaciendo antes la sesión de juego si hay una
+        private async void AlCerrar(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!saliendo && bandeja != null && SesionGaming.Actual.Vigilados > 0)
+            {
+                e.Cancel = true;
+                Hide();
+                if (!AjustesApp.Actual.AvisoBandejaMostrado)
+                {
+                    bandeja.Notificar("Ghost Mode sigue aquí",
+                                      "Está vigilando tus juegos desde la bandeja. Clic derecho en el icono para salir.");
+                    AjustesApp.Actual.AvisoBandejaMostrado = true;
+                    AjustesApp.Actual.Guardar();
+                }
+                return;
+            }
+
+            SesionGaming.Actual.Detener();
+            if (!cerrandoTrasDeshacer && SesionGaming.QuedoAlgoPendiente())
+            {
+                // Con una partida en marcha: primero se deshace la sesión de juego y después se cierra
                 e.Cancel = true;   // "todavía no": se cierra al terminar de deshacer
                 cerrandoTrasDeshacer = true;
                 try
@@ -57,15 +145,43 @@ namespace OptimizadorPC
                     Logger.Error("No se pudo deshacer la sesión de Modo Gaming al cerrar", ex);
                 }
                 Close();
-            };
+                return;
+            }
+
+            atajo?.Dispose();
+            bandeja?.Dispose();
+            mensajes?.Dispose();
+            Logger.Info("=== Ghost Mode cerrado ===");
+            Application.Current.Shutdown();
+        }
+
+        private void MostrarBienvenidaSiHaceFalta()
+        {
+            if (AjustesApp.Actual.BienvenidaVista)
+            {
+                return;
+            }
+            AjustesApp.Actual.BienvenidaVista = true;
+            AjustesApp.Actual.Guardar();
+            MostrarBienvenida();
+        }
+
+        public void MostrarBienvenida()
+        {
+            try
+            {
+                new BienvenidaVentana { Owner = this }.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("No se pudo mostrar la bienvenida", ex);
+            }
 
             // Cada vez que se aplique o revierta algo (desde cualquier pantalla), refrescar el pie.
             // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
             AplicadorOptimizaciones.EstadoCambiado += ActualizarPie;
             Closed += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
         }
-
-        private bool cerrandoTrasDeshacer = false;
 
         // Modo Gaming vigila en segundo plano desde que se abre la app. Antes, deshace lo que hubiera
         // quedado de una sesión anterior que terminó mal (apps pausadas, prioridades...)
@@ -159,8 +275,17 @@ namespace OptimizadorPC
             }
         }
 
-        private async void BtnDeshacerTodo_Click(object sender, RoutedEventArgs e)
+        private async void BtnDeshacerTodo_Click(object sender, RoutedEventArgs e) => await DeshacerTodoAsync();
+
+        // También desde el menú de la bandeja
+        private async Task DeshacerTodoAsync()
         {
+            if (!GestorEstado.HayCambiosPendientes)
+            {
+                Avisos.Info("No hay cambios que deshacer", "Windows está como antes de usar Ghost Mode.");
+                return;
+            }
+
             var confirmar = new MessageBoxUi
             {
                 Title = "¿Deshacer todos los cambios?",
@@ -174,7 +299,18 @@ namespace OptimizadorPC
             }
 
             BtnDeshacerTodo.IsEnabled = false;   // evitar doble clic mientras trabaja
-            ResultadoAplicacion resultado = await AplicadorOptimizaciones.DeshacerTodoAsync();
+            ResultadoAplicacion resultado;
+            try
+            {
+                resultado = await AplicadorOptimizaciones.DeshacerTodoAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Deshacer todo falló", ex);
+                Avisos.Error("No se pudo deshacer todo", "Revisa el log para más detalles.");
+                ActualizarPie();
+                return;
+            }
             // (el pie se actualiza solo gracias al evento EstadoCambiado)
 
             if (!resultado.TodoBien)

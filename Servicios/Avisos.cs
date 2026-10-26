@@ -25,6 +25,15 @@ namespace OptimizadorPC.Servicios
 
         private static void Mostrar(string titulo, string mensaje, ControlAppearance aspecto, SymbolRegular icono)
         {
+            // Ventana oculta en la bandeja o detrás de otra (p. ej. jugando): el toast de dentro no se vería.
+            // Se manda como notificación de Windows desde el icono de la bandeja
+            System.Windows.Window? ventana = System.Windows.Application.Current?.MainWindow;
+            if (IconoBandeja.Actual != null && (ventana == null || !ventana.IsVisible || !ventana.IsActive))
+            {
+                IconoBandeja.Actual.Notificar(titulo, mensaje);
+                return;
+            }
+
             if (Presentador == null)   // la ventana aún no está lista: no hay dónde mostrarlo
             {
                 return;

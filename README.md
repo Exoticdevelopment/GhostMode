@@ -13,6 +13,11 @@ Red mide la latencia real de los DNS (Automático, Cloudflare, Google, Quad9) co
 más rápido y lo aplica al adaptador activo guardando el original; muestra el ping en vivo de los últimos
 60 s (también a la IP de un servidor de FiveM) y los datos del adaptador. Sin "trucos" de red sin respaldo.
 
+Vive en la bandeja del sistema mientras Modo Gaming vigila tus juegos (menú con Abrir, Activar/Desactivar
+Ghost Mode, Deshacer todo y Salir), puede iniciarse con Windows minimizado (tarea programada con privilegios
+elevados, sin aviso de UAC en cada arranque) y se activa o desactiva con un atajo global (`Ctrl+Alt+G` por
+defecto, configurable en Ajustes). La primera vez muestra una bienvenida con un diagnóstico rápido del equipo.
+
 Todos los cambios se pueden deshacer: Ghost Mode guarda el valor original antes de modificar nada y crea un
 punto de restauración antes de aplicar optimizaciones. Nunca desactiva Windows Defender ni Windows Update.
 

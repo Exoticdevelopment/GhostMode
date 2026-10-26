@@ -152,7 +152,7 @@ namespace OptimizadorPC.Servicios
             return limpio;
         }
 
-        private static bool EsDedicada(string? nombre)
+        public static bool EsDedicada(string? nombre)
         {
             if (nombre == null)
             {
