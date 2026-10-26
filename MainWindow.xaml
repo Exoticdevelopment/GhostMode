@@ -50,8 +50,8 @@
         <!-- NavigationView = barra lateral + zona donde se muestra la página elegida.
              IsPaneToggleVisible="False": sin botón de hamburguesa, la barra siempre está abierta.
              FontFamily se hereda: todos los ítems en letra monoespaciada.
-             Los textos de los ítems los pone MainWindow.xaml.cs ("> inicio" el elegido, "  inicio" el resto);
-             Tag guarda el nombre base. -->
+             Los textos de los ítems los pone MainWindow.xaml.cs ("> inicio" el elegido, "  inicio" el resto,
+             con los "_" escapados); Tag guarda el nombre base. -->
         <ui:NavigationView x:Name="Navegacion" Grid.Row="1"
                            PaneDisplayMode="Left"
                            IsPaneToggleVisible="False"
@@ -87,8 +87,9 @@
                                    VerticalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Appearance="Transparent" = botón sin fondo, como un enlace -->
-                    <ui:Button x:Name="BtnDeshacerTodo" Content="[ deshacer_todo ]" Appearance="Transparent"
+                    <!-- Appearance="Transparent" = botón sin fondo, como un enlace.
+                         "__" = un "_" visible: con uno solo, WPF lo toma como tecla de acceso y no lo muestra -->
+                    <ui:Button x:Name="BtnDeshacerTodo" Content="[ deshacer__todo ]" Appearance="Transparent"
                                FontFamily="{StaticResource FuenteMono}" FontSize="12"
                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                Padding="4,6" Click="BtnDeshacerTodo_Click"/>

@@ -54,13 +54,28 @@ namespace OptimizadorPC
         }
 
         // "> inicio" el elegido, "  inicio" el resto (los espacios mantienen el texto alineado).
-        // El nombre base de cada ítem está en su Tag (MainWindow.xaml)
+        // El nombre base de cada ítem está en su Tag (MainWindow.xaml).
+        // OJO: en el contenido de botones e ítems, WPF toma "_" como marca de tecla de acceso (como en "_Archivo")
+        // y se lo come: "modo_gaming" se vería "modogaming". Escrito doble ("__") se muestra un "_" normal
         private void MarcarSeleccion()
         {
             foreach (var item in Navegacion.MenuItems.OfType<NavigationViewItem>())
             {
-                string nombre = item.Tag as string ?? "";
-                item.Content = ReferenceEquals(item, Navegacion.SelectedItem) ? $"> {nombre}" : $"  {nombre}";
+                string nombre = (item.Tag as string ?? "").Replace("_", "__");
+                bool elegido = ReferenceEquals(item, Navegacion.SelectedItem);
+                item.Content = elegido ? $"> {nombre}" : $"  {nombre}";
+
+                // El elegido tiene fondo morado oscuro: texto claro (sobre morado nunca va gris ni morado).
+                // WPF-UI no tiene un color propio para el texto del elegido, por eso se pone aquí.
+                // ClearValue = los demás vuelven al gris del tema (y al blanco al pasar el ratón)
+                if (elegido)
+                {
+                    item.SetResourceReference(ForegroundProperty, "TextoBrush");
+                }
+                else
+                {
+                    item.ClearValue(ForegroundProperty);
+                }
             }
         }
 

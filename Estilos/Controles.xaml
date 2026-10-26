@@ -95,15 +95,24 @@
     <!-- ===== Botones: letra monoespaciada, esquinas de 2 px ===== -->
     <!-- BasedOn = "parte del estilo de botón de WPF-UI y cambia solo esto" -->
 
-    <!-- Principal: relleno morado (el color de acento de la app) -->
+    <!-- Principal: relleno morado con texto NEGRO (regla de contraste: sobre morado, texto negro o blanco;
+         texto morado solo sobre negro). Los colores van puestos a mano en vez de Appearance="Primary":
+         ese modo calcula sus propios tonos del acento y no asegura el texto negro -->
     <Style x:Key="BotonPrincipalEstilo" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-        <Setter Property="Appearance" Value="Primary"/>
         <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
         <Setter Property="Height" Value="34"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Padding" Value="14,0"/>
         <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Background" Value="{StaticResource AcentoBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource AcentoBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource FondoBrush}"/>
+        <Setter Property="MouseOverBackground" Value="{StaticResource AcentoBrilloBrush}"/>
+        <Setter Property="MouseOverBorderBrush" Value="{StaticResource AcentoBrilloBrush}"/>
+        <Setter Property="PressedBackground" Value="{StaticResource AcentoBrush}"/>
+        <Setter Property="PressedBorderBrush" Value="{StaticResource AcentoBrush}"/>
+        <Setter Property="PressedForeground" Value="{StaticResource FondoBrush}"/>
     </Style>
 
     <!-- Secundario: negro con borde gris; al pasar el ratón, borde y texto más claros -->

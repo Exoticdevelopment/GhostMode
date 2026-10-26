@@ -31,7 +31,7 @@ namespace OptimizadorPC.Core
             {
                 datos[modulo][clave] = valor;
                 Persistir();
-                Logger.Info($"Estado original guardado: {modulo}.{clave} = {valor}");
+                Logger.Info($"Estado original guardado: {modulo}.{clave} = {valor ?? "(no existía)"}");
             }
         }
 

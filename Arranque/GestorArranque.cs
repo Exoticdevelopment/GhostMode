@@ -60,7 +60,7 @@ namespace OptimizadorPC.Arranque
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"No se pudo leer {hive}\\{ruta}", ex);
+                    Logger.Error($"No se pudo leer {(hive == RegistryHive.CurrentUser ? "HKCU" : "HKLM")}\\{ruta}", ex);
                 }
             }
 
@@ -90,7 +90,7 @@ namespace OptimizadorPC.Arranque
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"No se pudo leer la carpeta Inicio {especial}", ex);
+                    Logger.Error($"No se pudo leer la carpeta Inicio {Environment.GetFolderPath(especial)}", ex);
                 }
             }
 

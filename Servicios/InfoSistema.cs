@@ -1,5 +1,6 @@
 using System.Globalization;   // CultureInfo: formato de números en español ("2,40")
 using System.Management;      // WMI: consultar el hardware de Windows
+using System.Text.RegularExpressions;   // Regex: sacar el modelo corto de la CPU y la GPU
 using OptimizadorPC.Core;
 
 namespace OptimizadorPC.Servicios
@@ -85,8 +86,70 @@ namespace OptimizadorPC.Servicios
             string windows = Environment.OSVersion.Version.Build >= 22000 ? "Windows 11" : "Windows 10";
 
             var datos = new DatosEquipo(cpu, nucleos, ghz, ramGb, gpu, windows);
-            Logger.Info($"Equipo: {datos}");
+            Logger.Info($"equipo: {Resumen(datos)}");
             return datos;
+        }
+
+        // Una línea corta para el log: "i5-13420H · 8 núcleos · 16 GB · RTX 3050".
+        // Lo que Windows no informó se omite (nunca se inventa)
+        public static string Resumen(DatosEquipo d)
+        {
+            var partes = new List<string>();
+            if (d.Cpu != null)
+            {
+                partes.Add(ModeloCorto(d.Cpu, ModelosCpu));
+            }
+            if (d.Nucleos != null)
+            {
+                partes.Add($"{d.Nucleos} núcleos");
+            }
+            if (d.RamGb != null)
+            {
+                partes.Add($"{d.RamGb} GB");
+            }
+            if (d.Gpu != null)
+            {
+                partes.Add(ModeloCorto(d.Gpu, ModelosGpu));
+            }
+            return partes.Count > 0 ? string.Join(" · ", partes) : "sin datos de hardware";
+        }
+
+        // El modelo dentro del nombre largo que da Windows:
+        //   "13th Gen Intel(R) Core(TM) i5-13420H"         → "i5-13420H"
+        //   "Intel(R) Core(TM) Ultra 7 155H"               → "Ultra 7 155H"
+        //   "AMD Ryzen 5 5600X 6-Core Processor"           → "Ryzen 5 5600X"
+        private static readonly Regex[] ModelosCpu =
+        {
+            new(@"\bi[3579]-\d{4,5}[A-Z]*\b"),
+            new(@"\bUltra \d \d{3}[A-Z]*\b"),
+            new(@"\bRyzen (Threadripper )?\d+ (PRO )?\d{4}[A-Z0-9]*\b"),
+        };
+
+        //   "NVIDIA GeForce RTX 3050 6GB Laptop GPU"       → "RTX 3050"
+        //   "AMD Radeon RX 6600"                           → "RX 6600"
+        //   "Intel(R) Arc(TM) A770 Graphics"               → "Arc A770" (tras quitar "(TM)")
+        private static readonly Regex[] ModelosGpu =
+        {
+            new(@"\b(RTX|GTX|GT|MX|RX) ?[A-Z]?\d{3,4}\b"),
+            new(@"\bArc [A-Z]\d{3}\b"),
+        };
+
+        // Si ningún patrón encaja ("Intel(R) UHD Graphics 620"), el nombre sin las marcas (R)/(TM)
+        // y sin "CPU @ 2.40GHz": "Intel UHD Graphics 620"
+        private static string ModeloCorto(string nombre, Regex[] patrones)
+        {
+            string limpio = Regex.Replace(nombre, @"\((R|TM)\)|\bCPU\b|@.*$", "", RegexOptions.IgnoreCase);
+            limpio = Regex.Replace(limpio, @"\s+", " ").Trim();
+
+            foreach (Regex patron in patrones)
+            {
+                Match m = patron.Match(limpio);
+                if (m.Success)
+                {
+                    return m.Value;
+                }
+            }
+            return limpio;
         }
 
         private static bool EsDedicada(string? nombre)

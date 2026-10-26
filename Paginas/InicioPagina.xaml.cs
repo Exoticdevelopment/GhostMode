@@ -171,7 +171,7 @@ namespace OptimizadorPC.Paginas
 
             // Tag="on" hace que el estilo del botón lo rellene de morado (InicioPagina.xaml)
             BtnGhost.Tag = ghostActivo ? "on" : "off";
-            TxtBotonGhost.Text = ghostActivo ? "[ GHOST MODE: ON ]" : "[ ACTIVAR GHOST MODE ]";
+            TxtBotonGhost.Text = ghostActivo ? "[ GHOST_MODE: ON ]" : "[ ACTIVAR GHOST MODE ]";
             TxtBotonGhostDetalle.Text = ghostActivo ? "clic para desactivar" : "un clic · pide confirmación";
         }
 

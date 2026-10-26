@@ -7,53 +7,51 @@
       Title="Inicio">
 
     <Page.Resources>
-        <!-- El botón grande de Ghost Mode: rectángulo con borde morado.
-             Tag="on" (lo pone InicioPagina.xaml.cs) = relleno morado con texto negro -->
+        <!-- El botón grande de Ghost Mode. Regla de contraste: texto morado SOLO sobre negro;
+             sobre morado, texto negro.
+               normal:          fondo negro, borde morado 2 px, texto morado claro
+               ratón encima:    fondo morado, texto negro
+               Tag="on" (ON):   fondo morado, texto negro (lo pone InicioPagina.xaml.cs)
+             Los colores se ponen en el propio botón y el texto de dentro los toma con
+             Foreground="{Binding Foreground, ...}", así ningún estilo heredado los pisa -->
         <Style x:Key="BotonGhostEstilo" TargetType="Button">
             <Setter Property="Height" Value="58"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="{StaticResource FondoBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AcentoBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource AcentoBrilloBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Caja" CornerRadius="2" BorderThickness="1"
-                                BorderBrush="{StaticResource AcentoBrush}" Background="Transparent">
-                            <!-- TextElement.Foreground = color del texto de dentro (se cambia en los Trigger) -->
-                            <ContentPresenter x:Name="Contenido" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                              TextElement.Foreground="{StaticResource AcentoBrilloBrush}"/>
+                        <Border CornerRadius="2" BorderThickness="2"
+                                Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <!-- Apagado + ratón encima: fondo morado oscuro -->
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoFondoBrush}"/>
-                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource AcentoBrilloBrush}"/>
-                            </Trigger>
-                            <!-- Encendido: relleno morado, texto negro -->
-                            <Trigger Property="Tag" Value="on">
-                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoBrush}"/>
-                                <Setter TargetName="Contenido" Property="TextElement.Foreground" Value="{StaticResource FondoBrush}"/>
-                            </Trigger>
-                            <!-- Encendido + ratón encima: morado brillante -->
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Tag" Value="on"/>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoBrilloBrush}"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource TextoBrush}"/>
-                            </Trigger>
-                            <!-- Leyendo o aplicando: borde y texto ámbar -->
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Caja" Property="Background" Value="Transparent"/>
-                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource AvisoBrush}"/>
-                                <Setter TargetName="Contenido" Property="TextElement.Foreground" Value="{StaticResource AvisoBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <!-- En los Trigger, el último que se cumple gana: el orden importa -->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AcentoBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource FondoBrush}"/>
+                </Trigger>
+                <Trigger Property="Tag" Value="on">
+                    <Setter Property="Background" Value="{StaticResource AcentoBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource FondoBrush}"/>
+                </Trigger>
+                <!-- Foco con teclado (Tab): borde claro para saber dónde estamos -->
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource TextoBrush}"/>
+                </Trigger>
+                <!-- Leyendo o aplicando: negro con borde y texto ámbar -->
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{StaticResource FondoBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AvisoBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Línea de la lista "[ AL ACTIVAR ]" -->
@@ -108,7 +106,8 @@
                         <Button x:Name="BtnGhost" Style="{StaticResource BotonGhostEstilo}" Tag="off"
                                 IsEnabled="False" Click="BtnGhost_Click">
                             <TextBlock x:Name="TxtBotonGhost" Text="[ LEYENDO ESTADO... ]" FontFamily="{StaticResource FuenteMono}"
-                                       FontSize="15" FontWeight="Bold"/>
+                                       FontSize="15" FontWeight="Bold"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
                         </Button>
                         <TextBlock x:Name="TxtBotonGhostDetalle" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0"/>
                     </StackPanel>
