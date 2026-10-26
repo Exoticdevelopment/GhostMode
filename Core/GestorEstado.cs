@@ -45,6 +45,20 @@ namespace OptimizadorPC.Core
             return null;
         }
 
+        // Olvida UNA clave (no todo el módulo). Si el módulo se queda vacío, se quita entero.
+        // Sirve cuando el usuario deja algo otra vez como estaba al principio
+        public static void Olvidar(string modulo, string clave)
+        {
+            if (datos.TryGetValue(modulo, out var claves) && claves.Remove(clave))
+            {
+                if (claves.Count == 0)
+                {
+                    datos.Remove(modulo);
+                }
+                Persistir();
+            }
+        }
+
         // ¿Hay algo guardado para esta clave?
         public static bool TieneOriginal(string modulo, string clave)
         {

@@ -81,10 +81,9 @@ namespace OptimizadorPC
             ResultadoAplicacion resultado = await AplicadorOptimizaciones.DeshacerTodoAsync();
             // (el pie se actualiza solo gracias al evento EstadoCambiado)
 
-            if (resultado.Fallidas.Count > 0)
+            if (!resultado.TodoBien)
             {
-                // Select = sacar el Nombre de cada optimización fallida
-                string nombres = string.Join("\n• ", resultado.Fallidas.Select(o => o.Nombre));
+                string nombres = string.Join("\n• ", resultado.NombresFallidos);
                 await new MessageBoxUi
                 {
                     Title = "No se pudo deshacer todo",

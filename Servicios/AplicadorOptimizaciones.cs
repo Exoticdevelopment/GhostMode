@@ -1,13 +1,19 @@
+using OptimizadorPC.Arranque;
 using OptimizadorPC.Core;
 using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Optimizaciones.Sistema;
 
 namespace OptimizadorPC.Servicios
 {
-    // Lo que devuelve aplicar o revertir: si se canceló y cuáles fallaron
-    public record ResultadoAplicacion(bool Cancelado, IReadOnlyList<IOptimizacion> Fallidas)
+    // Lo que devuelve aplicar o revertir: si se canceló y cuáles fallaron.
+    // OtrosFallos = cosas que no son IOptimizacion (p. ej. "Programas de inicio") y no se pudieron deshacer
+    public record ResultadoAplicacion(bool Cancelado, IReadOnlyList<IOptimizacion> Fallidas,
+                                      IReadOnlyList<string>? OtrosFallos = null)
     {
-        public bool TodoBien => !Cancelado && Fallidas.Count == 0;
+        public bool TodoBien => !Cancelado && Fallidas.Count == 0 && (OtrosFallos?.Count ?? 0) == 0;
+
+        // Los nombres de todo lo que falló, para mostrarlos juntos
+        public IEnumerable<string> NombresFallidos => Fallidas.Select(o => o.Nombre).Concat(OtrosFallos ?? []);
     }
 
     // El "cerebro" que aplica y revierte. Lo usan el pie de la barra lateral,
@@ -114,7 +120,54 @@ namespace OptimizadorPC.Servicios
             }
         }
 
-        public static Task<ResultadoAplicacion> DeshacerTodoAsync() => RevertirAsync(Todas);
+        // Para cambios que no son una IOptimizacion (p. ej. un programa de inicio): mismo candado,
+        // mismo punto de restauración y mismo aviso EstadoCambiado. Devuelve false si el usuario canceló.
+        // Si el cambio falla, la excepción llega a quien llamó, que decide cómo avisar.
+        public static async Task<bool> CambiarAsync(Action cambio, Func<Task<bool>> continuarSinPunto)
+        {
+            await Candado.WaitAsync();
+            try
+            {
+                if (!await AsegurarPuntoRestauracionAsync(continuarSinPunto))
+                {
+                    return false;
+                }
+                await Task.Run(cambio);
+                return true;
+            }
+            finally
+            {
+                Candado.Release();
+                EstadoCambiado?.Invoke();
+            }
+        }
+
+        // Deshace las optimizaciones y, además, los programas de inicio que se deshabilitaron
+        public static async Task<ResultadoAplicacion> DeshacerTodoAsync()
+        {
+            ResultadoAplicacion resultado = await RevertirAsync(Todas);
+            if (!GestorEstado.TieneCambios(GestorArranque.Modulo))
+            {
+                return resultado;
+            }
+
+            await Candado.WaitAsync();
+            try
+            {
+                await Task.Run(GestorArranque.RestaurarTodo);
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Falló al restaurar los programas de inicio", ex);
+                return resultado with { OtrosFallos = ["Programas de inicio de Windows"] };   // with = copia cambiando eso
+            }
+            finally
+            {
+                Candado.Release();
+                EstadoCambiado?.Invoke();
+            }
+        }
 
         // Devuelve true si se puede seguir aplicando, false si el usuario canceló
         private static async Task<bool> AsegurarPuntoRestauracionAsync(Func<Task<bool>> continuarSinPunto)
