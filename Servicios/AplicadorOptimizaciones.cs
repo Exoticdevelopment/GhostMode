@@ -1,5 +1,6 @@
 using OptimizadorPC.Arranque;
 using OptimizadorPC.Core;
+using OptimizadorPC.Gaming;
 using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Optimizaciones.Sistema;
 
@@ -63,34 +64,56 @@ namespace OptimizadorPC.Servicios
                     return new ResultadoAplicacion(true, []);   // [] = lista vacía
                 }
 
-                var fallidas = new List<IOptimizacion>();
-                foreach (var optimizacion in lista)
-                {
-                    try
-                    {
-                        // Task.Run = trabajar en segundo plano para que la ventana no se congele
-                        await Task.Run(() =>
-                        {
-                            if (!optimizacion.EstaActiva())   // ya aplicada: nada que hacer
-                            {
-                                optimizacion.Aplicar();
-                            }
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        // Si una falla, la anotamos y seguimos con las demás
-                        fallidas.Add(optimizacion);
-                        Logger.Error($"Falló al aplicar {optimizacion.Id}", ex);
-                    }
-                }
-                return new ResultadoAplicacion(false, fallidas);
+                return new ResultadoAplicacion(false, await AplicarListaAsync(lista));
             }
             finally
             {
                 Candado.Release();
                 EstadoCambiado?.Invoke();   // ?. = solo si alguien está escuchando
             }
+        }
+
+        // Modo Gaming: cambios temporales que la sesión de juego deshace sola al cerrar el juego.
+        // Sin punto de restauración: crearlo justo al abrir un juego le quitaría disco y CPU mientras carga,
+        // y además no hace falta: la sesión anota todo en GestorEstado antes de aplicar
+        public static async Task<ResultadoAplicacion> AplicarTemporalAsync(IEnumerable<IOptimizacion> lista)
+        {
+            await Candado.WaitAsync();
+            try
+            {
+                return new ResultadoAplicacion(false, await AplicarListaAsync(lista));
+            }
+            finally
+            {
+                Candado.Release();
+                EstadoCambiado?.Invoke();
+            }
+        }
+
+        // Aplica una a una; si una falla, la anota y sigue con las demás. Devuelve las que fallaron
+        private static async Task<List<IOptimizacion>> AplicarListaAsync(IEnumerable<IOptimizacion> lista)
+        {
+            var fallidas = new List<IOptimizacion>();
+            foreach (var optimizacion in lista)
+            {
+                try
+                {
+                    // Task.Run = trabajar en segundo plano para que la ventana no se congele
+                    await Task.Run(() =>
+                    {
+                        if (!optimizacion.EstaActiva())   // ya aplicada: nada que hacer
+                        {
+                            optimizacion.Aplicar();
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    fallidas.Add(optimizacion);
+                    Logger.Error($"Falló al aplicar {optimizacion.Id}", ex);
+                }
+            }
+            return fallidas;
         }
 
         public static async Task<ResultadoAplicacion> RevertirAsync(IEnumerable<IOptimizacion> lista)
@@ -148,9 +171,13 @@ namespace OptimizadorPC.Servicios
             }
         }
 
-        // Deshace las optimizaciones y, además, los programas de inicio que se deshabilitaron
+        // Deshace las optimizaciones y, además, la sesión de Modo Gaming (apps pausadas, prioridades)
+        // y los programas de inicio que se deshabilitaron
         public static async Task<ResultadoAplicacion> DeshacerTodoAsync()
         {
+            // Primero la sesión de juego: reanuda las apps pausadas y revierte lo suyo
+            await SesionGaming.Actual.TerminarAsync("Deshacer todo");
+
             ResultadoAplicacion resultado = await RevertirAsync(Todas);
             if (!GestorEstado.TieneCambios(GestorArranque.Modulo))
             {

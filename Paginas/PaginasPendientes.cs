@@ -36,11 +36,6 @@ namespace OptimizadorPC.Paginas
 
     // Una clase por sección: la barra lateral distingue las páginas por su TIPO.
     // ": base(...)" = llamar al constructor de PaginaProximamente con estos textos.
-    public class ModoGamingPagina : PaginaProximamente
-    {
-        public ModoGamingPagina() : base("Modo Gaming", "en construcción") { }
-    }
-
     public class RedPagina : PaginaProximamente
     {
         public RedPagina() : base("Red", "en construcción") { }

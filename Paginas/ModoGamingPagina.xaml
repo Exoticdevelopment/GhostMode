@@ -1,0 +1,251 @@
+<!-- Página Modo Gaming: la lista de juegos (detectados y agregados a mano) con su interruptor de
+     activación automática, y las opciones que se aplican mientras dura la partida.
+     La vigilancia corre siempre en segundo plano (Gaming/SesionGaming.cs), esté o no esta página a la vista -->
+<Page x:Class="OptimizadorPC.Paginas.ModoGamingPagina"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+      Title="Modo Gaming">
+
+    <Page.Resources>
+        <!-- Botón "[ quitar ]" / "×": texto gris que se pone morado claro al pasar el ratón (sobre negro) -->
+        <Style x:Key="BotonTextoEstilo" TargetType="Button" BasedOn="{StaticResource EnlaceEstilo}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="44,36,44,36">
+
+            <!-- Encabezado -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Modo Gaming" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <TextBlock Text="Ghost Mode se activa solo al abrir un juego y se deshace al cerrarlo."
+                               Style="{StaticResource SubtituloPaginaEstilo}"/>
+                </StackPanel>
+                <ui:Button x:Name="BtnAgregar" Grid.Column="1" Content="[ agregar juego ]" VerticalAlignment="Top"
+                           Style="{StaticResource BotonPrincipalEstilo}" Click="BtnAgregar_Click"/>
+            </Grid>
+
+            <!-- Estado de la vigilancia: "> vigilando 2 juegos · cada 2 s" o "> ghost_mode activo: FiveM" -->
+            <Border x:Name="PastillaEstado" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Left" Margin="0,18,0,0">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle x:Name="PuntoEstado" Width="6" Height="6" VerticalAlignment="Center" Margin="0,0,8,0"
+                               Fill="{StaticResource TextoSecundarioBrush}"/>
+                    <TextBlock x:Name="TxtEstado" Text="&gt; leyendo juegos..." Style="{StaticResource PastillaTextoEstilo}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Lista de juegos ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,14,0,0" Padding="0">
+                <StackPanel>
+                    <Grid Margin="20,14">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="[ JUEGOS ]" Style="{StaticResource EtiquetaEstilo}" VerticalAlignment="Center"/>
+                            <Border Style="{StaticResource PastillaEstilo}" Margin="10,0,0,0">
+                                <TextBlock x:Name="TxtCuantos" Text="—" Style="{StaticResource PastillaTextoEstilo}"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="AUTOACTIVACIÓN" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <ItemsControl x:Name="ListaJuegos">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="20,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Ícono del .exe (o uno genérico) en un cuadrado con borde -->
+                                        <Border Width="40" Height="40" BorderThickness="1" CornerRadius="2"
+                                                BorderBrush="{StaticResource BordeHoverBrush}" Background="{StaticResource FondoBrush}">
+                                            <Grid>
+                                                <Image Source="{Binding Icono}" Width="24" Height="24"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <ui:SymbolIcon Symbol="Games24" FontSize="20" Visibility="{Binding VisibleIconoGenerico}"
+                                                               Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                            </Grid>
+                                        </Border>
+
+                                        <!-- Nombre + origen, y debajo la ruta -->
+                                        <StackPanel Grid.Column="1" Margin="14,0,12,0" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Nombre}" FontSize="14" FontWeight="SemiBold"
+                                                           Foreground="{StaticResource TextoBrush}" VerticalAlignment="Center"/>
+                                                <Border Style="{StaticResource PastillaEstilo}" Margin="10,0,0,0" Padding="5,0">
+                                                    <TextBlock Text="{Binding TextoOrigen}" Style="{StaticResource PastillaTextoEstilo}"
+                                                               FontSize="10"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Ruta}" ToolTip="{Binding Ruta}" Style="{StaticResource EtiquetaEstilo}"
+                                                       Margin="0,4,0,0" TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+
+                                        <Button Grid.Column="2" Content="[ quitar ]" Style="{StaticResource BotonTextoEstilo}"
+                                                Margin="0,0,16,0" Visibility="{Binding VisibleQuitar}" Click="BtnQuitar_Click"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding TextoAutomatico}" Style="{StaticResource EtiquetaEstilo}"
+                                                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                        <componentes:InterruptorEstado Grid.Column="4" VerticalAlignment="Center"
+                                                                       IsChecked="{Binding Automatico, Mode=TwoWay}"
+                                                                       ToolTip="Activación automática"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Sin juegos (o leyendo) -->
+                    <StackPanel x:Name="PanelVacio" Margin="20,4,20,20">
+                        <TextBlock x:Name="TxtVacio" Text="&gt; leyendo..." Style="{StaticResource DatoEstilo}"/>
+                        <TextBlock x:Name="TxtVacioDetalle" Style="{StaticResource ExplicacionEstilo}" Margin="0,6,0,0"
+                                   Text="No se encontraron juegos de Steam, Epic Games ni FiveM. Usa «[ agregar juego ]» para elegir un .exe."
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Opciones ===== -->
+            <TextBlock Text="[ AL INICIAR UNA PARTIDA ]" Style="{StaticResource EtiquetaEstilo}" Margin="0,24,0,10"/>
+            <UniformGrid Columns="2" Margin="0,0,-12,-12">
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Prioridad alta" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="El juego va primero en la CPU, solo mientras está abierto."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntPrioridad" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Pausar apps en segundo plano" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="Congela las apps de la lista de abajo; al cerrar el juego se reanudan todas."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntSuspender" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Liberar memoria en espera" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="Solo si queda menos de 1 GB libre. Si hay de sobra, no se toca."/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntLiberar" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,12,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,12,0">
+                            <TextBlock Text="Optimizaciones de Inicio" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock x:Name="TxtOptimizaciones" Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntOptimizaciones" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="Opcion_Click"/>
+                    </Grid>
+                </Border>
+            </UniformGrid>
+
+            <!-- ===== Lista editable de apps a pausar ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,12,0,0" Padding="20,16">
+                <StackPanel>
+                    <Grid>
+                        <TextBlock Text="[ APPS A PAUSAR ]" Style="{StaticResource EtiquetaEstilo}" VerticalAlignment="Center"/>
+                        <Button Content="[ restaurar lista ]" Style="{StaticResource BotonTextoEstilo}" HorizontalAlignment="Right"
+                                Click="BtnRestaurarLista_Click"/>
+                    </Grid>
+
+                    <!-- Una pastilla por app, con su "×" para quitarla -->
+                    <ItemsControl x:Name="ListaApps" Margin="0,12,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource PastillaEstilo}" Margin="0,0,8,8" Padding="8,3,4,3">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}" Style="{StaticResource PastillaTextoEstilo}" FontSize="12"
+                                                   Foreground="{StaticResource TextoBrush}" VerticalAlignment="Center"/>
+                                        <Button Content=" × " Tag="{Binding}" Style="{StaticResource BotonTextoEstilo}" FontSize="12"
+                                                Margin="4,0,0,0" ToolTip="Quitar de la lista" Click="BtnQuitarApp_Click"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Grid Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MaxWidth="320"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox x:Name="TxtNuevaApp" PlaceholderText="programa.exe" FontFamily="{StaticResource FuenteMono}"
+                                    FontSize="12" KeyDown="TxtNuevaApp_KeyDown"/>
+                        <ui:Button Grid.Column="1" Content="[ agregar ]" Margin="8,0,0,0"
+                                   Style="{StaticResource BotonSecundarioEstilo}" Click="BtnAgregarApp_Click"/>
+                    </Grid>
+                    <TextBlock x:Name="TxtErrorApp" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"
+                               Foreground="{StaticResource AvisoBrush}" Visibility="Collapsed"/>
+                    <TextBlock Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,10,0,0"
+                               Text="* nunca se pausan: Windows, el antivirus, el audio, Discord y otros chats de voz, Steam ni el launcher que abrió el juego. Si escuchas música en el navegador, quítalo de la lista."/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Aviso verde de abajo ===== -->
+            <Border Margin="0,16,0,0" Padding="16,12" CornerRadius="2" Background="{StaticResource ActivoSuaveBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" VerticalAlignment="Top"
+                                   Foreground="{StaticResource ActivoBrush}"/>
+                    <TextBlock Grid.Column="1" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap"
+                               Foreground="{StaticResource TextoBrush}"
+                               Text="Al cerrar el juego se restauran solos los ajustes de la sesión. Si Ghost Mode se cierra a mitad de partida, al volver a abrirse reanuda las apps pausadas y deshace el resto."/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

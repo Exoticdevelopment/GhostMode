@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media.Imaging;   // BitmapDecoder: leer las imágenes del .ico
 using OptimizadorPC.Core;
+using OptimizadorPC.Gaming;
 using OptimizadorPC.Paginas;
 using OptimizadorPC.Servicios;
 using Wpf.Ui.Controls;   // FluentWindow
@@ -31,13 +32,53 @@ namespace OptimizadorPC
                 Navegacion.Navigate(typeof(InicioPagina));   // empezar en Inicio
                 MarcarSeleccion();   // por si la primera navegación no lanza SelectionChanged
                 ActualizarPie();
+                await IniciarModoGamingAsync();
                 await MostrarHardwareAsync();
+            };
+
+            // Al cerrar con una partida en marcha: primero se deshace la sesión de juego
+            // (reanudar apps pausadas, prioridades, optimizaciones temporales) y después se cierra
+            Closing += async (s, e) =>
+            {
+                SesionGaming.Actual.Detener();
+                if (cerrandoTrasDeshacer || !SesionGaming.QuedoAlgoPendiente())
+                {
+                    return;
+                }
+                e.Cancel = true;   // "todavía no": se cierra al terminar de deshacer
+                cerrandoTrasDeshacer = true;
+                try
+                {
+                    await SesionGaming.Actual.TerminarAsync("Ghost Mode se cerró");
+                }
+                catch (Exception ex)
+                {
+                    // Lo que quede, se deshace al volver a abrir Ghost Mode (SesionGaming.RecuperarAsync)
+                    Logger.Error("No se pudo deshacer la sesión de Modo Gaming al cerrar", ex);
+                }
+                Close();
             };
 
             // Cada vez que se aplique o revierta algo (desde cualquier pantalla), refrescar el pie.
             // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
             AplicadorOptimizaciones.EstadoCambiado += ActualizarPie;
             Closed += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
+        }
+
+        private bool cerrandoTrasDeshacer = false;
+
+        // Modo Gaming vigila en segundo plano desde que se abre la app. Antes, deshace lo que hubiera
+        // quedado de una sesión anterior que terminó mal (apps pausadas, prioridades...)
+        private static async Task IniciarModoGamingAsync()
+        {
+            try
+            {
+                await SesionGaming.Actual.IniciarAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("No se pudo iniciar Modo Gaming", ex);
+            }
         }
 
         // Un .ico trae la misma imagen en varios tamaños (16, 24, 32... 256 px). Si se carga desde XAML,

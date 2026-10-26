@@ -4,6 +4,11 @@ Optimizador de Windows para jugar en PCs de bajos recursos. Aplica ajustes rever
 Modo Juego, efectos visuales, GPU dedicada para FiveM), limpia archivos temporales y cachés, controla los
 programas que arrancan con Windows y mide los FPS antes y después con PresentMon.
 
+Modo Gaming detecta los juegos de Steam, Epic Games y FiveM (o los que agregues a mano) y, al abrir uno,
+aplica solo lo que elijas: prioridad alta, pausar apps de fondo, liberar memoria en espera si queda poca y
+las optimizaciones de Inicio. Al cerrar el juego lo deshace todo, y si Ghost Mode se cierra a mitad de
+partida, al volver a abrirse reanuda lo que quedó pausado.
+
 Todos los cambios se pueden deshacer: Ghost Mode guarda el valor original antes de modificar nada y crea un
 punto de restauración antes de aplicar optimizaciones. Nunca desactiva Windows Defender ni Windows Update.
 
