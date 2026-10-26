@@ -109,6 +109,10 @@
                 <ui:NavigationViewItem Content="Monitor" TargetPageType="{x:Type paginas:MonitorPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Pulse24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
+                <!-- Benchmark: no está en el diseño, va justo debajo de Monitor -->
+                <ui:NavigationViewItem Content="Benchmark" TargetPageType="{x:Type paginas:BenchmarkPagina}">
+                    <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Gauge24"/></ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content="Ajustes" TargetPageType="{x:Type paginas:AjustesPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Settings24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
