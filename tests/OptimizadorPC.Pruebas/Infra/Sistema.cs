@@ -76,7 +76,12 @@ namespace OptimizadorPC.Pruebas.Infra
             {
                 return new ValorRegistro(false, RegistryValueKind.None, null);
             }
-            string texto = valor is byte[] bytes ? Convert.ToHexString(bytes) : valor.ToString()!;
+            string texto = valor switch
+            {
+                byte[] bytes => Convert.ToHexString(bytes),
+                string[] lineas => "[" + string.Join("|", lineas) + "]",
+                _ => valor.ToString()!
+            };
             return new ValorRegistro(true, clave.GetValueKind(nombre), texto);
         }
 
@@ -106,6 +111,8 @@ namespace OptimizadorPC.Pruebas.Infra
                         RegistryValueKind.DWord => int.Parse(antes.Texto!),
                         RegistryValueKind.QWord => long.Parse(antes.Texto!),
                         RegistryValueKind.Binary => Convert.FromHexString(antes.Texto!),
+                        RegistryValueKind.MultiString when antes.Texto == "[]" => Array.Empty<string>(),
+                        RegistryValueKind.MultiString => antes.Texto![1..^1].Split('|'),
                         _ => antes.Texto!
                     };
                     k.SetValue(a.Nombre, dato, antes.Tipo);

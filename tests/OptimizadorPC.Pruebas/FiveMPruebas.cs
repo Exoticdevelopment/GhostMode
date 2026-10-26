@@ -32,32 +32,11 @@ namespace OptimizadorPC.Pruebas
             Assert.False(GestorEstado.TieneCambios(gpu.Id));
         }
 
-        // FiveM no está instalado en este PC: armamos una instalación falsa (archivos vacíos que nunca
-        // se ejecutan) en la ruta por defecto, solo si ahí no hay nada, y la quitamos al terminar
         [Fact]
-        public void GpuDedicadaFiveM_AplicaYRevierteElRegistroExacto()
+        public void GpuDedicadaFiveM_AplicaYRevierteConservandoOtrosAjustes()
         {
-            string exe = Path.Combine(CarpetaFiveM, "FiveM.exe");
-            string app = Path.Combine(CarpetaFiveM, "FiveM.app");
-            Assert.False(File.Exists(exe) || Directory.Exists(app), "Hay un FiveM real: esta prueba no lo toca");
-
-            bool habiaCarpeta = Directory.Exists(CarpetaFiveM);
-            bool habiaClaveGpu;
-            using (RegistryKey? clave = Registry.CurrentUser.OpenSubKey(RutaGpu))
+            ConFiveMFalso((gpu, exe, juego) =>
             {
-                habiaClaveGpu = clave != null;
-            }
-            string juego = Path.Combine(app, "data", "cache", "subprocess", "FiveM_b3095_GTAProcess.exe");
-            var gpu = new GpuDedicadaFiveM();
-            GestorEstado.Limpiar(gpu.Id);
-
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(juego)!);
-                File.WriteAllBytes(exe, []);
-                File.WriteAllBytes(juego, []);
-                Assert.Equal(exe, UbicacionFiveM.BuscarExe());
-
                 // El proceso del juego ya tenía otros ajustes de Windows: deben conservarse
                 Registro.Escribir(RutaGpu, juego, "SwapEffectUpgradeEnable=1;GpuPreference=0;", RegistryValueKind.String);
                 var antesExe = Ayudas.LeerCrudo(RutaGpu, exe);
@@ -77,9 +56,53 @@ namespace OptimizadorPC.Pruebas
                 Assert.Equal(antesJuego, Ayudas.LeerCrudo(RutaGpu, juego));
                 Assert.False(gpu.EstaActiva());
                 Assert.False(GestorEstado.TieneCambios(gpu.Id));
+            });
+        }
+
+        [Fact]
+        public void GpuDedicadaFiveM_SiCreoLaClaveDePreferenciasLaQuitaAlRevertir()
+        {
+            Assert.False(ExisteClaveGpu(), "Esta prueba es para un PC donde Windows aún no creó UserGpuPreferences");
+
+            ConFiveMFalso((gpu, exe, juego) =>
+            {
+                gpu.Aplicar();
+                Assert.True(ExisteClaveGpu());
+                Assert.True(gpu.EstaActiva());
+
+                gpu.Revertir();
+
+                Assert.False(ExisteClaveGpu(), "La clave UserGpuPreferences quedó vacía en el registro");
+                Assert.False(GestorEstado.TieneCambios(gpu.Id));
+            });
+        }
+
+        // FiveM no está instalado en este PC: armamos una instalación falsa (archivos vacíos que nunca
+        // se ejecutan) en la ruta por defecto, solo si ahí no hay nada, y la quitamos al terminar
+        private static void ConFiveMFalso(Action<GpuDedicadaFiveM, string, string> prueba)
+        {
+            string exe = Path.Combine(CarpetaFiveM, "FiveM.exe");
+            string app = Path.Combine(CarpetaFiveM, "FiveM.app");
+            Assert.False(File.Exists(exe) || Directory.Exists(app), "Hay un FiveM real: esta prueba no lo toca");
+
+            bool habiaCarpeta = Directory.Exists(CarpetaFiveM);
+            bool habiaClaveGpu = ExisteClaveGpu();
+            string juego = Path.Combine(app, "data", "cache", "subprocess", "FiveM_b3095_GTAProcess.exe");
+            var gpu = new GpuDedicadaFiveM();
+            GestorEstado.Limpiar(gpu.Id);
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(juego)!);
+                File.WriteAllBytes(exe, []);
+                File.WriteAllBytes(juego, []);
+                Assert.Equal(exe, UbicacionFiveM.BuscarExe());
+
+                prueba(gpu, exe, juego);
             }
             finally
             {
+                // Red de seguridad por si la prueba falló a mitad
                 GestorEstado.Limpiar(gpu.Id);
                 using (RegistryKey? clave = Registry.CurrentUser.OpenSubKey(RutaGpu, writable: true))
                 {
@@ -100,6 +123,12 @@ namespace OptimizadorPC.Pruebas
                     Directory.Delete(CarpetaFiveM);
                 }
             }
+        }
+
+        private static bool ExisteClaveGpu()
+        {
+            using RegistryKey? clave = Registry.CurrentUser.OpenSubKey(RutaGpu);
+            return clave != null;
         }
     }
 }

@@ -44,6 +44,7 @@ namespace OptimizadorPC.Optimizaciones.Sistema
                 return;   // salimos del método
             }
 
+            // Si powercfg falla, lanza un error ANTES de Limpiar: la foto se conserva para reintentar
             EjecutarPowercfg($"/setactive {original}");
             GestorEstado.Limpiar(Id);   // ya no necesitamos la foto
             Logger.Info($"Plan de energía restaurado a {original}");
@@ -51,7 +52,7 @@ namespace OptimizadorPC.Optimizaciones.Sistema
 
         // ---------- Métodos de ayuda (privados) ----------
 
-        private string? ObtenerPlanActual()
+        private string ObtenerPlanActual()
         {
             // powercfg /getactivescheme devuelve algo como:
             // "GUID del plan de energía: 381b4222-f694-41f0-9685-ff5bb260df2e  (Equilibrado)"
@@ -61,9 +62,16 @@ namespace OptimizadorPC.Optimizaciones.Sistema
             // Así funciona aunque Windows esté en español, inglés o cualquier idioma.
             Match coincidencia = Regex.Match(salida, @"[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}");
 
-            return coincidencia.Success ? coincidencia.Value.ToLower() : null;
+            // Sin GUID no sabríamos a qué plan volver: mejor no cambiar nada
+            if (!coincidencia.Success)
+            {
+                throw new InvalidOperationException($"powercfg no indicó el plan de energía activo: {salida.Trim()}");
+            }
+            return coincidencia.Value.ToLower();
         }
 
+        // Ejecuta powercfg y devuelve lo que imprime. Si Windows rechaza la orden (p. ej. un plan que
+        // no existe en este PC), lanza un error con su mensaje: así nunca se anota un cambio que no se hizo
         private static string EjecutarPowercfg(string argumentos)
         {
             var configuracion = new ProcessStartInfo
@@ -71,13 +79,24 @@ namespace OptimizadorPC.Optimizaciones.Sistema
                 FileName = "powercfg",
                 Arguments = argumentos,
                 RedirectStandardOutput = true,   // capturar lo que imprime
+                RedirectStandardError = true,    // y los mensajes de error
                 UseShellExecute = false,
                 CreateNoWindow = true            // sin ventana negra parpadeando
             };
 
             using var proceso = Process.Start(configuracion)!;
+            // Leemos las dos salidas a la vez para que powercfg no se quede trabado esperando
+            Task<string> errores = proceso.StandardError.ReadToEndAsync();
             string salida = proceso.StandardOutput.ReadToEnd();
             proceso.WaitForExit();
+
+            if (proceso.ExitCode != 0)
+            {
+                // powercfg a veces escribe el error en la salida normal: usamos la que tenga texto
+                string mensaje = errores.Result.Trim();
+                throw new InvalidOperationException(
+                    $"powercfg {argumentos} falló (código {proceso.ExitCode}): {(mensaje.Length > 0 ? mensaje : salida.Trim())}");
+            }
             return salida;
         }
     }
