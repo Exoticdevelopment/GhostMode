@@ -7,7 +7,11 @@ programas que arrancan con Windows y mide los FPS antes y después con PresentMo
 Modo Gaming detecta los juegos de Steam, Epic Games y FiveM (o los que agregues a mano) y, al abrir uno,
 aplica solo lo que elijas: prioridad alta, pausar apps de fondo, liberar memoria en espera si queda poca y
 las optimizaciones de Inicio. Al cerrar el juego lo deshace todo, y si Ghost Mode se cierra a mitad de
-partida, al volver a abrirse reanuda lo que quedó pausado.
+partida, al volver a abrirse reanuda lo que quedó pausado. También pausa la grabación de Game DVR durante
+la partida y, con FiveM y una GPU NVIDIA, pone «preferir máximo rendimiento» en el perfil del driver (NVAPI)
+solo mientras dura el juego. La pantalla FiveM incluye un diagnóstico de gráficos de solo lectura con
+recomendaciones para equipos modestos, y Ajustes › Solución de problemas permite desactivar MPO (arregla
+parpadeos, no da FPS; pide reiniciar).
 
 Red mide la latencia real de los DNS (Automático, Cloudflare, Google, Quad9) con consultas DNS, recomienda el
 más rápido y lo aplica al adaptador activo guardando el original; muestra el ping en vivo de los últimos

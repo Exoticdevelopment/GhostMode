@@ -13,7 +13,8 @@ namespace OptimizadorPC
     // la app sigue en la bandeja). Así, en segundo plano no ocupa memoria con pantallas que nadie ve.
     public partial class App : Application
     {
-        public static App Actual => (App)Current;
+        // null solo fuera de la app real (p. ej. al dibujar una página suelta para revisarla)
+        public static App? Actual => Current as App;
 
         public AtajoGlobal? Atajo { get; private set; }
 

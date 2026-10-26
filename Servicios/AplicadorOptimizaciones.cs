@@ -173,7 +173,7 @@ namespace OptimizadorPC.Servicios
         }
 
         // Deshace las optimizaciones y, además, la sesión de Modo Gaming (apps pausadas, prioridades),
-        // el DNS y los programas de inicio que se deshabilitaron
+        // el DNS, la solución de MPO y los programas de inicio que se deshabilitaron
         public static async Task<ResultadoAplicacion> DeshacerTodoAsync()
         {
             // Primero la sesión de juego: reanuda las apps pausadas y revierte lo suyo
@@ -185,6 +185,7 @@ namespace OptimizadorPC.Servicios
             var otros = new (string Modulo, Action Deshacer, string Nombre)[]
             {
                 (GestorDns.Modulo, GestorDns.Revertir, "Servidor DNS"),
+                (SolucionMpo.Modulo, SolucionMpo.Revertir, "MPO (solución de parpadeos)"),
                 (GestorArranque.Modulo, GestorArranque.RestaurarTodo, "Programas de inicio de Windows"),
             };
             var fallos = new List<string>();

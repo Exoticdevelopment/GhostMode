@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;   // Key, Keyboard
 using OptimizadorPC.Componentes;
 using OptimizadorPC.Core;
+using OptimizadorPC.Optimizaciones.Sistema;
 using OptimizadorPC.Servicios;
 
 namespace OptimizadorPC.Paginas
@@ -27,13 +28,14 @@ namespace OptimizadorPC.Paginas
             Loaded += async (s, e) =>
             {
                 MostrarAtajo();
+                MostrarMpo();
                 // Lo que manda es la tarea del Programador de tareas, no un ajuste guardado
                 IntInicioWindows.IsChecked = await Task.Run(() => InicioAutomatico.Existe());
             };
         }
 
         private static MainWindow? Ventana => Application.Current.MainWindow as MainWindow;
-        private static AtajoGlobal? Atajo => App.Actual.Atajo;
+        private static AtajoGlobal? Atajo => App.Actual?.Atajo;
 
         // ===== Iniciar con Windows =====
 
@@ -117,6 +119,37 @@ namespace OptimizadorPC.Paginas
         }
 
         private void BtnBienvenida_Click(object sender, RoutedEventArgs e) => Ventana?.MostrarBienvenida();
+
+        // ===== Solución de problemas: MPO =====
+
+        private void MostrarMpo()
+        {
+            IntMpo.IsChecked = SolucionMpo.EstaDesactivado();
+            TxtMpo.Text = IntMpo.IsChecked == true ? "> MPO desactivado (efectivo tras reiniciar)" : "> MPO activado (lo normal)";
+        }
+
+        private async void IntMpo_Click(object sender, RoutedEventArgs e)
+        {
+            bool desactivar = IntMpo.IsChecked == true;
+            IntMpo.Estado = EstadoInterruptor.Aplicando;
+            try
+            {
+                bool hecho = await AplicadorOptimizaciones.CambiarAsync(
+                    desactivar ? SolucionMpo.Desactivar : SolucionMpo.Revertir, Avisos.PreguntarContinuarSinPuntoAsync);
+                IntMpo.Estado = EstadoInterruptor.Normal;
+                if (hecho)
+                {
+                    Avisos.Info(desactivar ? "MPO desactivado" : "MPO restaurado", "Reinicia Windows para que se aplique.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"No se pudo {(desactivar ? "desactivar" : "restaurar")} MPO", ex);
+                IntMpo.Estado = EstadoInterruptor.Error;
+                Avisos.Error("No se pudo cambiar MPO", "Revisa el log para más detalles.");
+            }
+            MostrarMpo();
+        }
 
         // ===== Exportar diagnóstico =====
 

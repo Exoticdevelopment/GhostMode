@@ -103,6 +103,30 @@
                 </StackPanel>
             </Border>
 
+            <!-- ===== Solución de problemas: cosas que arreglan fallos concretos, NO dan rendimiento ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+                <StackPanel>
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
+                        <TextBlock Text="[ SOLUCIÓN DE PROBLEMAS ]" Style="{StaticResource EtiquetaEstilo}"/>
+                    </Border>
+                    <Grid Margin="16,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="Desactivar MPO (parpadeos de pantalla)" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="Solo si ves parpadeos o tirones en el escritorio, en ventanas o en el navegador. NO da FPS. Es el arreglo que publicó NVIDIA para algunos drivers; en Windows 11 reciente puede no tener efecto. Afecta a todo el sistema y necesita reiniciar Windows. Se deshace aquí o con «Deshacer todo»."/>
+                            <TextBlock x:Name="TxtMpo" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <componentes:InterruptorEstado x:Name="IntMpo" Grid.Column="1" VerticalAlignment="Center"
+                                                       Click="IntMpo_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
                 <StackPanel>
                     <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
