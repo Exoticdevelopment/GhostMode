@@ -11,7 +11,8 @@ namespace OptimizadorPC.Limpieza
         public string Id => "papelera";
         public string Nombre => "Papelera de reciclaje";
         public string Descripcion => "Archivos eliminados de todas las unidades.";
-        public bool MarcadaPorDefecto => true;
+        // Desmarcada: en la papelera puede haber algo que el usuario aún quiera recuperar
+        public bool MarcadaPorDefecto => false;
 
         public long Medir()
         {
