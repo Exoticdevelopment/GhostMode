@@ -1,4 +1,5 @@
 using OptimizadorPC.Core;
+using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Optimizaciones.Sistema;
 
 namespace OptimizadorPC.Servicios
@@ -19,6 +20,7 @@ namespace OptimizadorPC.Servicios
             new PlanEnergia(),
             new GameMode(),
             new EfectosVisuales(),
+            new GpuDedicadaFiveM(),   // Categoría FiveM: solo aparece en la página FiveM
         };
 
         // event = "aviso" al que otras partes se suscriben con +=.

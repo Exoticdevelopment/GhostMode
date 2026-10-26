@@ -66,6 +66,11 @@ namespace OptimizadorPC.Core
         // ¿Este módulo en concreto tiene algo que revertir? Sirve para su botón "Revertir"
         public static bool TieneCambios(string modulo) => datos.ContainsKey(modulo);
 
+        // Qué claves tiene guardadas un módulo. Sirve a los módulos cuya lista de cambios
+        // no es fija (p. ej. un ejecutable de FiveM que ya no existe pero que la app cambió)
+        public static IReadOnlyList<string> ClavesGuardadas(string modulo) =>
+            datos.TryGetValue(modulo, out var claves) ? claves.Keys.ToList() : [];
+
         // Lee el archivo JSON al iniciar la app
         private static Dictionary<string, Dictionary<string, string?>> Cargar()
         {

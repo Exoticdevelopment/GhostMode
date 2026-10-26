@@ -9,9 +9,11 @@ namespace OptimizadorPC.Paginas
 {
     public partial class OptimizacionesPagina : Page
     {
-        // Un VM por cada optimización de la app. Select = "convertir cada una en un VM"
-        private readonly List<OptimizacionVM> todas =
-            AplicadorOptimizaciones.Todas.Select(o => new OptimizacionVM(o)).ToList();
+        // Un VM por cada optimización de la app (menos las de FiveM, que tienen su página).
+        // Select = "convertir cada una en un VM"
+        private readonly List<OptimizacionVM> todas = AplicadorOptimizaciones.Todas
+            .Where(o => o.Categoria != Categoria.FiveM)
+            .Select(o => new OptimizacionVM(o)).ToList();
 
         private bool soloSeguros = false;
         private bool aplicando = false;   // mientras es true, ignoramos nuestro propio aviso EstadoCambiado

@@ -11,7 +11,8 @@ namespace OptimizadorPC.Core
         Energia,
         Graficos,
         Sistema,
-        Entrada
+        Entrada,
+        FiveM      // Solo se ven en la página FiveM (no en Optimizaciones ni en el botón Ghost Mode)
     }
 
     // Cuánto se nota la mejora
