@@ -104,7 +104,7 @@ namespace OptimizadorPC.Paginas
                 TxtEjecutables.Text += ". Entra una vez a un servidor y vuelve a aplicar para incluir el juego.";
             }
 
-            TxtTamano.Text = datos.BytesCache != null ? FormatoTamano(datos.BytesCache.Value) : "—";
+            TxtTamano.Text = datos.BytesCache != null ? Formato.Tamano(datos.BytesCache.Value) : "—";
             ActualizarBotones();
         }
 
@@ -116,15 +116,6 @@ namespace OptimizadorPC.Paginas
             BtnAplicarGpu.IsEnabled = instalado && gpu.TieneCambioPendiente && !trabajando;
 
             BtnLimpiar.IsEnabled = instalado && !datos.Abierto && !trabajando && datos.BytesCache > 0;
-        }
-
-        // "1,4 GB" o "350 MB", con coma decimal como en español
-        private static string FormatoTamano(long bytes)
-        {
-            double mb = bytes / 1048576.0;   // 1 MB = 1024 × 1024 bytes
-            return mb >= 1024
-                ? $"{(mb / 1024).ToString("F1", InfoSistema.Es)} GB"
-                : $"{mb.ToString("F0", InfoSistema.Es)} MB";
         }
 
         // ===== Botones =====
@@ -199,7 +190,7 @@ namespace OptimizadorPC.Paginas
             var confirmar = new MessageBoxUi
             {
                 Title = "¿Limpiar la caché de FiveM?",
-                Content = $"Se borrarán {FormatoTamano(datos.BytesCache.Value)} de archivos descargados de los servidores. " +
+                Content = $"Se borrarán {Formato.Tamano(datos.BytesCache.Value)} de archivos descargados de los servidores. " +
                           "No se puede deshacer, pero FiveM vuelve a descargar lo que necesite (la primera entrada a " +
                           "cada servidor tardará un poco más).\n\nLos archivos del juego no se tocan.",
                 PrimaryButtonText = "Limpiar",
@@ -221,7 +212,7 @@ namespace OptimizadorPC.Paginas
                 string detalle = resultado.ArchivosEnUso > 0
                     ? $"{resultado.ArchivosEnUso} archivos estaban en uso y se dejaron."
                     : "FiveM volverá a descargar lo que necesite al entrar a un servidor.";
-                Avisos.Exito($"Caché limpiada: {FormatoTamano(resultado.BytesLiberados)} liberados", detalle);
+                Avisos.Exito($"Caché limpiada: {Formato.Tamano(resultado.BytesLiberados)} liberados", detalle);
             }
             catch (Exception ex)
             {

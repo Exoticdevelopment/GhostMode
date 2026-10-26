@@ -41,11 +41,6 @@ namespace OptimizadorPC.Paginas
         public ModoGamingPagina() : base("Modo Gaming", "en construcción") { }
     }
 
-    public class LimpiezaPagina : PaginaProximamente
-    {
-        public LimpiezaPagina() : base("Limpieza", "Fase 2") { }
-    }
-
     public class InicioWindowsPagina : PaginaProximamente
     {
         public InicioWindowsPagina() : base("Inicio de Windows", "Fase 2") { }
