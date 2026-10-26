@@ -3,6 +3,7 @@ using OptimizadorPC.Core;
 using OptimizadorPC.Gaming;
 using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Optimizaciones.Sistema;
+using OptimizadorPC.Red;
 
 namespace OptimizadorPC.Servicios
 {
@@ -171,35 +172,41 @@ namespace OptimizadorPC.Servicios
             }
         }
 
-        // Deshace las optimizaciones y, además, la sesión de Modo Gaming (apps pausadas, prioridades)
-        // y los programas de inicio que se deshabilitaron
+        // Deshace las optimizaciones y, además, la sesión de Modo Gaming (apps pausadas, prioridades),
+        // el DNS y los programas de inicio que se deshabilitaron
         public static async Task<ResultadoAplicacion> DeshacerTodoAsync()
         {
             // Primero la sesión de juego: reanuda las apps pausadas y revierte lo suyo
             await SesionGaming.Actual.TerminarAsync("Deshacer todo");
 
             ResultadoAplicacion resultado = await RevertirAsync(Todas);
-            if (!GestorEstado.TieneCambios(GestorArranque.Modulo))
-            {
-                return resultado;
-            }
 
-            await Candado.WaitAsync();
-            try
+            // Lo que no es una IOptimizacion: (módulo en GestorEstado, cómo deshacerlo, nombre si falla)
+            var otros = new (string Modulo, Action Deshacer, string Nombre)[]
             {
-                await Task.Run(GestorArranque.RestaurarTodo);
-                return resultado;
-            }
-            catch (Exception ex)
+                (GestorDns.Modulo, GestorDns.Revertir, "Servidor DNS"),
+                (GestorArranque.Modulo, GestorArranque.RestaurarTodo, "Programas de inicio de Windows"),
+            };
+            var fallos = new List<string>();
+            foreach (var (modulo, deshacer, nombre) in otros.Where(o => GestorEstado.TieneCambios(o.Modulo)))
             {
-                Logger.Error("Falló al restaurar los programas de inicio", ex);
-                return resultado with { OtrosFallos = ["Programas de inicio de Windows"] };   // with = copia cambiando eso
+                await Candado.WaitAsync();
+                try
+                {
+                    await Task.Run(deshacer);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Falló al restaurar: {nombre}", ex);
+                    fallos.Add(nombre);
+                }
+                finally
+                {
+                    Candado.Release();
+                    EstadoCambiado?.Invoke();
+                }
             }
-            finally
-            {
-                Candado.Release();
-                EstadoCambiado?.Invoke();
-            }
+            return fallos.Count > 0 ? resultado with { OtrosFallos = fallos } : resultado;   // with = copia cambiando eso
         }
 
         // Crea el punto de restauración ya, antes de algo largo (el benchmark), para no tener que

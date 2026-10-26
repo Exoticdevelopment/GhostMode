@@ -9,6 +9,10 @@ aplica solo lo que elijas: prioridad alta, pausar apps de fondo, liberar memoria
 las optimizaciones de Inicio. Al cerrar el juego lo deshace todo, y si Ghost Mode se cierra a mitad de
 partida, al volver a abrirse reanuda lo que quedó pausado.
 
+Red mide la latencia real de los DNS (Automático, Cloudflare, Google, Quad9) con consultas DNS, recomienda el
+más rápido y lo aplica al adaptador activo guardando el original; muestra el ping en vivo de los últimos
+60 s (también a la IP de un servidor de FiveM) y los datos del adaptador. Sin "trucos" de red sin respaldo.
+
 Todos los cambios se pueden deshacer: Ghost Mode guarda el valor original antes de modificar nada y crea un
 punto de restauración antes de aplicar optimizaciones. Nunca desactiva Windows Defender ni Windows Update.
 
