@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media.Imaging;   // BitmapDecoder: leer las imágenes del .ico
 using OptimizadorPC.Core;
 using OptimizadorPC.Paginas;
 using OptimizadorPC.Servicios;
@@ -19,6 +20,8 @@ namespace OptimizadorPC
             // Decirle a Avisos dónde mostrar los toasts
             Avisos.Presentador = PresentadorAvisos;
 
+            Logo.ImageSource = ImagenDelIcono(80);
+
             // Loaded = cuando la ventana ya está construida y lista para dibujarse
             Loaded += async (s, e) =>
             {
@@ -31,6 +34,19 @@ namespace OptimizadorPC
             // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
             AplicadorOptimizaciones.EstadoCambiado += ActualizarPie;
             Closed += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
+        }
+
+        // Un .ico trae la misma imagen en varios tamaños (16, 24, 32... 256 px). Si se carga desde XAML,
+        // WPF suele quedarse con la primera (16 px) y a 40 px se vería borrosa.
+        // Aquí elegimos la más pequeña que mida al menos "minimo" px (80 = nítida aun con escalado al 200 %).
+        private static BitmapFrame ImagenDelIcono(int minimo)
+        {
+            var decodificador = BitmapDecoder.Create(new Uri("pack://application:,,,/Assets/ghostmode.ico"),
+                                                     BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            return decodificador.Frames
+                .OrderBy(f => f.PixelWidth)
+                .FirstOrDefault(f => f.PixelWidth >= minimo)
+                ?? decodificador.Frames.OrderBy(f => f.PixelWidth).Last();   // si ninguno llega, el más grande
         }
 
         // "Cambios guardados" = hay valores originales guardados que se pueden deshacer

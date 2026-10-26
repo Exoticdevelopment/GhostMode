@@ -6,6 +6,7 @@
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:paginas="clr-namespace:OptimizadorPC.Paginas"
                  Title="Ghost Mode"
+                 Icon="pack://application:,,,/Assets/ghostmode.ico"
                  Width="1100" Height="700" MinWidth="900" MinHeight="600"
                  WindowStartupLocation="CenterScreen"
                  ExtendsContentIntoTitleBar="True"
@@ -19,11 +20,12 @@
             <RowDefinition Height="*"/>      <!-- todo lo demás -->
         </Grid.RowDefinitions>
 
-        <!-- Barra de título: rayo verde + nombre + botones minimizar/maximizar/cerrar -->
+        <!-- Barra de título: ícono de la app + nombre + botones minimizar/maximizar/cerrar.
+             TitleBar dibuja su propio ícono, por eso se lo damos aquí además de en Icon="..." de la ventana -->
         <Border Grid.Row="0" BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
             <ui:TitleBar Title="Ghost Mode">
                 <ui:TitleBar.Icon>
-                    <ui:SymbolIcon Symbol="Flash24" Foreground="{StaticResource ActivoBrush}"/>
+                    <ui:ImageIcon Source="pack://application:,,,/Assets/ghostmode.ico" Width="16" Height="16"/>
                 </ui:TitleBar.Icon>
             </ui:TitleBar>
         </Border>
@@ -37,11 +39,16 @@
                            OpenPaneLength="230"
                            FrameMargin="0">
 
-            <!-- Cabecera de la barra: logo + nombre + lema -->
+            <!-- Cabecera de la barra: logo + nombre + lema.
+                 El logo es el ícono de la app pintado como fondo de un cuadrado con esquinas redondeadas
+                 (el .ico tiene fondo gris claro: así se ve como el ícono de una app) -->
             <ui:NavigationView.PaneHeader>
                 <StackPanel Orientation="Horizontal" Margin="14,20,14,24">
-                    <Border Width="40" Height="40" CornerRadius="8" Background="{StaticResource ActivoSuaveBrush}">
-                        <ui:SymbolIcon Symbol="Flash24" FontSize="22" Foreground="{StaticResource ActivoBrush}"/>
+                    <Border Width="40" Height="40" CornerRadius="8">
+                        <Border.Background>
+                            <!-- La imagen la pone MainWindow.xaml.cs: elige el tamaño nítido del .ico -->
+                            <ImageBrush x:Name="Logo" Stretch="UniformToFill"/>
+                        </Border.Background>
                     </Border>
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
                         <TextBlock Text="Ghost Mode" FontSize="16" FontWeight="SemiBold"
