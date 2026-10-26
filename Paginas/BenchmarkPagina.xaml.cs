@@ -66,9 +66,10 @@ namespace OptimizadorPC.Paginas
                         conVentana.Add(new ProcesoJuego(p.Id, p.ProcessName, p.MainWindowTitle));
                     }
                 }
-                catch (Exception)
+                catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception)
                 {
-                    // El proceso se cerró mientras lo mirábamos o es del sistema: se salta
+                    // El proceso se cerró mientras lo mirábamos o es del sistema: se salta (es lo normal, no se anota).
+                    // Cualquier otro error no se traga aquí: llega al registro de errores de la app
                 }
                 finally
                 {

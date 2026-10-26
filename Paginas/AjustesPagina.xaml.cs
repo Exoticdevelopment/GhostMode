@@ -33,6 +33,7 @@ namespace OptimizadorPC.Paginas
         }
 
         private static MainWindow? Ventana => Application.Current.MainWindow as MainWindow;
+        private static AtajoGlobal? Atajo => App.Actual.Atajo;
 
         // ===== Iniciar con Windows =====
 
@@ -73,7 +74,7 @@ namespace OptimizadorPC.Paginas
 
         private void MostrarAtajo()
         {
-            Combinacion? actual = Ventana?.Atajo?.Actual;
+            Combinacion? actual = Atajo?.Actual;
             TxtAtajo.Text = actual?.ToString() ?? "";
             TxtEstadoAtajo.Text = actual != null ? $"> activo: {actual}" : "> sin atajo";
             BtnGuardarAtajo.IsEnabled = false;
@@ -96,7 +97,7 @@ namespace OptimizadorPC.Paginas
 
         private void CambiarAtajo(Combinacion? combinacion)
         {
-            if (Ventana?.Atajo is not AtajoGlobal atajo)
+            if (Atajo is not AtajoGlobal atajo)
             {
                 return;
             }
@@ -116,6 +117,41 @@ namespace OptimizadorPC.Paginas
         }
 
         private void BtnBienvenida_Click(object sender, RoutedEventArgs e) => Ventana?.MostrarBienvenida();
+
+        // ===== Exportar diagnóstico =====
+
+        private async void BtnExportar_Click(object sender, RoutedEventArgs e)
+        {
+            var dialogo = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Guardar diagnóstico de Ghost Mode",
+                FileName = ExportadorDiagnostico.NombreSugerido,
+                Filter = "Archivo ZIP (*.zip)|*.zip",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
+            if (dialogo.ShowDialog() != true)
+            {
+                return;
+            }
+
+            BtnExportar.IsEnabled = false;
+            BtnExportar.Content = "[ exportando... ]";
+            try
+            {
+                await ExportadorDiagnostico.CrearAsync(dialogo.FileName);
+                Avisos.Exito("Diagnóstico exportado", $"{System.IO.Path.GetFileName(dialogo.FileName)} está listo para enviar.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("No se pudo exportar el diagnóstico", ex);
+                Avisos.Error("No se pudo exportar el diagnóstico", ex.Message);
+            }
+            finally
+            {
+                BtnExportar.IsEnabled = true;
+                BtnExportar.Content = "[ exportar diagnóstico ]";
+            }
+        }
 
         // Los enlaces llevan la URL en su Tag
         private void Enlace_Click(object sender, RoutedEventArgs e)

@@ -16,7 +16,16 @@ namespace OptimizadorPC.Core
     {
         // async Task<...> = método que tarda y no bloquea la ventana mientras espera.
         // Se usa así:  ResultadoPunto r = await PuntoRestauracion.CrearAsync("...");
+        // Lo que pasó la última vez que se intentó crear (null = nunca en esta sesión)
+        public static ResultadoPunto? Ultimo { get; private set; }
+
         public static async Task<ResultadoPunto> CrearAsync(string descripcion)
+        {
+            Ultimo = await IntentarCrearAsync(descripcion);
+            return Ultimo.Value;
+        }
+
+        private static async Task<ResultadoPunto> IntentarCrearAsync(string descripcion)
         {
             Logger.Info($"Creando punto de restauración: {descripcion}");
 

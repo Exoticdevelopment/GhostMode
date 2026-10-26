@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Interop;            // Imaging: convertir un ícono de Windows en imagen de WPF
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using OptimizadorPC.Core;
 
 namespace OptimizadorPC.Servicios
 {
@@ -24,8 +25,9 @@ namespace OptimizadorPC.Servicios
                 imagen.Freeze();   // Freeze = ya no cambia: se puede usar desde cualquier hilo
                 return imagen;
             }
-            catch
+            catch (Exception ex)
             {
+                Logger.Aviso($"No se pudo leer el ícono de {ruta}: {ex.Message}");
                 return null;
             }
             finally

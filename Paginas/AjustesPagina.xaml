@@ -83,6 +83,26 @@
                 </StackPanel>
             </Border>
 
+            <!-- ===== Diagnóstico para enviar ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+                <StackPanel>
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
+                        <TextBlock Text="[ DIAGNÓSTICO ]" Style="{StaticResource EtiquetaEstilo}"/>
+                    </Border>
+                    <Grid Margin="16,14">
+                        <StackPanel Margin="0,0,220,0">
+                            <TextBlock Text="Exportar diagnóstico" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                       Text="Crea un .zip con el log, los cambios guardados, la configuración y un resumen del equipo, para enviarlo si algo falla. Sin datos personales: se quitan tu usuario, el nombre del equipo y las IP de tu red."/>
+                        </StackPanel>
+                        <ui:Button x:Name="BtnExportar" Content="[ exportar diagnóstico ]" HorizontalAlignment="Right"
+                                   VerticalAlignment="Center" Style="{StaticResource BotonSecundarioEstilo}"
+                                   Click="BtnExportar_Click"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
                 <StackPanel>
                     <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">

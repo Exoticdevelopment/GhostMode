@@ -18,6 +18,11 @@ Ghost Mode, Deshacer todo y Salir), puede iniciarse con Windows minimizado (tare
 elevados, sin aviso de UAC en cada arranque) y se activa o desactiva con un atajo global (`Ctrl+Alt+G` por
 defecto, configurable en Ajustes). La primera vez muestra una bienvenida con un diagnóstico rápido del equipo.
 
+En la bandeja ocupa unos 25–30 MB de RAM y menos del 0,1 % de CPU: la ventana se destruye al cerrarla y se
+vuelve a crear al abrirla. El log (`C:\ProgramData\OptimizadorPC\log.txt`) rota a los 5 MB, y
+**Ajustes › [ exportar diagnóstico ]** crea un .zip con el log, la configuración y un resumen del equipo,
+sin tu nombre de usuario, el del equipo ni las IP de tu red, para reportar fallos.
+
 Todos los cambios se pueden deshacer: Ghost Mode guarda el valor original antes de modificar nada y crea un
 punto de restauración antes de aplicar optimizaciones. Nunca desactiva Windows Defender ni Windows Update.
 

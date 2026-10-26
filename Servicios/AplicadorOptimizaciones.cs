@@ -242,7 +242,15 @@ namespace OptimizadorPC.Servicios
                     Logger.Info("El usuario canceló al no poder crear el punto de restauración");
                     return false;
                 }
-                Logger.Aviso("El usuario decidió continuar sin punto de restauración");
+                // Ese diálogo también puede activar la Protección del sistema y crear el punto: el log debe decir cuál fue
+                if (PuntoRestauracion.Ultimo is ResultadoPunto.Creado or ResultadoPunto.YaHabiaUnoReciente)
+                {
+                    Logger.Info("Punto de restauración listo tras activar la Protección del sistema");
+                }
+                else
+                {
+                    Logger.Aviso("El usuario decidió continuar sin punto de restauración");
+                }
             }
 
             puntoRestauracionListo = true;
