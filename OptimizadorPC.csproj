@@ -31,6 +31,14 @@
     <Resource Include="Assets\ghostmode.ico" />
   </ItemGroup>
 
+  <!-- El proyecto de pruebas vive dentro de esta carpeta: que la app no compile sus archivos -->
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+    <Page Remove="tests\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="System.Management" Version="10.0.13" />

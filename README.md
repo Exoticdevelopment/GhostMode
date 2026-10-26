@@ -28,6 +28,16 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 
 El resultado queda en `bin/Release/net10.0-windows/win-x64/publish/OptimizadorPC.exe`.
 
+## Pruebas
+
+Las pruebas de `tests/OptimizadorPC.Pruebas` (xUnit) ejecutan la lógica real contra Windows, sin la interfaz:
+aplican y revierten cada optimización y comprueban que todo vuelve exactamente a como estaba. Necesitan una
+terminal de administrador e internet (descargan PresentMon). Cierra Ghost Mode antes de ejecutarlas.
+
+```
+dotnet test tests/OptimizadorPC.Pruebas
+```
+
 ## Autor
 
 Miguel Ángel González Zuluaga — [@Exoticdevelopment](https://github.com/Exoticdevelopment)
