@@ -11,10 +11,8 @@ namespace OptimizadorPC.Paginas
 {
     public partial class InicioPagina : Page
     {
-        // "Ghost Mode" = todas las optimizaciones de riesgo Seguro. Las Moderadas se eligen a mano en Optimizaciones.
-        // Las de FiveM quedan fuera: solo tienen sentido si FiveM está instalado, y van en su propia página
-        private static readonly List<IOptimizacion> Seguras =
-            AplicadorOptimizaciones.Todas.Where(o => o.Riesgo == Riesgo.Seguro && o.Categoria != Categoria.FiveM).ToList();
+        // Las optimizaciones de "Ghost Mode" (todas las seguras menos las de FiveM; ver AplicadorOptimizaciones)
+        private static readonly IReadOnlyList<IOptimizacion> Seguras = AplicadorOptimizaciones.GhostMode;
 
         private readonly MonitorRecursos monitor = new();
         private DatosEquipo? equipo;      // hardware fijo (núcleos, GHz, RAM instalada, nombre de la GPU)

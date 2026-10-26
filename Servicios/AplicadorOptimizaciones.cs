@@ -29,6 +29,12 @@ namespace OptimizadorPC.Servicios
             new GpuDedicadaFiveM(),   // Categoría FiveM: solo aparece en la página FiveM
         };
 
+        // "Ghost Mode" = todas las de riesgo Seguro. Las Moderadas se eligen a mano en Optimizaciones.
+        // Las de FiveM quedan fuera: solo tienen sentido si FiveM está instalado, y van en su propia página.
+        // La usan el botón grande del Inicio y el benchmark.
+        public static IReadOnlyList<IOptimizacion> GhostMode { get; } =
+            Todas.Where(o => o.Riesgo == Riesgo.Seguro && o.Categoria != Categoria.FiveM).ToList();
+
         // event = "aviso" al que otras partes se suscriben con +=.
         // Se dispara al terminar de aplicar o revertir, para que la pantalla se actualice sola.
         public static event Action? EstadoCambiado;
@@ -166,6 +172,21 @@ namespace OptimizadorPC.Servicios
             {
                 Candado.Release();
                 EstadoCambiado?.Invoke();
+            }
+        }
+
+        // Crea el punto de restauración ya, antes de algo largo (el benchmark), para no tener que
+        // preguntar nada a mitad de camino. Devuelve false si el usuario canceló.
+        public static async Task<bool> PrepararPuntoRestauracionAsync(Func<Task<bool>> continuarSinPunto)
+        {
+            await Candado.WaitAsync();
+            try
+            {
+                return await AsegurarPuntoRestauracionAsync(continuarSinPunto);
+            }
+            finally
+            {
+                Candado.Release();
             }
         }
 
