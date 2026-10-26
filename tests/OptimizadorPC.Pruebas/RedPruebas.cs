@@ -163,6 +163,12 @@ namespace OptimizadorPC.Pruebas
         [Fact]
         public async Task Dns_DeshacerTodoTambienDevuelveElDns()
         {
+            // «Deshacer todo» es el de verdad: si el usuario tiene Ghost Mode (u otra cosa) aplicado en este PC,
+            // también lo desharía. En ese caso la prueba no toca nada y lo dice
+            Assert.False(GestorEstado.HayCambiosPendientes,
+                "Hay cambios reales de Ghost Mode aplicados en este PC y «Deshacer todo» los desharía. " +
+                "Ejecuta esta prueba con todo deshecho.");
+
             InfoAdaptador a = AdaptadorRed.Activo()!;
             Dictionary<string, string> antes = FotoRed(a.Id);
             try
