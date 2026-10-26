@@ -20,12 +20,16 @@ namespace OptimizadorPC
             // Decirle a Avisos dónde mostrar los toasts
             Avisos.Presentador = PresentadorAvisos;
 
-            Logo.ImageSource = ImagenDelIcono(80);
+            Logo.Source = ImagenDelIcono(68);   // 34 px en pantalla, nítido aun con escalado al 200 %
+
+            // Cada vez que cambia la sección elegida, poner el ">" delante de su nombre
+            Navegacion.SelectionChanged += (s, e) => MarcarSeleccion();
 
             // Loaded = cuando la ventana ya está construida y lista para dibujarse
             Loaded += async (s, e) =>
             {
                 Navegacion.Navigate(typeof(InicioPagina));   // empezar en Inicio
+                MarcarSeleccion();   // por si la primera navegación no lanza SelectionChanged
                 ActualizarPie();
                 await MostrarHardwareAsync();
             };
@@ -38,7 +42,7 @@ namespace OptimizadorPC
 
         // Un .ico trae la misma imagen en varios tamaños (16, 24, 32... 256 px). Si se carga desde XAML,
         // WPF suele quedarse con la primera (16 px) y a 40 px se vería borrosa.
-        // Aquí elegimos la más pequeña que mida al menos "minimo" px (80 = nítida aun con escalado al 200 %).
+        // Aquí elegimos la más pequeña que mida al menos "minimo" px (el doble del tamaño en pantalla = nítida aun con escalado al 200 %).
         private static BitmapFrame ImagenDelIcono(int minimo)
         {
             var decodificador = BitmapDecoder.Create(new Uri("pack://application:,,,/Assets/ghostmode.ico"),
@@ -49,12 +53,23 @@ namespace OptimizadorPC
                 ?? decodificador.Frames.OrderBy(f => f.PixelWidth).Last();   // si ninguno llega, el más grande
         }
 
+        // "> inicio" el elegido, "  inicio" el resto (los espacios mantienen el texto alineado).
+        // El nombre base de cada ítem está en su Tag (MainWindow.xaml)
+        private void MarcarSeleccion()
+        {
+            foreach (var item in Navegacion.MenuItems.OfType<NavigationViewItem>())
+            {
+                string nombre = item.Tag as string ?? "";
+                item.Content = ReferenceEquals(item, Navegacion.SelectedItem) ? $"> {nombre}" : $"  {nombre}";
+            }
+        }
+
         // "Cambios guardados" = hay valores originales guardados que se pueden deshacer
         private void ActualizarPie()
         {
             bool hayCambios = GestorEstado.HayCambiosPendientes;
 
-            TxtCambios.Text = hayCambios ? "Cambios guardados" : "Sin cambios aplicados";
+            TxtCambios.Text = hayCambios ? "cambios_guardados" : "sin_cambios";
             IconoCambios.Visibility = hayCambios ? Visibility.Visible : Visibility.Collapsed;
             BtnDeshacerTodo.IsEnabled = hayCambios;
         }
@@ -63,20 +78,20 @@ namespace OptimizadorPC
         {
             DatosEquipo equipo = await InfoSistema.ObtenerAsync();
 
-            TxtEquipo.Text = $"EQUIPO LOCAL · {equipo.Windows.ToUpper()}";
+            TxtEquipo.Text = $"HOST · {equipo.Windows.ToUpper()}";
 
             // Solo mostramos lo que se pudo leer: nada de datos inventados
             var partes = new List<string>();
             if (equipo.RamGb != null)
             {
-                partes.Add($"{equipo.RamGb} GB RAM");
+                partes.Add($"RAM {equipo.RamGb} GB");
             }
             if (equipo.Nucleos != null)
             {
-                partes.Add($"CPU de {equipo.Nucleos} núcleos");
+                partes.Add($"CPU {equipo.Nucleos} núcleos");
             }
             // string.Join = unir las partes con " · " entre medio
-            TxtHardware.Text = partes.Count > 0 ? string.Join(" · ", partes) : "Hardware no disponible";
+            TxtHardware.Text = partes.Count > 0 ? string.Join(" · ", partes) : "hardware no disponible";
         }
 
         private async void BtnDeshacerTodo_Click(object sender, RoutedEventArgs e)

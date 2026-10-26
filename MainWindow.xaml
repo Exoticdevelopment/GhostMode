@@ -1,5 +1,6 @@
 ﻿<!-- FluentWindow = ventana de WPF-UI que dibuja su propia barra de título.
-     WindowBackdropType="None": sin Mica ni acrílico (efectos que gastan GPU). -->
+     WindowBackdropType="None": sin Mica ni acrílico (efectos que gastan GPU).
+     WindowCornerPreference="DoNotRound": esquinas rectas, como una terminal. -->
 <ui:FluentWindow x:Class="OptimizadorPC.MainWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,7 +12,7 @@
                  WindowStartupLocation="CenterScreen"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="None"
-                 WindowCornerPreference="Round"
+                 WindowCornerPreference="DoNotRound"
                  Background="{StaticResource FondoBrush}">
 
     <Grid>
@@ -22,37 +23,44 @@
 
         <!-- Barra de título: ícono de la app + nombre + botones minimizar/maximizar/cerrar.
              TitleBar dibuja su propio ícono, por eso se lo damos aquí además de en Icon="..." de la ventana -->
-        <Border Grid.Row="0" BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
-            <ui:TitleBar Title="Ghost Mode">
+        <Border Grid.Row="0" Background="{StaticResource TarjetaBrush}"
+                BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
+            <ui:TitleBar Title="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12">
                 <ui:TitleBar.Icon>
                     <ui:ImageIcon Source="pack://application:,,,/Assets/ghostmode.ico" Width="16" Height="16"/>
                 </ui:TitleBar.Icon>
             </ui:TitleBar>
         </Border>
 
+        <!-- Fondo de la barra lateral (#0A0A0A con borde derecho). NavigationView no tiene una propiedad
+             para pintar su panel, así que ponemos este rectángulo DETRÁS (misma fila, dibujado antes).
+             Width = OpenPaneLength de abajo -->
+        <Border Grid.Row="1" Width="230" HorizontalAlignment="Left" Background="{StaticResource TarjetaBrush}"
+                BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,1,0"/>
+
         <!-- NavigationView = barra lateral + zona donde se muestra la página elegida.
-             IsPaneToggleVisible="False": sin botón de hamburguesa, la barra siempre está abierta. -->
+             IsPaneToggleVisible="False": sin botón de hamburguesa, la barra siempre está abierta.
+             FontFamily se hereda: todos los ítems en letra monoespaciada.
+             Los textos de los ítems los pone MainWindow.xaml.cs ("> inicio" el elegido, "  inicio" el resto);
+             Tag guarda el nombre base. -->
         <ui:NavigationView x:Name="Navegacion" Grid.Row="1"
                            PaneDisplayMode="Left"
                            IsPaneToggleVisible="False"
                            IsBackButtonVisible="Collapsed"
                            OpenPaneLength="230"
-                           FrameMargin="0">
+                           FrameMargin="0"
+                           FontFamily="{StaticResource FuenteMono}"
+                           FontSize="13">
 
-            <!-- Cabecera de la barra: logo + nombre + lema.
-                 El logo es el ícono de la app (fondo transparente) pintado dentro de un cuadrado de 40 px -->
+            <!-- Cabecera de la barra: logo + nombre -->
             <ui:NavigationView.PaneHeader>
-                <StackPanel Orientation="Horizontal" Margin="14,20,14,24">
-                    <Border Width="40" Height="40" CornerRadius="8">
-                        <Border.Background>
-                            <!-- La imagen la pone MainWindow.xaml.cs: elige el tamaño nítido del .ico -->
-                            <ImageBrush x:Name="Logo" Stretch="Uniform"/>
-                        </Border.Background>
-                    </Border>
-                    <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Ghost Mode" FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextoBrush}"/>
-                        <TextBlock Text="RENDIMIENTO BAJO CONTROL" FontSize="9"
+                <StackPanel Orientation="Horizontal" Margin="14,18,14,22">
+                    <!-- La imagen la pone MainWindow.xaml.cs: elige el tamaño nítido del .ico -->
+                    <Image x:Name="Logo" Width="34" Height="34" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="GHOST_MODE" FontFamily="{StaticResource FuenteMono}" FontSize="14"
+                                   FontWeight="Bold" Foreground="{StaticResource TextoBrush}"/>
+                        <TextBlock Text="optimizador · windows" FontFamily="{StaticResource FuenteMono}" FontSize="10"
                                    Foreground="{StaticResource TextoSecundarioBrush}"/>
                     </StackPanel>
                 </StackPanel>
@@ -61,65 +69,63 @@
             <!-- Pie de la barra: estado de los cambios, Deshacer todo y el hardware del equipo.
                  Los textos se rellenan desde MainWindow.xaml.cs con datos reales -->
             <ui:NavigationView.PaneFooter>
-                <StackPanel Margin="14,0,14,16">
-                    <StackPanel Orientation="Horizontal" Margin="4,0,0,6">
-                        <ui:SymbolIcon x:Name="IconoCambios" Symbol="CheckmarkCircle20" FontSize="16"
-                                       Foreground="{StaticResource ActivoBrush}" Margin="0,0,8,0"/>
-                        <TextBlock x:Name="TxtCambios" FontSize="13" VerticalAlignment="Center"
-                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+                <StackPanel Margin="14,0,14,14">
+                    <TextBlock Text="SYS.STATUS" Style="{StaticResource EtiquetaEstilo}" Margin="4,0,0,6"/>
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,4">
+                        <ui:SymbolIcon x:Name="IconoCambios" Symbol="CheckmarkCircle20" FontSize="14"
+                                       Foreground="{StaticResource ExitoBrush}" Margin="0,0,6,0"/>
+                        <TextBlock x:Name="TxtCambios" Style="{StaticResource EtiquetaEstilo}" FontSize="12"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Appearance="Transparent" = botón sin fondo, como un enlace -->
-                    <ui:Button x:Name="BtnDeshacerTodo" Content="Deshacer todo" Appearance="Transparent"
+                    <ui:Button x:Name="BtnDeshacerTodo" Content="[ deshacer_todo ]" Appearance="Transparent"
+                               FontFamily="{StaticResource FuenteMono}" FontSize="12"
                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
-                               Padding="4,6" Click="BtnDeshacerTodo_Click">
-                        <ui:Button.Icon>
-                            <ui:SymbolIcon Symbol="ArrowUndo20"/>
-                        </ui:Button.Icon>
-                    </ui:Button>
+                               Padding="4,6" Click="BtnDeshacerTodo_Click"/>
 
                     <!-- Línea separadora -->
-                    <Border Height="1" Background="{StaticResource BordeBrush}" Margin="0,12"/>
+                    <Border Height="1" Background="{StaticResource BordeBrush}" Margin="0,10"/>
 
-                    <TextBlock x:Name="TxtEquipo" Text="EQUIPO LOCAL" FontSize="10"
-                               Foreground="{StaticResource TextoTenueBrush}" Margin="4,0,0,6"/>
-                    <TextBlock x:Name="TxtHardware" Text="Leyendo hardware…" FontSize="12"
-                               TextWrapping="Wrap" Foreground="{StaticResource TextoSecundarioBrush}" Margin="4,0,0,0"/>
+                    <TextBlock x:Name="TxtEquipo" Text="HOST" Style="{StaticResource EtiquetaEstilo}" FontSize="10"
+                               Margin="4,0,0,4"/>
+                    <TextBlock x:Name="TxtHardware" Text="leyendo hardware..." Style="{StaticResource EtiquetaEstilo}"
+                               TextWrapping="Wrap" Margin="4,0,0,0"/>
                 </StackPanel>
             </ui:NavigationView.PaneFooter>
 
             <!-- Las secciones. TargetPageType = qué página abre al pulsarla -->
             <ui:NavigationView.MenuItems>
-                <ui:NavigationViewItem Content="Inicio" TargetPageType="{x:Type paginas:InicioPagina}">
+                <ui:NavigationViewItem Tag="inicio" Content="inicio" TargetPageType="{x:Type paginas:InicioPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Home24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Modo Gaming" TargetPageType="{x:Type paginas:ModoGamingPagina}">
+                <ui:NavigationViewItem Tag="modo_gaming" Content="modo_gaming" TargetPageType="{x:Type paginas:ModoGamingPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Games24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <!-- FiveM: no está en el diseño, va justo debajo de Modo Gaming -->
-                <ui:NavigationViewItem Content="FiveM" TargetPageType="{x:Type paginas:FiveMPagina}">
+                <ui:NavigationViewItem Tag="fivem" Content="fivem" TargetPageType="{x:Type paginas:FiveMPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="VehicleCar24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Optimizaciones" TargetPageType="{x:Type paginas:OptimizacionesPagina}">
+                <ui:NavigationViewItem Tag="optimizaciones" Content="optimizaciones" TargetPageType="{x:Type paginas:OptimizacionesPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Options24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Limpieza" TargetPageType="{x:Type paginas:LimpiezaPagina}">
+                <ui:NavigationViewItem Tag="limpieza" Content="limpieza" TargetPageType="{x:Type paginas:LimpiezaPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Broom24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Inicio de Windows" TargetPageType="{x:Type paginas:InicioWindowsPagina}">
+                <ui:NavigationViewItem Tag="inicio_windows" Content="inicio_windows" TargetPageType="{x:Type paginas:InicioWindowsPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Power24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Red" TargetPageType="{x:Type paginas:RedPagina}">
+                <ui:NavigationViewItem Tag="red" Content="red" TargetPageType="{x:Type paginas:RedPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Wifi124"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Monitor" TargetPageType="{x:Type paginas:MonitorPagina}">
+                <ui:NavigationViewItem Tag="monitor" Content="monitor" TargetPageType="{x:Type paginas:MonitorPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Pulse24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <!-- Benchmark: no está en el diseño, va justo debajo de Monitor -->
-                <ui:NavigationViewItem Content="Benchmark" TargetPageType="{x:Type paginas:BenchmarkPagina}">
+                <ui:NavigationViewItem Tag="benchmark" Content="benchmark" TargetPageType="{x:Type paginas:BenchmarkPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Gauge24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-                <ui:NavigationViewItem Content="Ajustes" TargetPageType="{x:Type paginas:AjustesPagina}">
+                <ui:NavigationViewItem Tag="ajustes" Content="ajustes" TargetPageType="{x:Type paginas:AjustesPagina}">
                     <ui:NavigationViewItem.Icon><ui:SymbolIcon Symbol="Settings24"/></ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
