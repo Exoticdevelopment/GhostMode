@@ -40,14 +40,13 @@
                            FrameMargin="0">
 
             <!-- Cabecera de la barra: logo + nombre + lema.
-                 El logo es el ícono de la app pintado como fondo de un cuadrado con esquinas redondeadas
-                 (el .ico tiene fondo gris claro: así se ve como el ícono de una app) -->
+                 El logo es el ícono de la app (fondo transparente) pintado dentro de un cuadrado de 40 px -->
             <ui:NavigationView.PaneHeader>
                 <StackPanel Orientation="Horizontal" Margin="14,20,14,24">
                     <Border Width="40" Height="40" CornerRadius="8">
                         <Border.Background>
                             <!-- La imagen la pone MainWindow.xaml.cs: elige el tamaño nítido del .ico -->
-                            <ImageBrush x:Name="Logo" Stretch="UniformToFill"/>
+                            <ImageBrush x:Name="Logo" Stretch="Uniform"/>
                         </Border.Background>
                     </Border>
                     <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
