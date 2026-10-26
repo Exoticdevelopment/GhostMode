@@ -1,7 +1,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using OptimizadorPC.Benchmark;
 using OptimizadorPC.Core;
+using OptimizadorPC.ModelosVista;
 using OptimizadorPC.Servicios;
 // Alias: WPF y WPF-UI tienen los dos una clase "MessageBox". Así dejamos claro cuál usamos
 using MessageBoxUi = Wpf.Ui.Controls.MessageBox;
@@ -29,6 +31,8 @@ namespace OptimizadorPC.Paginas
             Loaded += async (s, e) =>
             {
                 AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstado;
+                HistorialBenchmarks.Cambiado += MostrarPuntuacion;
+                MostrarPuntuacion();
                 monitor.Iniciar();
                 await LeerEstadoGhostAsync();
                 equipo = await InfoSistema.ObtenerAsync();
@@ -39,6 +43,7 @@ namespace OptimizadorPC.Paginas
                 // Fuera de la pantalla no medimos nada: cero consumo
                 monitor.Detener();
                 AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstado;
+                HistorialBenchmarks.Cambiado -= MostrarPuntuacion;
             };
         }
 
@@ -93,6 +98,36 @@ namespace OptimizadorPC.Paginas
 
             MedGpu.Valor = m.GpuPorcentaje != null ? $"{m.GpuPorcentaje.Value.ToString("F0", es)} %" : "—";
             MedGpu.Porcentaje = m.GpuPorcentaje ?? 0;
+        }
+
+        // ===== Puntuación =====
+
+        // El último benchmark real (de benchmarks.json). Si no hay ninguno, el mensaje de "Ejecuta un benchmark"
+        private void MostrarPuntuacion()
+        {
+            ResultadoBenchmark? ultimo = HistorialBenchmarks.Ultimo;
+            bool hay = ultimo != null;
+
+            PanelSinBenchmark.Visibility = hay ? Visibility.Collapsed : Visibility.Visible;
+            PanelConBenchmark.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
+            PastillaBenchmark.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
+            TxtBenchmarkDetalle.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
+            if (ultimo == null)
+            {
+                return;
+            }
+
+            var vm = new BenchmarkVM(ultimo);
+            TxtMejora.Text = vm.TextoMejora;
+            // Si empeoró, en naranja: se muestra tal cual, sin maquillar
+            TxtMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ActivoBrush" : "AvisoBrush");
+
+            double maximo = Math.Max(ultimo.Antes.FpsPromedio, ultimo.Despues.FpsPromedio);
+            BarraAntes.Value = 100 * ultimo.Antes.FpsPromedio / maximo;
+            BarraDespues.Value = 100 * ultimo.Despues.FpsPromedio / maximo;
+            TxtAntes.Text = $"{BenchmarkVM.Fps(ultimo.Antes.FpsPromedio)} FPS";
+            TxtDespues.Text = $"{BenchmarkVM.Fps(ultimo.Despues.FpsPromedio)} FPS";
+            TxtBenchmarkDetalle.Text = $"{vm.Juego} · {vm.Fecha} · 1% low {vm.Texto1Low}";
         }
 
         // ===== Ghost Mode =====

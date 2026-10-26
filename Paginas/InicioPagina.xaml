@@ -157,17 +157,60 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Puntuación: sin benchmark no hay número que mostrar (nada inventado) -->
+                <!-- Puntuación: el último benchmark real. Sin benchmark no hay número que mostrar (nada inventado) -->
                 <Border Style="{StaticResource TarjetaEstilo}">
                     <StackPanel>
-                        <TextBlock Text="Puntuación de rendimiento" FontSize="16" FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextoBrush}"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                        <Grid>
+                            <TextBlock Text="Puntuación de rendimiento" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <Border x:Name="PastillaBenchmark" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Right"
+                                    Margin="0" Visibility="Collapsed">
+                                <TextBlock Text="Último benchmark" Style="{StaticResource PastillaTextoEstilo}"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- Con benchmark: % de mejora grande y barras Antes / Después en FPS -->
+                        <Grid x:Name="PanelConBenchmark" Margin="0,16,0,0" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
+                                <TextBlock x:Name="TxtMejora" FontSize="30" FontWeight="SemiBold"
+                                           Foreground="{StaticResource ActivoBrush}"/>
+                                <TextBlock Text="FPS promedio" FontSize="12" Foreground="{StaticResource TextoTenueBrush}"/>
+                            </StackPanel>
+                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Antes" FontSize="13" Margin="0,4,12,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <ProgressBar x:Name="BarraAntes" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}" Height="6"
+                                             Foreground="{StaticResource TextoTenueBrush}"/>
+                                <TextBlock x:Name="TxtAntes" Grid.Column="2" FontSize="13" Margin="12,4,0,4"
+                                           Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <TextBlock Grid.Row="1" Text="Después" FontSize="13" Margin="0,4,12,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <ProgressBar x:Name="BarraDespues" Grid.Row="1" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}" Height="6"/>
+                                <TextBlock x:Name="TxtDespues" Grid.Row="1" Grid.Column="2" FontSize="13" FontWeight="SemiBold" Margin="12,4,0,4"
+                                           Foreground="{StaticResource ActivoBrush}"/>
+                            </Grid>
+                        </Grid>
+                        <TextBlock x:Name="TxtBenchmarkDetalle" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"
+                                   Visibility="Collapsed" Foreground="{StaticResource TextoTenueBrush}"/>
+
+                        <!-- Sin benchmark -->
+                        <StackPanel x:Name="PanelSinBenchmark" Orientation="Horizontal" Margin="0,18,0,0">
                             <ui:SymbolIcon Symbol="Gauge24" FontSize="32" Foreground="{StaticResource TextoTenueBrush}"/>
                             <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
                                 <TextBlock Text="Ejecuta un benchmark para medir tu equipo" FontSize="14"
                                            Foreground="{StaticResource TextoSecundarioBrush}"/>
-                                <TextBlock Text="Próximamente: comparará el antes y el después de optimizar." FontSize="12"
+                                <TextBlock Text="En la sección Benchmark: compara los FPS antes y después de Ghost Mode." FontSize="12"
                                            TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
                             </StackPanel>
                         </StackPanel>
