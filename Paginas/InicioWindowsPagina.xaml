@@ -1,0 +1,162 @@
+<!-- Página Inicio de Windows: los programas que arrancan con Windows, con un interruptor cada uno.
+     Desactivar NO borra nada: se marca como deshabilitado igual que en el Administrador de tareas. -->
+<Page x:Class="OptimizadorPC.Paginas.InicioWindowsPagina"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+      Title="Inicio de Windows">
+
+    <Page.Resources>
+        <!-- Las 4 columnas de la tabla. Cabecera y filas usan las mismas proporciones, así quedan alineadas -->
+        <Style x:Key="CabeceraEstilo" TargetType="TextBlock" BasedOn="{StaticResource EtiquetaEstilo}">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style x:Key="CeldaEstilo" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+            <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="44,36,44,36">
+
+            <!-- Encabezado -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Inicio de Windows" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <TextBlock Text="Un arranque más ligero empieza con menos programas." Style="{StaticResource SubtituloPaginaEstilo}"/>
+                </StackPanel>
+                <ui:Button x:Name="BtnActualizar" Grid.Column="1" Content="Actualizar" VerticalAlignment="Top"
+                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnActualizar_Click">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="ArrowSync20"/>
+                    </ui:Button.Icon>
+                </ui:Button>
+            </Grid>
+
+            <!-- ===== Las 3 tarjetas de resumen ===== -->
+            <UniformGrid Rows="1" Margin="0,24,-16,0">
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,16,0">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock x:Name="TxtTiempo" Text="—" FontSize="26" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Último tiempo de arranque" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        </StackPanel>
+                        <ui:SymbolIcon Symbol="Timer20" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                       Foreground="{StaticResource ActivoBrush}"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,16,0">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock x:Name="TxtHabilitados" Text="—" FontSize="26" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Programas habilitados" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        </StackPanel>
+                        <ui:SymbolIcon Symbol="Power20" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                       Foreground="{StaticResource ActivoBrush}"/>
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource TarjetaEstilo}" Margin="0,0,16,0">
+                    <Grid>
+                        <StackPanel>
+                            <TextBlock x:Name="TxtDeshabilitados" Text="—" FontSize="26" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Desactivados al iniciar" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        </StackPanel>
+                        <ui:SymbolIcon Symbol="CheckmarkCircle20" FontSize="18" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                       Foreground="{StaticResource ActivoBrush}"/>
+                    </Grid>
+                </Border>
+            </UniformGrid>
+
+            <!-- ===== La tabla ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+                <StackPanel>
+                    <!-- Cabecera -->
+                    <Grid Margin="20,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2.2*"/>
+                            <ColumnDefinition Width="1.6*"/>
+                            <ColumnDefinition Width="1.4*"/>
+                            <ColumnDefinition Width="80"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="PROGRAMA" Style="{StaticResource CabeceraEstilo}"/>
+                        <TextBlock Grid.Column="1" Text="EDITOR" Style="{StaticResource CabeceraEstilo}"/>
+                        <TextBlock Grid.Column="2" Text="ORIGEN" Style="{StaticResource CabeceraEstilo}"/>
+                        <TextBlock Grid.Column="3" Text="AL INICIAR" Style="{StaticResource CabeceraEstilo}"/>
+                    </Grid>
+
+                    <ItemsControl x:Name="ListaProgramas">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="20,12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2.2*"/>
+                                            <ColumnDefinition Width="1.6*"/>
+                                            <ColumnDefinition Width="1.4*"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Programa: icono + nombre. Al pasar el ratón se ve el comando completo -->
+                                        <Grid ToolTip="{Binding Comando}" Background="Transparent">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ui:SymbolIcon Symbol="{Binding Icono}" FontSize="18" VerticalAlignment="Center"
+                                                           Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Nombre}" Style="{StaticResource CeldaEstilo}"
+                                                       Margin="10,0,12,0" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
+                                        </Grid>
+                                        <TextBlock Grid.Column="1" Text="{Binding Editor}" Style="{StaticResource CeldaEstilo}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding TextoOrigen}" Style="{StaticResource CeldaEstilo}"/>
+                                        <componentes:InterruptorEstado Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                                       IsChecked="{Binding Habilitado, Mode=TwoWay}"
+                                                                       Estado="{Binding Estado}" ToolTip="{Binding Nombre}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Sin programas (o leyendo) -->
+                    <TextBlock x:Name="TxtVacio" Text="Leyendo programas de inicio…" FontSize="13" Margin="20,16,20,20"
+                               TextWrapping="Wrap" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== Aviso verde de abajo ===== -->
+            <Border Margin="0,16,0,0" Padding="16,12" CornerRadius="8" Background="{StaticResource ActivoSuaveBrush}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" VerticalAlignment="Top"
+                                   Foreground="{StaticResource ActivoBrush}"/>
+                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                        <TextBlock FontSize="13" TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"
+                                   Text="Desactivar un programa no lo desinstala. Los cambios se aplicarán en el próximo inicio de Windows."/>
+                        <TextBlock x:Name="TxtOcultos" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Foreground="{StaticResource TextoSecundarioBrush}" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
