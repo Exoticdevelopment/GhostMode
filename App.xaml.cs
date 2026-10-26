@@ -36,10 +36,10 @@ namespace OptimizadorPC
                 ex.SetObserved();
             };
 
-            // Color de acento = el verde del diseño (#22C55E). WPF-UI lo usa en la barrita
+            // Color de acento = el morado de la pantera (#8B5CF6). WPF-UI lo usa en la barrita
             // del elemento activo de la barra lateral, los interruptores, etc.
             // Si no, usaría el color de acento que el usuario tenga en Windows.
-            ApplicationAccentColorManager.Apply(Color.FromRgb(0x22, 0xC5, 0x5E), ApplicationTheme.Dark);
+            ApplicationAccentColorManager.Apply(Color.FromRgb(0x8B, 0x5C, 0xF6), ApplicationTheme.Dark);
 
             Logger.Info("=== Ghost Mode iniciado ===");
             base.OnStartup(e);

@@ -1,4 +1,5 @@
-<!-- Estilos compartidos por todas las pantallas (PDF "Componentes reutilizables" y "Elementos y estados").
+<!-- Estilos compartidos por todas las pantallas. Estética "terminal": negro, bordes de 1 px,
+     esquinas de 2 px como máximo, sin sombras ni degradados, letra monoespaciada para datos.
      Un Style = un "molde" de propiedades. Se usa con Style="{StaticResource NombreEstilo}".
      Si un estilo no tiene x:Key, se aplica SOLO a todos los controles de ese tipo (estilo implícito). -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11,80 +12,122 @@
         <ResourceDictionary Source="Colores.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+    <!-- ===== Tipografía =====
+         Cascadia Mono viene con Windows 11. Si no está, WPF prueba la siguiente de la lista: Consolas -->
+    <FontFamily x:Key="FuenteMono">Cascadia Mono, Consolas</FontFamily>
+    <!-- Solo para textos largos de explicación -->
+    <FontFamily x:Key="FuenteTexto">Segoe UI</FontFamily>
+
     <!-- ===== Textos ===== -->
 
+    <!-- Título de página tipo comando: "> inicio" -->
     <Style x:Key="TituloPaginaEstilo" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="30"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="24"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
     </Style>
 
+    <!-- Explicación corta debajo del título (texto largo → Segoe UI) -->
     <Style x:Key="SubtituloPaginaEstilo" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteTexto}"/>
+        <Setter Property="FontSize" Value="13"/>
         <Setter Property="Margin" Value="0,6,0,0"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
         <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
     </Style>
 
-    <!-- Etiquetas pequeñas en mayúsculas: "CPU", "AL ACTIVAR"... -->
+    <!-- Etiquetas de consola en mayúsculas: "[ CPU ]", "SYS.STATUS"... -->
     <Style x:Key="EtiquetaEstilo" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="11"/>
         <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
     </Style>
 
-    <!-- ===== Tarjeta: superficie #1A1D24, borde de 1 px, radio 8 px ===== -->
+    <!-- Datos y números: "24 %", "4,6 / 16 GB" -->
+    <Style x:Key="DatoEstilo" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
+    </Style>
+
+    <!-- Explicación larga dentro de una tarjeta (Segoe UI) -->
+    <Style x:Key="ExplicacionEstilo" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FuenteTexto}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
+    </Style>
+
+    <!-- ===== Tarjeta: superficie #0A0A0A, borde de 1 px, esquinas de 2 px ===== -->
 
     <Style x:Key="TarjetaEstilo" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource TarjetaBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BordeBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="20,18"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Padding" Value="16,14"/>
+        <Style.Triggers>
+            <!-- Al pasar el ratón, el borde se aclara un poco -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource BordeHoverBrush}"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
-    <!-- ===== Pastilla: "Impacto Alto", "Seguro"... ===== -->
-    <!-- Por defecto es gris. Las versiones de color cambian solo el fondo y el texto -->
+    <!-- ===== Pastilla: "ALTO", "SEGURO"... Solo borde, sin relleno ===== -->
 
     <Style x:Key="PastillaEstilo" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource BordeBrush}"/>
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="Padding" Value="8,3"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordeHoverBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Padding" Value="6,2"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
     </Style>
 
     <Style x:Key="PastillaTextoEstilo" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="11"/>
         <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
     </Style>
 
-    <!-- ===== Botones: altura 36 px, texto 13 px, radio 8 px ===== -->
+    <!-- ===== Botones: letra monoespaciada, esquinas de 2 px ===== -->
     <!-- BasedOn = "parte del estilo de botón de WPF-UI y cambia solo esto" -->
 
+    <!-- Principal: relleno morado (el color de acento de la app) -->
     <Style x:Key="BotonPrincipalEstilo" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-        <Setter Property="Appearance" Value="Primary"/>   <!-- fondo con el color de acento (verde) -->
-        <Setter Property="Height" Value="36"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Appearance" Value="Primary"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="Height" Value="34"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,0"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="CornerRadius" Value="2"/>
     </Style>
 
+    <!-- Secundario: negro con borde gris; al pasar el ratón, borde y texto más claros -->
     <Style x:Key="BotonSecundarioEstilo" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
-        <Setter Property="Height" Value="36"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Padding" Value="16,0"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="Height" Value="34"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Padding" Value="14,0"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Background" Value="{StaticResource TarjetaBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordeHoverBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
+        <Setter Property="MouseOverBackground" Value="{StaticResource BordeBrush}"/>
+        <Setter Property="MouseOverBorderBrush" Value="{StaticResource TextoSecundarioBrush}"/>
+        <Setter Property="PressedBackground" Value="{StaticResource BordeHoverBrush}"/>
     </Style>
 
-    <!-- ===== Barra del medidor de recursos: fina, gris de fondo, verde de relleno ===== -->
+    <!-- ===== Barra de recurso: 2 px, pista gris oscura, relleno claro ===== -->
 
     <Style x:Key="BarraRecursoEstilo" TargetType="ProgressBar">
-        <Setter Property="Height" Value="4"/>
+        <Setter Property="Height" Value="2"/>
         <Setter Property="Minimum" Value="0"/>
         <Setter Property="Maximum" Value="100"/>
-        <Setter Property="Foreground" Value="{StaticResource ActivoBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <!-- ControlTemplate = cómo se DIBUJA el control.
@@ -92,8 +135,8 @@
                      él mismo ajusta el ancho del indicador según Value. -->
                 <ControlTemplate TargetType="ProgressBar">
                     <Grid>
-                        <Border x:Name="PART_Track" CornerRadius="2" Background="{StaticResource BordeBrush}"/>
-                        <Border x:Name="PART_Indicator" CornerRadius="2" HorizontalAlignment="Left"
+                        <Border x:Name="PART_Track" Background="{StaticResource BordeBrush}"/>
+                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left"
                                 Background="{TemplateBinding Foreground}"/>
                     </Grid>
                 </ControlTemplate>
@@ -103,74 +146,72 @@
 
     <!-- ===== Interruptor de cuatro estados (Componentes/InterruptorEstado.cs) ===== -->
     <!-- Sin x:Key: se aplica a TODOS los InterruptorEstado.
-         Los Trigger cambian el dibujo según IsChecked (activo/inactivo) y Estado (aplicando/error). -->
+         Rectangular, como un interruptor de consola. Los Trigger cambian el dibujo según
+         IsChecked (activo/inactivo) y Estado (aplicando/error). Sin animaciones. -->
 
     <Style TargetType="componentes:InterruptorEstado">
-        <Setter Property="Width" Value="50"/>
-        <Setter Property="Height" Value="26"/>
+        <Setter Property="Width" Value="44"/>
+        <Setter Property="Height" Value="22"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="componentes:InterruptorEstado">
-                    <!-- La "píldora" de fondo. Por defecto = Inactivo: gris con bolita a la izquierda -->
-                    <Border x:Name="Fondo" CornerRadius="13" BorderThickness="1.5"
-                            Background="{StaticResource BordeBrush}"
-                            BorderBrush="{StaticResource TextoTenueBrush}">
-                        <Grid Margin="4,0">
-                            <!-- La bolita -->
-                            <Ellipse x:Name="Bolita" Width="16" Height="16" HorizontalAlignment="Left"
-                                     Fill="{StaticResource TextoSecundarioBrush}"/>
+                    <!-- El fondo. Por defecto = Inactivo: negro con borde gris y el cuadradito a la izquierda -->
+                    <Border x:Name="Fondo" CornerRadius="2" BorderThickness="1"
+                            Background="{StaticResource FondoBrush}"
+                            BorderBrush="{StaticResource BordeHoverBrush}">
+                        <Grid Margin="3,0">
+                            <!-- El cuadradito que se mueve -->
+                            <Rectangle x:Name="Bolita" Width="14" Height="14" HorizontalAlignment="Left"
+                                       Fill="{StaticResource TextoSecundarioBrush}"/>
 
-                            <!-- Ruedita de "Aplicando": un arco de 3/4 de círculo que gira -->
-                            <Path x:Name="Ruedita" Width="14" Height="14" HorizontalAlignment="Left"
-                                  Margin="1,0,0,0" Visibility="Collapsed"
-                                  Stroke="{StaticResource AvisoBrush}" StrokeThickness="2"
-                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                  Data="M 7,1 A 6,6 0 1 1 1,7" RenderTransformOrigin="0.5,0.5">
-                                <Path.RenderTransform>
-                                    <RotateTransform x:Name="Giro"/>
-                                </Path.RenderTransform>
-                            </Path>
+                            <!-- "Aplicando": tres puntos ámbar fijos (sin animación: PCs de pocos recursos) -->
+                            <TextBlock x:Name="Puntos" Text="..." FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-4,0,0"
+                                       Foreground="{StaticResource AvisoBrush}" Visibility="Collapsed"/>
 
                             <!-- La X de "Error" -->
-                            <Path x:Name="Cruz" Width="10" Height="10" HorizontalAlignment="Left"
-                                  Margin="3,0,0,0" Visibility="Collapsed"
-                                  Stroke="{StaticResource ErrorBrush}" StrokeThickness="1.8"
-                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                  Data="M 0,0 L 10,10 M 10,0 L 0,10"/>
+                            <Path x:Name="Cruz" Width="8" Height="8" HorizontalAlignment="Center"
+                                  Visibility="Collapsed" Stroke="{StaticResource ErrorBrush}" StrokeThickness="1.5"
+                                  Data="M 0,0 L 8,8 M 8,0 L 0,8"/>
                         </Grid>
                     </Border>
 
                     <ControlTemplate.Triggers>
-                        <!-- Activo: verde, bolita oscura a la derecha -->
+                        <!-- Activo: relleno morado, cuadradito negro a la derecha -->
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource ActivoBrush}"/>
-                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource ActivoBrush}"/>
+                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource AcentoBrush}"/>
+                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource AcentoBrush}"/>
                             <Setter TargetName="Bolita" Property="HorizontalAlignment" Value="Right"/>
                             <Setter TargetName="Bolita" Property="Fill" Value="{StaticResource FondoBrush}"/>
                         </Trigger>
 
-                        <!-- Aplicando: borde gris, sin bolita, ruedita naranja girando.
+                        <!-- Al pasar el ratón: borde más claro (morado brillante si está activo) -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsChecked" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource TextoSecundarioBrush}"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsChecked" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource AcentoBrilloBrush}"/>
+                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource AcentoBrilloBrush}"/>
+                        </MultiTrigger>
+
+                        <!-- Aplicando: negro, borde ámbar, "..." en el centro.
                              Va DESPUÉS de IsChecked para ganarle (en los Trigger, el último gana) -->
                         <Trigger Property="Estado" Value="Aplicando">
-                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource BordeBrush}"/>
-                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource TextoTenueBrush}"/>
+                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource FondoBrush}"/>
+                            <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource AvisoBrush}"/>
                             <Setter TargetName="Bolita" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="Ruedita" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="Puntos" Property="Visibility" Value="Visible"/>
                             <Setter Property="Cursor" Value="Wait"/>
-                            <Trigger.EnterActions>
-                                <BeginStoryboard x:Name="Girar">
-                                    <Storyboard>
-                                        <!-- Una vuelta completa por segundo, para siempre -->
-                                        <DoubleAnimation Storyboard.TargetName="Giro" Storyboard.TargetProperty="Angle"
-                                                         From="0" To="360" Duration="0:0:1" RepeatBehavior="Forever"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <StopStoryboard BeginStoryboardName="Girar"/>
-                            </Trigger.ExitActions>
                         </Trigger>
 
                         <!-- Error: fondo rojo translúcido, borde rojo y una X -->
@@ -181,7 +222,7 @@
                             <Setter TargetName="Cruz" Property="Visibility" Value="Visible"/>
                         </Trigger>
 
-                        <!-- Foco con teclado (Tab): un borde blanco para saber dónde estamos -->
+                        <!-- Foco con teclado (Tab): borde claro para saber dónde estamos -->
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource TextoBrush}"/>
                         </Trigger>
