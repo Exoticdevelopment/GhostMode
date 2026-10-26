@@ -12,5 +12,20 @@ namespace OptimizadorPC.Servicios
                 ? $"{(mb / 1024).ToString("F1", InfoSistema.Es)} GB"
                 : $"{mb.ToString("N0", InfoSistema.Es)} MB";
         }
+
+        // Temperatura de la GPU: lo que se escribe debajo del valor y el color (nombre en Colores.xaml)
+        public static string TextoNivel(NivelTemperatura nivel) => nivel switch
+        {
+            NivelTemperatura.Critica => "muy alta · más de 85 °C",
+            NivelTemperatura.Alta => "alta · de 75 a 85 °C",
+            _ => "normal · menos de 75 °C"
+        };
+
+        public static string ColorNivel(NivelTemperatura nivel) => nivel switch
+        {
+            NivelTemperatura.Critica => "ErrorBrush",
+            NivelTemperatura.Alta => "AvisoBrush",
+            _ => "TextoBrush"   // el mismo color que las barras de CPU, RAM y GPU
+        };
     }
 }

@@ -86,6 +86,13 @@ namespace OptimizadorPC.Paginas
             TarjetaGpu.Valor = m.GpuPorcentaje != null ? $"{m.GpuPorcentaje.Value.ToString("F0", es)} %" : "—";
             TarjetaGpu.Agregar(m.GpuPorcentaje);
 
+            // Temperatura de la GPU (°C; la gráfica va de 0 a 100 °C)
+            TarjetaTemp.Valor = m.GpuTemperatura != null ? $"{m.GpuTemperatura.Value.ToString("F0", es)} °C" : "N/D";
+            TarjetaTemp.Detalle = m.GpuTemperatura != null
+                ? Formato.TextoNivel(SensorTemperaturaGpu.Clasificar(m.GpuTemperatura.Value))
+                : "Windows no expone el sensor sin drivers extra";
+            TarjetaTemp.Agregar(m.GpuTemperatura is double grados ? Math.Clamp(grados, 0, 100) : null);
+
             // Disco: tiempo activo + lectura/escritura
             TarjetaDisco.Valor = m.DiscoPorcentaje != null ? $"{m.DiscoPorcentaje.Value.ToString("F0", es)} %" : "—";
             TarjetaDisco.Detalle = m.DiscoLecturaMBs != null && m.DiscoEscrituraMBs != null
@@ -111,6 +118,10 @@ namespace OptimizadorPC.Paginas
             if (m.DiscoPorcentaje == null)
             {
                 sinDatos.Add("disco");
+            }
+            if (m.GpuTemperatura == null)
+            {
+                sinDatos.Add("temperatura");
             }
             TxtSensores.Text = sinDatos.Count == 0
                 ? "Todos los sensores operativos"

@@ -1,4 +1,4 @@
-<!-- Página Monitor: CPU, RAM, GPU y disco de los últimos 60 segundos, actualizados cada 1 s.
+<!-- Página Monitor: CPU, RAM, GPU, disco y temperatura de la GPU de los últimos 60 segundos, actualizados cada 1 s.
      Solo mide mientras la página está a la vista (y no está en pausa). -->
 <Page x:Class="OptimizadorPC.Paginas.MonitorPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -50,6 +50,10 @@
                 <componentes:TarjetaGrafica x:Name="TarjetaDisco" Titulo="Disco" Icono="HardDrive20"
                                             EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
             </UniformGrid>
+
+            <!-- Temperatura de la GPU (NVML, solo NVIDIA), a lo ancho: el techo de la gráfica es 100 °C -->
+            <componentes:TarjetaGrafica x:Name="TarjetaTemp" Titulo="Temp · GPU" Icono="Temperature20"
+                                        EtiquetaMaximo="100 °C" Valor="N/D" Margin="0,16,0,0"/>
 
             <!-- Pie: consumo de la propia app y estado de los sensores -->
             <Grid Margin="0,20,0,0">

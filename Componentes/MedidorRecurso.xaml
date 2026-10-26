@@ -17,7 +17,9 @@
                            FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
             </Viewbox>
 
-            <ProgressBar Style="{StaticResource BarraRecursoEstilo}" Value="{Binding Porcentaje, ElementName=Raiz}"/>
+            <!-- ColorBarra sin poner (null) = el color normal de la barra -->
+            <ProgressBar Style="{StaticResource BarraRecursoEstilo}" Value="{Binding Porcentaje, ElementName=Raiz}"
+                         Foreground="{Binding ColorBarra, ElementName=Raiz, TargetNullValue={StaticResource TextoBrush}}"/>
 
             <!-- Hasta dos líneas (MinHeight = sitio para las dos, así las 4 tarjetas quedan alineadas) -->
             <TextBlock Text="{Binding Detalle, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"

@@ -78,7 +78,8 @@
                 <componentes:MedidorRecurso x:Name="MedCpu" Etiqueta="[ CPU ]" Margin="0,0,12,0"/>
                 <componentes:MedidorRecurso x:Name="MedRam" Etiqueta="[ RAM ]" Margin="0,0,12,0"/>
                 <componentes:MedidorRecurso x:Name="MedGpu" Etiqueta="[ GPU ]" Margin="0,0,12,0"/>
-                <componentes:MedidorRecurso x:Name="MedTemp" Etiqueta="[ TEMP ]" Margin="0,0,12,0"
+                <!-- Temperatura de la GPU con NVML (solo NVIDIA). Sin dato: "N/D" y este texto -->
+                <componentes:MedidorRecurso x:Name="MedTemp" Etiqueta="[ TEMP · GPU ]" Margin="0,0,12,0"
                                             Valor="N/D" Detalle="Windows no expone el sensor sin drivers extra"/>
             </UniformGrid>
 

@@ -13,6 +13,7 @@ namespace OptimizadorPC.Servicios
         double? RamLibreGb,
         double? RamPorcentaje,
         double? GpuPorcentaje,
+        double? GpuTemperatura,              // °C con NVML (solo GPU NVIDIA; si no, null)
         // Solo con "detallado" (pantalla Monitor). "= null" = si no se indican, quedan vacíos
         double? DiscoPorcentaje = null,      // tiempo activo del disco, como en el Administrador de tareas
         double? DiscoLecturaMBs = null,
@@ -107,7 +108,8 @@ namespace OptimizadorPC.Servicios
                 ramPorcentaje = memoria.dwMemoryLoad;   // Windows ya lo da en %
             }
 
-            var muestra = new MuestraRecursos(cpu, ramUsada, ramLibre, ramPorcentaje, MedirGpu());
+            var muestra = new MuestraRecursos(cpu, ramUsada, ramLibre, ramPorcentaje, MedirGpu(),
+                                              SensorTemperaturaGpu.Sistema.Leer());
             return detallado ? MedirDetalle(muestra) : muestra;
         }
 

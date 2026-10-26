@@ -98,6 +98,23 @@ namespace OptimizadorPC.Paginas
 
             MedGpu.Valor = m.GpuPorcentaje != null ? $"{m.GpuPorcentaje.Value.ToString("F0", es)} %" : "—";
             MedGpu.Porcentaje = m.GpuPorcentaje ?? 0;
+
+            // Temperatura de la GPU: la barra va de 0 a 100 °C y cambia de color según lo caliente que esté
+            if (m.GpuTemperatura is double grados)
+            {
+                NivelTemperatura nivel = SensorTemperaturaGpu.Clasificar(grados);
+                MedTemp.Valor = $"{grados.ToString("F0", es)} °C";
+                MedTemp.Porcentaje = Math.Clamp(grados, 0, 100);
+                MedTemp.Detalle = Formato.TextoNivel(nivel);
+                MedTemp.ColorBarra = (Brush?)TryFindResource(Formato.ColorNivel(nivel));
+            }
+            else
+            {
+                MedTemp.Valor = "N/D";
+                MedTemp.Porcentaje = 0;
+                MedTemp.Detalle = "Windows no expone el sensor sin drivers extra";
+                MedTemp.ColorBarra = null;
+            }
         }
 
         // ===== Puntuación =====

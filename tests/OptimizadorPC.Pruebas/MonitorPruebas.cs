@@ -51,6 +51,10 @@ namespace OptimizadorPC.Pruebas
                 Assert.InRange(m.GpuPorcentaje!.Value, 0, 100);
                 Assert.True(MotoresGpu3D() > 0, "Windows no expone motores 3D de la GPU");
 
+                // Temperatura de la GPU NVIDIA (NVML)
+                Assert.NotNull(m.GpuTemperatura);
+                Assert.InRange(m.GpuTemperatura!.Value, 15, 110);
+
                 Assert.NotNull(m.DiscoPorcentaje);
                 Assert.InRange(m.DiscoPorcentaje!.Value, 0.01, 100);
                 Assert.True(m.DiscoEscrituraMBs > 0, $"Escritura de disco: {m.DiscoEscrituraMBs} MB/s");

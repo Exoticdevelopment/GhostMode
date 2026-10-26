@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;   // Brush
 using Wpf.Ui.Controls;   // SymbolRegular (la lista de iconos)
 
 namespace OptimizadorPC.Componentes
@@ -51,6 +52,16 @@ namespace OptimizadorPC.Componentes
         {
             get => (double)GetValue(PorcentajeProperty);
             set => SetValue(PorcentajeProperty, value);
+        }
+
+        // Color de la barra (p. ej. ámbar o rojo si la GPU está caliente). null = el normal
+        public static readonly DependencyProperty ColorBarraProperty =
+            DependencyProperty.Register(nameof(ColorBarra), typeof(Brush), typeof(MedidorRecurso), new PropertyMetadata(null));
+
+        public Brush? ColorBarra
+        {
+            get => (Brush?)GetValue(ColorBarraProperty);
+            set => SetValue(ColorBarraProperty, value);
         }
 
         // Icono de la esquina
