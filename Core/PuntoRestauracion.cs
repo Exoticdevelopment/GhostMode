@@ -64,6 +64,45 @@ namespace OptimizadorPC.Core
             }
         }
 
+        // Enciende la "Protección del sistema" en el disco de Windows (normalmente C:),
+        // que es lo que permite crear puntos de restauración. Devuelve true si quedó activada.
+        // OJO: no se guarda en GestorEstado ni se apaga con "Deshacer todo" a propósito:
+        // apagarla BORRA todos los puntos de restauración del disco, justo lo contrario de lo que queremos.
+        // Se puede apagar a mano en Windows: Panel de control > Sistema > Protección del sistema.
+        public static async Task<bool> ActivarProteccionAsync()
+        {
+            Logger.Info("Activando la Protección del sistema en el disco de Windows");
+
+            // $env:SystemDrive = la letra del disco de Windows ("C:"); Enable-ComputerRestore la quiere con \ al final
+            string script = @"
+                [Console]::OutputEncoding = [Text.Encoding]::UTF8
+                try {
+                    Enable-ComputerRestore -Drive ($env:SystemDrive + '\') -ErrorAction Stop
+                    exit 0
+                } catch {
+                    [Console]::Error.WriteLine($_.Exception.Message)
+                    exit 1
+                }";
+            // Aquí no hay $ delante del @"...", así que las llaves de PowerShell van simples
+
+            try
+            {
+                var (codigo, error) = await EjecutarPowerShellAsync(script);
+                if (codigo == 0)
+                {
+                    Logger.Info("Protección del sistema activada (queda activada: es una función de seguridad de Windows)");
+                    return true;
+                }
+                Logger.Error($"No se pudo activar la Protección del sistema: {error}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error al activar la Protección del sistema", ex);
+                return false;
+            }
+        }
+
         // Ejecuta un script y devuelve DOS cosas a la vez (una "tupla"):
         // el código de salida y el mensaje de error, si lo hubo
         private static async Task<(int Codigo, string Error)> EjecutarPowerShellAsync(string script)

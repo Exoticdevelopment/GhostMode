@@ -1,3 +1,4 @@
+using OptimizadorPC.Core;  // PuntoRestauracion, ResultadoPunto
 using Wpf.Ui.Controls;   // Snackbar, SnackbarPresenter, SymbolIcon, ControlAppearance
 // Alias: WPF y WPF-UI tienen los dos una clase "MessageBox". Así dejamos claro cuál usamos
 using MessageBoxUi = Wpf.Ui.Controls.MessageBox;
@@ -42,18 +43,59 @@ namespace OptimizadorPC.Servicios
         }
 
         // Se pasa a AplicadorOptimizaciones.AplicarAsync. Devuelve true = "seguir de todos modos"
+        // (o porque se activó la protección y ya hay punto, o porque el usuario decidió seguir sin él)
         public static async Task<bool> PreguntarContinuarSinPuntoAsync()
         {
-            var dialogo = new MessageBoxUi
+            bool ofrecerActivar = true;   // tras un intento fallido ya no se vuelve a ofrecer
+
+            // while (true) = repetir hasta que un "return" nos saque
+            while (true)
             {
-                Title = "No se pudo crear el punto de restauración",
-                Content = "Windows no permitió crear el punto de restauración (puede que la Protección del sistema " +
-                          "esté desactivada).\n\nLos cambios de Ghost Mode se pueden deshacer igualmente desde " +
+                var dialogo = new MessageBoxUi
+                {
+                    Title = "No se pudo crear el punto de restauración",
+                    Content = ofrecerActivar
+                        ? "Windows no permitió crear el punto de restauración. Lo más habitual es que la " +
+                          "Protección del sistema esté desactivada.\n\nGhost Mode puede activarla ahora (es una " +
+                          "función de seguridad de Windows y se quedará activada). Los cambios de Ghost Mode " +
+                          "se pueden deshacer igualmente desde «Deshacer todo»."
+                        : "Tampoco se pudo crear el punto con la Protección del sistema activada. Revisa el log " +
+                          "para más detalles.\n\nLos cambios de Ghost Mode se pueden deshacer igualmente desde " +
                           "«Deshacer todo». ¿Quieres continuar?",
-                PrimaryButtonText = "Continuar",
-                CloseButtonText = "Cancelar"
-            };
-            return await dialogo.ShowDialogAsync() == MessageBoxResultUi.Primary;
+                    // Un botón con texto vacío no se muestra: así quitamos "Activar" en el segundo intento
+                    PrimaryButtonText = ofrecerActivar ? "Activar protección" : "Continuar sin punto",
+                    SecondaryButtonText = ofrecerActivar ? "Continuar sin punto" : "",
+                    CloseButtonText = "Cancelar"
+                };
+
+                MessageBoxResultUi respuesta = await dialogo.ShowDialogAsync();
+
+                // "Continuar sin punto" es el botón principal o el secundario según la vuelta
+                bool continuarSinPunto = ofrecerActivar
+                    ? respuesta == MessageBoxResultUi.Secondary
+                    : respuesta == MessageBoxResultUi.Primary;
+                if (continuarSinPunto)
+                {
+                    return true;
+                }
+                if (!ofrecerActivar || respuesta != MessageBoxResultUi.Primary)
+                {
+                    return false;   // Cancelar o la X
+                }
+
+                // Pulsó "Activar protección": activarla y volver a intentar el punto
+                ofrecerActivar = false;
+                if (await PuntoRestauracion.ActivarProteccionAsync())
+                {
+                    ResultadoPunto punto = await PuntoRestauracion.CrearAsync("Ghost Mode - antes de optimizar");
+                    if (punto != ResultadoPunto.Fallo)
+                    {
+                        Exito("Protección del sistema activada", "Se creó el punto de restauración. Aplicando cambios…");
+                        return true;
+                    }
+                }
+                // Si algo falló, el bucle vuelve a preguntar, ya sin la opción de activar
+            }
         }
     }
 }
