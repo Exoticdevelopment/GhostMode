@@ -139,6 +139,11 @@ namespace OptimizadorPC.Servicios
                     Procesos = (int)procesos.NextValue()
                 };
             }
+            catch (ObjectDisposedException)
+            {
+                // Se llamó a Detener mientras medíamos: no es un fallo, la próxima vez se crean de nuevo
+                return muestra;
+            }
             catch (Exception ex)
             {
                 contadoresDisponibles = false;

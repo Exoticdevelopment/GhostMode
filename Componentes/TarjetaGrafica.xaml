@@ -1,0 +1,53 @@
+<!-- Tarjeta del Monitor: icono + título, valor grande, detalle, gráfica de 60 s y eje de tiempo.
+     x:Name="Raiz" = nombre del propio control, para enlazar con sus propiedades: {Binding X, ElementName=Raiz} -->
+<UserControl x:Class="OptimizadorPC.Componentes.TarjetaGrafica"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+             x:Name="Raiz">
+
+    <Border Style="{StaticResource TarjetaEstilo}">
+        <StackPanel>
+            <!-- Fila 1: icono + título a la izquierda, valor grande a la derecha -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Symbol="{Binding Icono, ElementName=Raiz}" FontSize="18" VerticalAlignment="Center"
+                               Foreground="{StaticResource ActivoBrush}"/>
+                <TextBlock Grid.Column="1" Text="{Binding Titulo, ElementName=Raiz}" FontSize="15" FontWeight="SemiBold"
+                           Margin="10,0,0,0" VerticalAlignment="Center" Foreground="{StaticResource TextoBrush}"/>
+                <!-- Viewbox DownOnly: si el valor no cabe, se encoge en vez de cortarse -->
+                <Viewbox Grid.Column="2" StretchDirection="DownOnly" Height="34" MaxWidth="160" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontSize="26" FontWeight="SemiBold"
+                               Foreground="{StaticResource TextoBrush}"/>
+                </Viewbox>
+            </Grid>
+
+            <!-- Fila 2: detalle a la izquierda, el máximo de la gráfica a la derecha -->
+            <Grid Margin="0,8,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Detalle, ElementName=Raiz}" FontSize="12" TextWrapping="Wrap"
+                           Foreground="{StaticResource TextoSecundarioBrush}"/>
+                <TextBlock Grid.Column="1" Text="{Binding EtiquetaMaximo, ElementName=Raiz}" FontSize="11" Margin="12,0,0,0"
+                           Foreground="{StaticResource TextoTenueBrush}"/>
+            </Grid>
+
+            <componentes:GraficaLinea x:Name="Grafica" Height="90" Maximo="100"
+                                      Trazo="{StaticResource ActivoBrush}" Lineas="{StaticResource BordeBrush}"/>
+
+            <!-- Eje de tiempo -->
+            <Grid Margin="0,8,0,0">
+                <TextBlock Text="−60 s" FontSize="11" Foreground="{StaticResource TextoTenueBrush}"/>
+                <TextBlock Text="−30 s" FontSize="11" HorizontalAlignment="Center" Foreground="{StaticResource TextoTenueBrush}"/>
+                <TextBlock Text="Ahora" FontSize="11" HorizontalAlignment="Right" Foreground="{StaticResource TextoTenueBrush}"/>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

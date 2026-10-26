@@ -46,11 +46,6 @@ namespace OptimizadorPC.Paginas
         public RedPagina() : base("Red", "en construcción") { }
     }
 
-    public class MonitorPagina : PaginaProximamente
-    {
-        public MonitorPagina() : base("Monitor", "Fase 4") { }
-    }
-
     public class AjustesPagina : PaginaProximamente
     {
         public AjustesPagina() : base("Ajustes", "en construcción") { }
