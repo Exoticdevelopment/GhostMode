@@ -1,0 +1,123 @@
+<!-- Página FiveM: estado de la instalación, GPU dedicada (reversible) y limpieza de caché.
+     Todos los textos con x:Name se rellenan desde el código con datos reales -->
+<Page x:Class="OptimizadorPC.Paginas.FiveMPagina"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+      Title="FiveM">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="44,36,44,36">
+
+            <!-- Encabezado: título a la izquierda, "Volver a buscar" a la derecha -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="FiveM" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <TextBlock Text="Ajustes para jugar en servidores de FiveM." Style="{StaticResource SubtituloPaginaEstilo}"/>
+                </StackPanel>
+                <ui:Button x:Name="BtnBuscar" Grid.Column="1" Content="Volver a buscar" VerticalAlignment="Top"
+                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnBuscar_Click">
+                    <ui:Button.Icon>
+                        <ui:SymbolIcon Symbol="ArrowSync20"/>
+                    </ui:Button.Icon>
+                </ui:Button>
+            </Grid>
+
+            <!-- ===== Estado de la instalación ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,24,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="44" Height="44" CornerRadius="8" Background="{StaticResource ActivoSuaveBrush}"
+                            VerticalAlignment="Top">
+                        <ui:SymbolIcon Symbol="VehicleCar24" FontSize="24" Foreground="{StaticResource ActivoBrush}"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="14,0,12,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="TxtEstado" Text="Buscando FiveM…" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextoBrush}"/>
+                        <!-- La ruta puede ser larga: que salte de línea en vez de cortarse -->
+                        <TextBlock x:Name="TxtRuta" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Foreground="{StaticResource TextoTenueBrush}"/>
+                    </StackPanel>
+
+                    <!-- Pastilla "Abierto" / "Cerrado" -->
+                    <Border x:Name="PastillaAbierto" Grid.Column="2" Style="{StaticResource PastillaEstilo}"
+                            VerticalAlignment="Center" Margin="0" Visibility="Collapsed">
+                        <TextBlock x:Name="TxtAbierto" Style="{StaticResource PastillaTextoEstilo}"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Aviso naranja: solo se ve con FiveM abierto -->
+            <Grid x:Name="AvisoAbierto" Margin="4,12,0,0" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Symbol="Warning20" FontSize="16" Foreground="{StaticResource AvisoBrush}" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="1" FontSize="13" TextWrapping="Wrap" Margin="8,0,0,0"
+                           Foreground="{StaticResource AvisoBrush}"
+                           Text="FiveM está abierto. Ciérralo para limpiar la caché; la GPU dedicada se notará la próxima vez que lo abras."/>
+            </Grid>
+
+            <!-- ===== Las dos tarjetas. ZonaAjustes se desactiva entera si FiveM no está instalado ===== -->
+            <Grid x:Name="ZonaAjustes" Margin="0,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Izquierda: GPU dedicada. La tarjeta es la misma de la pantalla Optimizaciones -->
+                <StackPanel>
+                    <componentes:TarjetaOptimizacion x:Name="TarjetaGpu"/>
+                    <TextBlock x:Name="TxtEjecutables" FontSize="12" TextWrapping="Wrap" Margin="4,10,0,0"
+                               Foreground="{StaticResource TextoTenueBrush}"/>
+                    <ui:Button x:Name="BtnAplicarGpu" Content="Sin cambios" IsEnabled="False" HorizontalAlignment="Left"
+                               Margin="0,14,0,0" Style="{StaticResource BotonPrincipalEstilo}" Click="BtnAplicarGpu_Click">
+                        <ui:Button.Icon>
+                            <ui:SymbolIcon Symbol="Checkmark20"/>
+                        </ui:Button.Icon>
+                    </ui:Button>
+                </StackPanel>
+
+                <!-- Derecha: caché -->
+                <Border Grid.Column="2" Style="{StaticResource TarjetaEstilo}" VerticalAlignment="Top">
+                    <StackPanel>
+                        <Grid>
+                            <TextBlock Text="Caché de FiveM" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <ui:SymbolIcon Symbol="Broom20" FontSize="18" HorizontalAlignment="Right"
+                                           Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        </Grid>
+                        <TextBlock FontSize="13" TextWrapping="Wrap" Margin="0,10,0,0"
+                                   Foreground="{StaticResource TextoSecundarioBrush}"
+                                   Text="Archivos que descargan los servidores. Si crece mucho o se daña provoca tirones y cierres; FiveM vuelve a descargar lo que necesite."/>
+
+                        <TextBlock x:Name="TxtTamano" Text="—" FontSize="28" FontWeight="SemiBold" Margin="0,14,0,0"
+                                   Foreground="{StaticResource TextoBrush}"/>
+                        <TextBlock Text="Se conservan los archivos del juego (cache\game y game-storage)." FontSize="12"
+                                   TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
+
+                        <ui:Button x:Name="BtnLimpiar" Content="Limpiar caché" IsEnabled="False" HorizontalAlignment="Left"
+                                   Margin="0,16,0,0" Style="{StaticResource BotonSecundarioEstilo}" Click="BtnLimpiar_Click">
+                            <ui:Button.Icon>
+                                <ui:SymbolIcon Symbol="Delete20"/>
+                            </ui:Button.Icon>
+                        </ui:Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
