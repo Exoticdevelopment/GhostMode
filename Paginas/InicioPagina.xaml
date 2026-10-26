@@ -1,44 +1,54 @@
-<!-- Página Inicio: uso de recursos en vivo, el botón grande "Activar Ghost Mode",
-     y abajo Puntuación y Perfil (llegan más adelante) -->
+<!-- Página Inicio, estilo terminal: uso de recursos en vivo, el botón "[ ACTIVAR GHOST MODE ]",
+     el panel [ LOG ] y abajo Puntuación (último benchmark) y Perfil (llega más adelante) -->
 <Page x:Class="OptimizadorPC.Paginas.InicioPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
       Title="Inicio">
 
     <Page.Resources>
-        <!-- El botón redondo grande. Su plantilla dibuja dos anillos y pone el contenido en el centro -->
-        <Style x:Key="BotonRedondoEstilo" TargetType="Button">
-            <Setter Property="Width" Value="220"/>
-            <Setter Property="Height" Value="220"/>
+        <!-- El botón grande de Ghost Mode: rectángulo con borde morado.
+             Tag="on" (lo pone InicioPagina.xaml.cs) = relleno morado con texto negro -->
+        <Style x:Key="BotonGhostEstilo" TargetType="Button">
+            <Setter Property="Height" Value="58"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <!-- Anillo exterior, gris y fino -->
-                            <Ellipse Stroke="{StaticResource BordeBrush}" StrokeThickness="1"/>
-                            <!-- Anillo interior verde con relleno verde translúcido -->
-                            <Ellipse x:Name="Anillo" Margin="14" StrokeThickness="3"
-                                     Stroke="{StaticResource ActivoBrush}" Fill="{StaticResource ActivoSuaveBrush}"/>
-                            <!-- ContentPresenter = "aquí va lo que pongas dentro del botón" -->
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
+                        <Border x:Name="Caja" CornerRadius="2" BorderThickness="1"
+                                BorderBrush="{StaticResource AcentoBrush}" Background="Transparent">
+                            <!-- TextElement.Foreground = color del texto de dentro (se cambia en los Trigger) -->
+                            <ContentPresenter x:Name="Contenido" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              TextElement.Foreground="{StaticResource AcentoBrilloBrush}"/>
+                        </Border>
                         <ControlTemplate.Triggers>
+                            <!-- Apagado + ratón encima: fondo morado oscuro -->
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Anillo" Property="StrokeThickness" Value="4"/>
+                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoFondoBrush}"/>
+                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource AcentoBrilloBrush}"/>
                             </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Anillo" Property="Margin" Value="18"/>
+                            <!-- Encendido: relleno morado, texto negro -->
+                            <Trigger Property="Tag" Value="on">
+                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoBrush}"/>
+                                <Setter TargetName="Contenido" Property="TextElement.Foreground" Value="{StaticResource FondoBrush}"/>
                             </Trigger>
+                            <!-- Encendido + ratón encima: morado brillante -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Tag" Value="on"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="Caja" Property="Background" Value="{StaticResource AcentoBrilloBrush}"/>
+                            </MultiTrigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Anillo" Property="StrokeThickness" Value="5"/>
+                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource TextoBrush}"/>
                             </Trigger>
+                            <!-- Leyendo o aplicando: borde y texto ámbar -->
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Anillo" Property="Stroke" Value="{StaticResource AvisoBrush}"/>
-                                <Setter TargetName="Anillo" Property="Fill" Value="{StaticResource AvisoSuaveBrush}"/>
+                                <Setter TargetName="Caja" Property="Background" Value="Transparent"/>
+                                <Setter TargetName="Caja" Property="BorderBrush" Value="{StaticResource AvisoBrush}"/>
+                                <Setter TargetName="Contenido" Property="TextElement.Foreground" Value="{StaticResource AvisoBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -46,114 +56,86 @@
             </Setter>
         </Style>
 
+        <!-- Línea de la lista "[ AL ACTIVAR ]" -->
+        <Style x:Key="LineaListaEstilo" TargetType="TextBlock" BasedOn="{StaticResource DatoEstilo}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+        </Style>
+
         <!-- Pastilla de perfil, desactivada hasta que exista la función -->
-        <Style x:Key="PerfilEstilo" TargetType="Border">
-            <Setter Property="BorderBrush" Value="{StaticResource BordeBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="6"/>
-            <Setter Property="Padding" Value="12,7"/>
-            <Setter Property="Margin" Value="0,0,8,0"/>
+        <Style x:Key="PerfilEstilo" TargetType="Border" BasedOn="{StaticResource PastillaEstilo}">
+            <Setter Property="Padding" Value="8,4"/>
             <Setter Property="Opacity" Value="0.5"/>
         </Style>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="44,36,44,36">
-            <TextBlock Text="Tu PC, listo para jugar" Style="{StaticResource TituloPaginaEstilo}"/>
-            <TextBlock Text="Menos procesos. Más recursos para lo que importa." Style="{StaticResource SubtituloPaginaEstilo}"/>
+        <StackPanel Margin="36,28,36,32">
+            <TextBlock Text="&gt; sistema_listo" Style="{StaticResource TituloPaginaEstilo}"/>
+            <TextBlock Text="Uso de recursos en vivo y acceso directo a Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
             <!-- ===== Los 4 medidores. Los valores se rellenan desde el código cada 2 segundos ===== -->
-            <UniformGrid Rows="1" Margin="0,24,-16,0">
-                <componentes:MedidorRecurso x:Name="MedCpu" Etiqueta="CPU" Icono="DeveloperBoard24" Margin="0,0,16,0"/>
-                <componentes:MedidorRecurso x:Name="MedRam" Etiqueta="RAM" Icono="Ram20" Margin="0,0,16,0"/>
-                <componentes:MedidorRecurso x:Name="MedGpu" Etiqueta="GPU" Icono="Video24" Margin="0,0,16,0"/>
-                <componentes:MedidorRecurso x:Name="MedTemp" Etiqueta="TEMPERATURA" Icono="Temperature24" Margin="0,0,16,0"
-                                            Valor="No disponible" Detalle="Windows no la informa sin programas extra"/>
+            <UniformGrid Rows="1" Margin="0,20,-12,0">
+                <componentes:MedidorRecurso x:Name="MedCpu" Etiqueta="[ CPU ]" Margin="0,0,12,0"/>
+                <componentes:MedidorRecurso x:Name="MedRam" Etiqueta="[ RAM ]" Margin="0,0,12,0"/>
+                <componentes:MedidorRecurso x:Name="MedGpu" Etiqueta="[ GPU ]" Margin="0,0,12,0"/>
+                <componentes:MedidorRecurso x:Name="MedTemp" Etiqueta="[ TEMP ]" Margin="0,0,12,0"
+                                            Valor="N/D" Detalle="Windows no expone el sensor sin drivers extra"/>
             </UniformGrid>
 
-            <!-- ===== Bloque central: Ghost Mode ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="28,24">
+            <!-- ===== Bloque Ghost Mode ===== -->
+            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,12,0,0" Padding="20,18">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Izquierda: estado y lema -->
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Ellipse x:Name="PuntoEstado" Width="8" Height="8" Fill="{StaticResource TextoTenueBrush}"/>
-                            <TextBlock x:Name="TxtEstado" Text="GHOST MODE · …" FontSize="13" FontWeight="SemiBold"
-                                       Margin="10,0,0,0" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    <!-- Izquierda: estado, explicación y el botón -->
+                    <StackPanel Margin="0,0,24,0">
+                        <TextBlock Text="SYS.STATUS" Style="{StaticResource EtiquetaEstilo}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <!-- Cuadradito de estado: verde = ON, gris = OFF -->
+                            <Rectangle x:Name="PuntoEstado" Width="8" Height="8" VerticalAlignment="Center"
+                                       Fill="{StaticResource TextoSecundarioBrush}"/>
+                            <TextBlock x:Name="TxtEstado" Text="&gt; GHOST_MODE: ..." Margin="10,0,0,0"
+                                       Style="{StaticResource DatoEstilo}" FontSize="16" FontWeight="SemiBold"/>
                         </StackPanel>
-                        <TextBlock Text="Dale prioridad a tu partida." FontSize="26" FontWeight="SemiBold" TextWrapping="Wrap"
-                                   Margin="0,14,0,0" Foreground="{StaticResource TextoBrush}"/>
-                        <TextBlock Text="Libera recursos y reduce tareas en segundo plano con un clic." FontSize="14"
-                                   TextWrapping="Wrap" Margin="0,12,0,0" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,10,0,16"
+                                   Text="Aplica de una vez las optimizaciones de riesgo bajo. Todas se pueden deshacer."/>
+
+                        <Button x:Name="BtnGhost" Style="{StaticResource BotonGhostEstilo}" Tag="off"
+                                IsEnabled="False" Click="BtnGhost_Click">
+                            <TextBlock x:Name="TxtBotonGhost" Text="[ LEYENDO ESTADO... ]" FontFamily="{StaticResource FuenteMono}"
+                                       FontSize="15" FontWeight="Bold"/>
+                        </Button>
+                        <TextBlock x:Name="TxtBotonGhostDetalle" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0"/>
                     </StackPanel>
 
-                    <!-- Centro: el botón grande -->
-                    <Button x:Name="BtnGhost" Grid.Column="1" Style="{StaticResource BotonRedondoEstilo}"
-                            IsEnabled="False" Click="BtnGhost_Click">
-                        <StackPanel HorizontalAlignment="Center" Width="150">
-                            <ui:SymbolIcon Symbol="Power28" FontSize="40" HorizontalAlignment="Center"
-                                           Foreground="{StaticResource ActivoBrush}"/>
-                            <TextBlock x:Name="TxtBotonGhost" Text="LEYENDO ESTADO…" FontSize="16" FontWeight="Bold"
-                                       TextAlignment="Center" TextWrapping="Wrap" Margin="0,14,0,0"
-                                       Foreground="{StaticResource ActivoBrush}"/>
-                            <TextBlock x:Name="TxtBotonGhostDetalle" FontSize="12" TextAlignment="Center"
-                                       TextWrapping="Wrap" Margin="0,8,0,0" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    <!-- Derecha: qué pasa al activar (todo dato real), separado por una línea vertical -->
+                    <Border Grid.Column="1" BorderBrush="{StaticResource BordeBrush}" BorderThickness="1,0,0,0"
+                            Padding="20,0,0,0" Width="250">
+                        <StackPanel>
+                            <TextBlock Text="[ AL ACTIVAR ]" Style="{StaticResource EtiquetaEstilo}"/>
+                            <TextBlock x:Name="TxtCuantasSeguras" Style="{StaticResource LineaListaEstilo}" Margin="0,12,0,0"/>
+                            <TextBlock Text="+ punto de restauración previo" Style="{StaticResource LineaListaEstilo}"/>
+                            <TextBlock Text="+ cambios reversibles" Style="{StaticResource LineaListaEstilo}"/>
+                            <TextBlock Text="* se pide confirmación antes de aplicar" Style="{StaticResource EtiquetaEstilo}"
+                                       TextWrapping="Wrap" Margin="0,14,0,0"/>
                         </StackPanel>
-                    </Button>
-
-                    <!-- Derecha: qué pasa al activar (todo dato real) -->
-                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="20,0,0,0">
-                        <TextBlock Text="AL ACTIVAR" Style="{StaticResource EtiquetaEstilo}" FontSize="13" FontWeight="SemiBold"/>
-                        <!-- Cada fila es un Grid: columna 1 el icono, columna 2 el texto.
-                             En un StackPanel horizontal el texto no puede saltar de línea (tiene ancho infinito);
-                             en la columna "*" del Grid sí, porque su ancho es el que sobra -->
-                        <Grid Margin="0,14,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:SymbolIcon Symbol="Flash20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
-                                           VerticalAlignment="Top"/>
-                            <TextBlock x:Name="TxtCuantasSeguras" Grid.Column="1" FontSize="14" Margin="10,0,0,0"
-                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
-                        </Grid>
-                        <Grid Margin="0,12,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
-                                           VerticalAlignment="Top"/>
-                            <TextBlock Grid.Column="1" Text="Punto de restauración antes" FontSize="14" Margin="10,0,0,0"
-                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
-                        </Grid>
-                        <Grid Margin="0,12,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ui:SymbolIcon Symbol="ArrowUndo20" FontSize="18" Foreground="{StaticResource ActivoBrush}"
-                                           VerticalAlignment="Top"/>
-                            <TextBlock Grid.Column="1" Text="Cambios reversibles" FontSize="14" Margin="10,0,0,0"
-                                       TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
-                        </Grid>
-                        <TextBlock Text="Se pedirá confirmación antes de aplicar los cambios." FontSize="12" TextWrapping="Wrap"
-                                   Margin="0,16,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
-                    </StackPanel>
+                    </Border>
                 </Grid>
             </Border>
 
+            <!-- ===== Log en vivo ===== -->
+            <componentes:PanelLog Margin="0,12,0,0"/>
+
             <!-- ===== Fila de abajo: Puntuación y Perfil ===== -->
-            <Grid Margin="0,20,0,0">
+            <Grid Margin="0,12,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="12"/>
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
@@ -161,24 +143,22 @@
                 <Border Style="{StaticResource TarjetaEstilo}">
                     <StackPanel>
                         <Grid>
-                            <TextBlock Text="Puntuación de rendimiento" FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="[ PUNTUACIÓN ]" Style="{StaticResource EtiquetaEstilo}"/>
                             <Border x:Name="PastillaBenchmark" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Right"
                                     Margin="0" Visibility="Collapsed">
-                                <TextBlock Text="Último benchmark" Style="{StaticResource PastillaTextoEstilo}"/>
+                                <TextBlock Text="último benchmark" Style="{StaticResource PastillaTextoEstilo}"/>
                             </Border>
                         </Grid>
 
                         <!-- Con benchmark: % de mejora grande y barras Antes / Después en FPS -->
-                        <Grid x:Name="PanelConBenchmark" Margin="0,16,0,0" Visibility="Collapsed">
+                        <Grid x:Name="PanelConBenchmark" Margin="0,14,0,0" Visibility="Collapsed">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <StackPanel VerticalAlignment="Center" Margin="0,0,20,0">
-                                <TextBlock x:Name="TxtMejora" FontSize="30" FontWeight="SemiBold"
-                                           Foreground="{StaticResource ActivoBrush}"/>
-                                <TextBlock Text="FPS promedio" FontSize="12" Foreground="{StaticResource TextoTenueBrush}"/>
+                                <TextBlock x:Name="TxtMejora" Style="{StaticResource DatoEstilo}" FontSize="26" FontWeight="SemiBold"/>
+                                <TextBlock Text="fps promedio" Style="{StaticResource EtiquetaEstilo}"/>
                             </StackPanel>
                             <Grid Grid.Column="1" VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
@@ -190,29 +170,24 @@
                                     <RowDefinition/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Antes" FontSize="13" Margin="0,4,12,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
-                                <ProgressBar x:Name="BarraAntes" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}" Height="6"
-                                             Foreground="{StaticResource TextoTenueBrush}"/>
-                                <TextBlock x:Name="TxtAntes" Grid.Column="2" FontSize="13" Margin="12,4,0,4"
-                                           Foreground="{StaticResource TextoSecundarioBrush}"/>
-                                <TextBlock Grid.Row="1" Text="Después" FontSize="13" Margin="0,4,12,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
-                                <ProgressBar x:Name="BarraDespues" Grid.Row="1" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}" Height="6"/>
-                                <TextBlock x:Name="TxtDespues" Grid.Row="1" Grid.Column="2" FontSize="13" FontWeight="SemiBold" Margin="12,4,0,4"
-                                           Foreground="{StaticResource ActivoBrush}"/>
+                                <TextBlock Text="antes  " Style="{StaticResource EtiquetaEstilo}" Margin="0,5,8,5"/>
+                                <ProgressBar x:Name="BarraAntes" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}"
+                                             Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <TextBlock x:Name="TxtAntes" Grid.Column="2" Style="{StaticResource EtiquetaEstilo}" Margin="10,5,0,5"/>
+                                <TextBlock Grid.Row="1" Text="después" Style="{StaticResource EtiquetaEstilo}" Margin="0,5,8,5"/>
+                                <ProgressBar x:Name="BarraDespues" Grid.Row="1" Grid.Column="1" Style="{StaticResource BarraRecursoEstilo}"/>
+                                <TextBlock x:Name="TxtDespues" Grid.Row="1" Grid.Column="2" Style="{StaticResource DatoEstilo}"
+                                           FontSize="11" Margin="10,5,0,5"/>
                             </Grid>
                         </Grid>
-                        <TextBlock x:Name="TxtBenchmarkDetalle" FontSize="12" TextWrapping="Wrap" Margin="0,12,0,0"
-                                   Visibility="Collapsed" Foreground="{StaticResource TextoTenueBrush}"/>
+                        <TextBlock x:Name="TxtBenchmarkDetalle" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap"
+                                   Margin="0,12,0,0" Visibility="Collapsed"/>
 
                         <!-- Sin benchmark -->
-                        <StackPanel x:Name="PanelSinBenchmark" Orientation="Horizontal" Margin="0,18,0,0">
-                            <ui:SymbolIcon Symbol="Gauge24" FontSize="32" Foreground="{StaticResource TextoTenueBrush}"/>
-                            <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="Ejecuta un benchmark para medir tu equipo" FontSize="14"
-                                           Foreground="{StaticResource TextoSecundarioBrush}"/>
-                                <TextBlock Text="En la sección Benchmark: compara los FPS antes y después de Ghost Mode." FontSize="12"
-                                           TextWrapping="Wrap" Margin="0,4,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
-                            </StackPanel>
+                        <StackPanel x:Name="PanelSinBenchmark" Margin="0,14,0,0">
+                            <TextBlock Text="&gt; sin_datos" Style="{StaticResource DatoEstilo}"/>
+                            <TextBlock Text="Ejecuta un benchmark para medir tu equipo (sección benchmark)."
+                                       Style="{StaticResource ExplicacionEstilo}" Margin="0,6,0,0"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -221,25 +196,24 @@
                 <Border Grid.Column="2" Style="{StaticResource TarjetaEstilo}">
                     <StackPanel>
                         <Grid>
-                            <TextBlock Text="Perfil de rendimiento" FontSize="16" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="[ PERFIL ]" Style="{StaticResource EtiquetaEstilo}"/>
                             <Border Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Right" Margin="0">
-                                <TextBlock Text="Próximamente" Style="{StaticResource PastillaTextoEstilo}"/>
+                                <TextBlock Text="próximamente" Style="{StaticResource PastillaTextoEstilo}"/>
                             </Border>
                         </Grid>
-                        <WrapPanel Margin="0,16,0,0">
+                        <WrapPanel Margin="0,14,0,0">
                             <Border Style="{StaticResource PerfilEstilo}">
-                                <TextBlock Text="Gaming extremo" FontSize="13" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <TextBlock Text="gaming_extremo" Style="{StaticResource PastillaTextoEstilo}"/>
                             </Border>
                             <Border Style="{StaticResource PerfilEstilo}">
-                                <TextBlock Text="Equilibrado" FontSize="13" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <TextBlock Text="equilibrado" Style="{StaticResource PastillaTextoEstilo}"/>
                             </Border>
                             <Border Style="{StaticResource PerfilEstilo}">
-                                <TextBlock Text="Batería" FontSize="13" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <TextBlock Text="batería" Style="{StaticResource PastillaTextoEstilo}"/>
                             </Border>
                         </WrapPanel>
-                        <TextBlock Text="Podrás elegir entre fluidez, consumo y temperatura." FontSize="13" TextWrapping="Wrap"
-                                   Margin="0,14,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
+                        <TextBlock Text="Elegir entre fluidez, consumo y temperatura." Style="{StaticResource ExplicacionEstilo}"
+                                   Margin="0,12,0,0"/>
                     </StackPanel>
                 </Border>
             </Grid>

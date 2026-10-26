@@ -1,0 +1,48 @@
+<!-- Panel "[ LOG ]" tipo terminal: las últimas 8 líneas del Logger en vivo y un cursor "_" morado que parpadea.
+     El parpadeo es la ÚNICA animación de la app: saltos discretos (visible/invisible), sin fundidos. -->
+<UserControl x:Class="OptimizadorPC.Componentes.PanelLog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border Style="{StaticResource TarjetaEstilo}" Padding="0">
+        <StackPanel>
+            <!-- Cabecera -->
+            <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="14,8">
+                <Grid>
+                    <TextBlock Text="[ LOG ]" Style="{StaticResource EtiquetaEstilo}"/>
+                    <TextBlock Text="tail -n 8 · log.txt" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Right"/>
+                </Grid>
+            </Border>
+
+            <StackPanel Margin="14,10,14,12">
+                <!-- Las líneas. Cada una: [hora] NIVEL mensaje -->
+                <ItemsControl x:Name="ListaLineas">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Run = un trozo de texto dentro de la misma línea, cada uno con su color.
+                                 TextTrimming: las líneas largas se cortan con "…"; al pasar el ratón se ven enteras -->
+                            <TextBlock FontFamily="{StaticResource FuenteMono}" FontSize="12" Margin="0,1"
+                                       TextTrimming="CharacterEllipsis" ToolTip="{Binding Mensaje}">
+                                <Run Text="{Binding Hora, Mode=OneWay}" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                <Run Text="{Binding Nivel, Mode=OneWay}" Foreground="{Binding ColorNivel, Mode=OneWay}"/>
+                                <Run Text="{Binding Mensaje, Mode=OneWay}" Foreground="{StaticResource TextoBrush}"/>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock x:Name="TxtVacio" Text="sin entradas todavía" FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                           Foreground="{StaticResource TextoSecundarioBrush}" Visibility="Collapsed"/>
+
+                <!-- Prompt con el cursor que parpadea -->
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <TextBlock Text="&gt; " FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                               Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    <!-- El parpadeo lo arranca PanelLog.xaml.cs al mostrarse y lo para al ocultarse -->
+                    <TextBlock x:Name="CursorLog" Text="_" FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                               FontWeight="Bold" Foreground="{StaticResource AcentoBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

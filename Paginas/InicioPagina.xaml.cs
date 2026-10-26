@@ -25,7 +25,7 @@ namespace OptimizadorPC.Paginas
         {
             InitializeComponent();
 
-            TxtCuantasSeguras.Text = Seguras.Count == 1 ? "1 optimización segura" : $"{Seguras.Count} optimizaciones seguras";
+            TxtCuantasSeguras.Text = Seguras.Count == 1 ? "+ 1 optimización segura" : $"+ {Seguras.Count} optimizaciones seguras";
             monitor.Actualizado += MostrarMuestra;
 
             Loaded += async (s, e) =>
@@ -120,7 +120,7 @@ namespace OptimizadorPC.Paginas
             var vm = new BenchmarkVM(ultimo);
             TxtMejora.Text = vm.TextoMejora;
             // Si empeoró, en naranja: se muestra tal cual, sin maquillar
-            TxtMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ActivoBrush" : "AvisoBrush");
+            TxtMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ExitoBrush" : "AvisoBrush");
 
             double maximo = Math.Max(ultimo.Antes.FpsPromedio, ultimo.Despues.FpsPromedio);
             BarraAntes.Value = 100 * ultimo.Antes.FpsPromedio / maximo;
@@ -158,18 +158,21 @@ namespace OptimizadorPC.Paginas
 
             if (trabajando)
             {
-                TxtBotonGhost.Text = "APLICANDO…";
-                TxtBotonGhostDetalle.Text = "No cierres la app";
+                TxtBotonGhost.Text = "[ APLICANDO... ]";
+                TxtBotonGhostDetalle.Text = "no cierres la app";
                 return;
             }
 
-            // TryFindResource = buscar un color de Colores.xaml por su nombre
-            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "ActivoBrush" : "TextoTenueBrush");
-            TxtEstado.Text = ghostActivo ? "GHOST MODE · ON" : "GHOST MODE · OFF";
-            TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "ActivoBrush" : "TextoSecundarioBrush");
+            // TryFindResource = buscar un color de Colores.xaml por su nombre.
+            // Verde solo para el estado OK ("ON"); apagado, gris
+            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "ExitoBrush" : "TextoSecundarioBrush");
+            TxtEstado.Text = ghostActivo ? "> GHOST_MODE: ON" : "> GHOST_MODE: OFF";
+            TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "ExitoBrush" : "TextoBrush");
 
-            TxtBotonGhost.Text = ghostActivo ? "GHOST MODE ACTIVO" : "ACTIVAR GHOST MODE";
-            TxtBotonGhostDetalle.Text = ghostActivo ? "Clic para desactivar" : "Un clic para optimizar";
+            // Tag="on" hace que el estilo del botón lo rellene de morado (InicioPagina.xaml)
+            BtnGhost.Tag = ghostActivo ? "on" : "off";
+            TxtBotonGhost.Text = ghostActivo ? "[ GHOST MODE: ON ]" : "[ ACTIVAR GHOST MODE ]";
+            TxtBotonGhostDetalle.Text = ghostActivo ? "clic para desactivar" : "un clic · pide confirmación";
         }
 
         // Se aplicó o deshizo algo desde otra parte (Optimizaciones, "Deshacer todo")
