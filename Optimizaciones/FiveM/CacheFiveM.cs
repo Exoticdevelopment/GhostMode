@@ -1,16 +1,15 @@
 using System.IO;
-using OptimizadorPC.Core;   // Logger
+using OptimizadorPC.Core;       // Logger
+using OptimizadorPC.Limpieza;   // BorradoSeguro, ResultadoLimpieza
 
 namespace OptimizadorPC.Optimizaciones.FiveM
 {
-    // Lo que devuelve la limpieza: cuánto se liberó y cuántos archivos no se pudieron borrar (en uso)
-    public record ResultadoLimpieza(long BytesLiberados, int ArchivosEnUso);
-
     // La caché de FiveM: archivos descargados de los servidores (mapas, coches, scripts...).
     // Con el tiempo ocupa varios GB y, si se corrompe, causa tirones o cierres. FiveM la vuelve a descargar.
     //
     // NO es una IOptimizacion: borrar no se puede "revertir", es una limpieza puntual.
     // Nunca se tocan "cache\game" (archivos del juego, pesan mucho) ni "game-storage".
+    // El borrado en sí (sin seguir enlaces, saltando lo que está en uso) lo hace Limpieza/BorradoSeguro.
     public static class CacheFiveM
     {
         // Carpetas dentro de FiveM.app\data que se limpian enteras
@@ -19,21 +18,10 @@ namespace OptimizadorPC.Optimizaciones.FiveM
         // Dentro de "data\cache" se limpia todo MENOS estas subcarpetas
         private static readonly string[] Conservar = { "game" };
 
-        // Opciones para recorrer carpetas:
-        // - RecurseSubdirectories: entrar también en las subcarpetas
-        // - IgnoreInaccessible: saltar lo que no se puede leer en vez de fallar
-        // - AttributesToSkip ReparsePoint: NO entrar en "accesos directos" de carpeta (junctions/enlaces),
-        //   que podrían apuntar fuera de FiveM. Así nunca se borra nada fuera de la caché.
-        private static readonly EnumerationOptions Recorrido = new()
-        {
-            RecurseSubdirectories = true,
-            IgnoreInaccessible = true,
-            AttributesToSkip = FileAttributes.ReparsePoint
-        };
-
-        // Tamaño total en bytes de lo que se limpiaría
+        // Tamaño total en bytes de lo que se limpiaría.
+        // TimeSpan.Zero = cuenta todo, sin importar cuándo se modificó (FiveM está cerrado al limpiar)
         public static long Medir(string exe) =>
-            Objetivos(exe).Sum(TamanoCarpeta);
+            Objetivos(exe).Sum(c => BorradoSeguro.Medir(c, TimeSpan.Zero));
 
         public static ResultadoLimpieza Limpiar(string exe)
         {
@@ -43,30 +31,12 @@ namespace OptimizadorPC.Optimizaciones.FiveM
             }
 
             Logger.Info("Limpiando la caché de FiveM");
-            long liberados = 0;
-            int enUso = 0;
-
+            var total = ResultadoLimpieza.Vacio;
             foreach (string carpeta in Objetivos(exe))
             {
-                foreach (string archivo in Directory.EnumerateFiles(carpeta, "*", Recorrido))
-                {
-                    try
-                    {
-                        long tamano = new FileInfo(archivo).Length;
-                        File.SetAttributes(archivo, FileAttributes.Normal);   // por si es de solo lectura
-                        File.Delete(archivo);
-                        liberados += tamano;
-                    }
-                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                    {
-                        enUso++;   // abierto por otro programa: se deja y seguimos
-                    }
-                }
-                BorrarCarpetasVacias(carpeta);
+                total += BorradoSeguro.Borrar(carpeta, TimeSpan.Zero);
             }
-
-            Logger.Info($"Caché de FiveM: {liberados / 1048576} MB liberados, {enUso} archivos en uso sin borrar");
-            return new ResultadoLimpieza(liberados, enUso);
+            return total;
         }
 
         // Las carpetas concretas que se limpian (solo las que existen)
@@ -80,46 +50,9 @@ namespace OptimizadorPC.Optimizaciones.FiveM
             {
                 // Archivos sueltos de "cache" no hay; sus subcarpetas sí, menos las que se conservan
                 lista.AddRange(Directory.GetDirectories(cache)
-                    .Where(d => !Conservar.Contains(Path.GetFileName(d), StringComparer.OrdinalIgnoreCase))
-                    .Where(d => !new DirectoryInfo(d).Attributes.HasFlag(FileAttributes.ReparsePoint)));
+                    .Where(d => !Conservar.Contains(Path.GetFileName(d), StringComparer.OrdinalIgnoreCase)));
             }
             return lista;
-        }
-
-        private static long TamanoCarpeta(string carpeta)
-        {
-            long total = 0;
-            foreach (string archivo in Directory.EnumerateFiles(carpeta, "*", Recorrido))
-            {
-                try
-                {
-                    total += new FileInfo(archivo).Length;
-                }
-                catch (IOException)
-                {
-                    // Se borró mientras medíamos: no cuenta
-                }
-            }
-            return total;
-        }
-
-        // Borra las subcarpetas que quedaron vacías, de la más profunda a la menos.
-        // Directory.Delete sin "recursive" solo borra carpetas vacías: si queda algo dentro, falla y se deja.
-        private static void BorrarCarpetasVacias(string carpeta)
-        {
-            var subcarpetas = Directory.EnumerateDirectories(carpeta, "*", Recorrido)
-                .OrderByDescending(d => d.Length);   // las rutas más largas = las más profundas
-            foreach (string sub in subcarpetas)
-            {
-                try
-                {
-                    Directory.Delete(sub);
-                }
-                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
-                {
-                    // No está vacía (algo en uso): se deja
-                }
-            }
         }
     }
 }

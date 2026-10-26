@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using OptimizadorPC.Componentes;
 using OptimizadorPC.Core;
+using OptimizadorPC.Limpieza;   // ResultadoLimpieza
 using OptimizadorPC.ModelosVista;
 using OptimizadorPC.Optimizaciones.FiveM;
 using OptimizadorPC.Servicios;
