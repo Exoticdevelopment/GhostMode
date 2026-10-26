@@ -121,6 +121,37 @@
         <Setter Property="PressedBackground" Value="{StaticResource BordeHoverBrush}"/>
     </Style>
 
+    <!-- ===== Enlace: texto mono gris que se pone morado al pasar el ratón =====
+         Es un Button (se puede usar con Tab y Enter) dibujado como texto. La URL va en Tag
+         y el Click la abre con Servicios/Enlaces.cs -->
+
+    <Style x:Key="EnlaceEstilo" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <!-- Fondo transparente: así toda la línea recibe el ratón, no solo las letras -->
+                    <Border Background="Transparent">
+                        <TextBlock x:Name="Texto" Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Texto" Property="Foreground" Value="{StaticResource AcentoBrilloBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Texto" Property="TextDecorations" Value="Underline"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===== Barra de recurso: 2 px, pista gris oscura, relleno claro ===== -->
 
     <Style x:Key="BarraRecursoEstilo" TargetType="ProgressBar">

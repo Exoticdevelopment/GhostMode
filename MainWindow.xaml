@@ -25,7 +25,16 @@
              TitleBar dibuja su propio ícono, por eso se lo damos aquí además de en Icon="..." de la ventana -->
         <Border Grid.Row="0" Background="{StaticResource TarjetaBrush}"
                 BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
+            <!-- Header reemplaza al texto del título: "ghost_mode" + la firma, muy tenue -->
             <ui:TitleBar Title="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12">
+                <ui:TitleBar.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <TextBlock Text="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                                   Foreground="{StaticResource TextoBrush}"/>
+                        <TextBlock Text="by Exoticdevelopment" FontFamily="{StaticResource FuenteMono}" FontSize="10"
+                                   Margin="10,1,0,0" Opacity="0.5" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    </StackPanel>
+                </ui:TitleBar.Header>
                 <ui:TitleBar.Icon>
                     <ui:ImageIcon Source="pack://application:,,,/Assets/ghostmode.ico" Width="16" Height="16"/>
                 </ui:TitleBar.Icon>
@@ -91,6 +100,11 @@
                                Margin="4,0,0,4"/>
                     <TextBlock x:Name="TxtHardware" Text="leyendo hardware..." Style="{StaticResource EtiquetaEstilo}"
                                TextWrapping="Wrap" Margin="4,0,0,0"/>
+
+                    <!-- Firma del autor: discreta; morada al pasar el ratón, abre su GitHub -->
+                    <Button Content="&gt; dev: @Exoticdevelopment" Tag="https://github.com/Exoticdevelopment"
+                            Style="{StaticResource EnlaceEstilo}" Margin="4,10,0,0" Click="Enlace_Click"
+                            ToolTip="github.com/Exoticdevelopment"/>
                 </StackPanel>
             </ui:NavigationView.PaneFooter>
 

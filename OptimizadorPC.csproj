@@ -9,6 +9,12 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- Incrusta app.manifest en el .exe (pide permisos de administrador) -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Metadatos del .exe: se ven en Propiedades > Detalles de Windows -->
+    <Product>Ghost Mode</Product>
+    <Authors>Exoticdevelopment</Authors>
+    <Company>Exoticdevelopment</Company>
+    <Copyright>© 2026 Miguel Ángel González Zuluaga — github.com/Exoticdevelopment</Copyright>
+
     <!-- Ícono del .exe (Explorador, barra de tareas, Alt+Tab) -->
     <ApplicationIcon>Assets\ghostmode.ico</ApplicationIcon>
 

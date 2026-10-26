@@ -94,6 +94,15 @@ namespace OptimizadorPC
             TxtHardware.Text = partes.Count > 0 ? string.Join(" · ", partes) : "hardware no disponible";
         }
 
+        // Enlaces del pie (la URL va en el Tag del botón)
+        private void Enlace_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement { Tag: string url })
+            {
+                Enlaces.Abrir(url);
+            }
+        }
+
         private async void BtnDeshacerTodo_Click(object sender, RoutedEventArgs e)
         {
             var confirmar = new MessageBoxUi
