@@ -22,6 +22,9 @@ namespace OptimizadorPC.Core
         // El aviso "Ghost Mode sigue en la bandeja" sale una sola vez
         public bool AvisoBandejaMostrado { get; set; }
 
+        // Al abrir la ventana, ~1 segundo con lo que de verdad cargó la app ("[ ok ] nvml"...). Se apaga en Ajustes
+        public bool SecuenciaArranque { get; set; } = true;
+
         public static AjustesApp Cargar(string? archivo = null)
         {
             archivo ??= ArchivoPorDefecto;

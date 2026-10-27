@@ -15,7 +15,7 @@
                  WindowCornerPreference="DoNotRound"
                  Background="{StaticResource FondoBrush}">
 
-    <Grid>
+    <Grid x:Name="Raiz">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>   <!-- barra de título -->
             <RowDefinition Height="*"/>      <!-- todo lo demás -->

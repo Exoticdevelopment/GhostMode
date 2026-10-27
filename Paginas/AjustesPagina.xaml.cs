@@ -29,6 +29,7 @@ namespace OptimizadorPC.Paginas
             {
                 MostrarAtajo();
                 MostrarMpo();
+                IntSecuencia.IsChecked = AjustesApp.Actual.SecuenciaArranque;
                 // Lo que manda es la tarea del Programador de tareas, no un ajuste guardado
                 IntInicioWindows.IsChecked = await Task.Run(() => InicioAutomatico.Existe());
             };
@@ -119,6 +120,15 @@ namespace OptimizadorPC.Paginas
         }
 
         private void BtnBienvenida_Click(object sender, RoutedEventArgs e) => Ventana?.MostrarBienvenida();
+
+        // ===== Secuencia de arranque =====
+
+        private void IntSecuencia_Click(object sender, RoutedEventArgs e)
+        {
+            AjustesApp.Actual.SecuenciaArranque = IntSecuencia.IsChecked == true;
+            // Si no se pudo guardar, el interruptor lo dice (y en esta sesión vale lo elegido)
+            IntSecuencia.Estado = AjustesApp.Actual.Guardar() ? EstadoInterruptor.Normal : EstadoInterruptor.Error;
+        }
 
         // ===== Solución de problemas: MPO =====
 

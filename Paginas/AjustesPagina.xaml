@@ -75,6 +75,23 @@
                                        Style="{StaticResource BotonSecundarioEstilo}" Click="BtnBienvenida_Click"/>
                         </Grid>
                     </Border>
+
+                    <!-- Secuencia de arranque -->
+                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="16,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,16,0">
+                                <TextBlock Text="Secuencia de arranque" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
+                                <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
+                                           Text="Al abrir Ghost Mode, durante un segundo, muestra lo que se cargó de verdad (NVML, NVAPI, estado.json, FiveM). No retrasa la carga y se salta con un clic o una tecla."/>
+                            </StackPanel>
+                            <componentes:InterruptorEstado x:Name="IntSecuencia" Grid.Column="1" VerticalAlignment="Center"
+                                                           Click="IntSecuencia_Click"/>
+                        </Grid>
+                    </Border>
                 </StackPanel>
             </HeaderedContentControl>
 

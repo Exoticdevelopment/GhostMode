@@ -15,6 +15,11 @@ namespace OptimizadorPC.Core
         //   clave interna = qué guardamos ("guid") → valor original
         private static Dictionary<string, Dictionary<string, string?>> datos = Cargar();
 
+        // Al iniciar: ¿existía estado.json? ¿estaba dañado? (lo muestra la secuencia de arranque)
+        public static bool ArchivoExiste => File.Exists(Archivo);
+        public static bool ArchivoDanado { get; private set; }
+        public static int ModulosGuardados => datos.Count;
+
         // Guarda el valor original SOLO si no se había guardado antes.
         // ¿Por qué? Si aplicas el modo gaming dos veces seguidas, la segunda vez
         // el "original" ya sería el valor optimizado, y perderíamos el verdadero.
@@ -104,6 +109,7 @@ namespace OptimizadorPC.Core
             {
                 // Si el archivo está dañado, no tumbamos la app: lo anotamos y empezamos vacío
                 Logger.Error("No se pudo leer estado.json", ex);
+                ArchivoDanado = true;
             }
             return new Dictionary<string, Dictionary<string, string?>>();
         }

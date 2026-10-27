@@ -1,0 +1,25 @@
+<!-- Secuencia de arranque: pantalla negra que escribe, línea a línea, lo que la app cargó DE VERDAD
+     (Servicios/ComprobacionesArranque.cs). Va ENCIMA de la ventana mientras la carga real sigue debajo:
+     no retrasa nada. Dura ~1 segundo; un clic o una tecla la saltan. Se apaga en Ajustes.
+     Colores de la marca: [ ok ] verde (resultado OK), [ - - ] (no disponible) gris, [fail] rojo -->
+<UserControl x:Class="OptimizadorPC.Componentes.SecuenciaArranque"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource FondoBrush}" Cursor="Arrow">
+
+    <Grid Margin="36,28,36,24">
+        <StackPanel>
+            <!-- La orden que "lanzó" el arranque. El usuario lo pone el código -->
+            <TextBlock x:Name="TxtOrden" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
+                       Foreground="{StaticResource TextoSecundarioBrush}" Margin="0,0,0,10"/>
+            <!-- Las líneas se añaden desde el código según llegan los resultados -->
+            <StackPanel x:Name="Lineas"/>
+            <TextBlock x:Name="CursorArranque" Text="_" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
+                       FontWeight="Bold" Foreground="{StaticResource AcentoBrush}" Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <TextBlock Text="clic o cualquier tecla para saltar" VerticalAlignment="Bottom"
+                   FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoEtiqueta}"
+                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+    </Grid>
+</UserControl>

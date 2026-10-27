@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media.Imaging;   // BitmapDecoder: leer las imágenes del .ico
+using OptimizadorPC.Componentes;   // SecuenciaArranque
 using OptimizadorPC.Core;
 using OptimizadorPC.Paginas;
 using OptimizadorPC.Servicios;
@@ -13,12 +14,26 @@ namespace OptimizadorPC
     // La ventana principal ahora hereda de FluentWindow (de WPF-UI), no de Window
     public partial class MainWindow : FluentWindow
     {
+        // La secuencia de arranque sale solo con la primera ventana de cada ejecución,
+        // no cada vez que se vuelve a abrir desde la bandeja
+        private static bool arranqueMostrado = false;
+        private SecuenciaArranque? arranque;
+
         public MainWindow()
         {
             InitializeComponent();
 
             // Decirle a Avisos dónde mostrar los toasts
             Avisos.Presentador = PresentadorAvisos;
+
+            if (!arranqueMostrado)
+            {
+                arranqueMostrado = true;
+                if (AjustesApp.Actual.SecuenciaArranque)
+                {
+                    MostrarArranque();
+                }
+            }
 
             Logo.Source = ImagenDelIcono(68);   // 34 px en pantalla, nítido aun con escalado al 200 %
 
@@ -36,7 +51,18 @@ namespace OptimizadorPC
             };
 
             // La bienvenida, cuando la ventana ya se ve (en Loaded aún no está en pantalla y quedaría detrás)
-            ContentRendered += (s, e) => MostrarBienvenidaSiHaceFalta();
+            // y, si está la secuencia de arranque, cuando esta termine
+            ContentRendered += (s, e) =>
+            {
+                if (arranque != null)
+                {
+                    arranque.Terminada += MostrarBienvenidaSiHaceFalta;
+                }
+                else
+                {
+                    MostrarBienvenidaSiHaceFalta();
+                }
+            };
 
             // Cada vez que se aplique o revierta algo (desde cualquier pantalla), refrescar el pie.
             // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
@@ -46,6 +72,24 @@ namespace OptimizadorPC
                 AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
                 Avisos.Presentador = null;   // sin ventana, los avisos salen desde la bandeja
             };
+        }
+
+        // Encima de todo menos la barra de título (la ventana se puede mover y cerrar mientras tanto).
+        // Debajo, la carga real sigue igual: la página de Inicio ya se está construyendo
+        private void MostrarArranque()
+        {
+            var secuencia = new SecuenciaArranque();
+            arranque = secuencia;
+            System.Windows.Controls.Grid.SetRow(secuencia, 1);   // (WPF-UI también tiene un "Grid": este es el de WPF)
+            Raiz.Children.Add(secuencia);   // el último hijo del Grid se dibuja encima
+            PreviewKeyDown += secuencia.Saltar;
+            secuencia.Terminada += () =>
+            {
+                PreviewKeyDown -= secuencia.Saltar;
+                Raiz.Children.Remove(secuencia);
+                arranque = null;
+            };
+            secuencia.Empezar();
         }
 
         private void MostrarBienvenidaSiHaceFalta()
