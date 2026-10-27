@@ -25,14 +25,16 @@
              TitleBar dibuja su propio ícono, por eso se lo damos aquí además de en Icon="..." de la ventana -->
         <Border Grid.Row="0" Background="{StaticResource TarjetaBrush}"
                 BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1">
-            <!-- Header reemplaza al texto del título: "ghost_mode" + la firma, muy tenue -->
+            <!-- Header reemplaza al texto del título: "ghost_mode" + la firma, discreta pero legible
+                 (antes tenía Opacity 0.5 y quedaba en ~2:1 de contraste: no se leía) -->
             <ui:TitleBar Title="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12">
                 <ui:TitleBar.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
                         <TextBlock Text="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12"
                                    Foreground="{StaticResource TextoBrush}"/>
-                        <TextBlock Text="by Exoticdevelopment" FontFamily="{StaticResource FuenteMono}" FontSize="10"
-                                   Margin="10,1,0,0" Opacity="0.5" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        <TextBlock Text="by Exoticdevelopment" FontFamily="{StaticResource FuenteMono}"
+                                   FontSize="{StaticResource TamanoEtiqueta}" Margin="10,1,0,0"
+                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
                     </StackPanel>
                 </ui:TitleBar.Header>
                 <ui:TitleBar.Icon>
@@ -67,45 +69,45 @@
                     <!-- La imagen la pone MainWindow.xaml.cs: elige el tamaño nítido del .ico -->
                     <Image x:Name="Logo" Width="34" Height="34" RenderOptions.BitmapScalingMode="HighQuality"/>
                     <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="GHOST_MODE" FontFamily="{StaticResource FuenteMono}" FontSize="14"
+                        <!-- En minúsculas como los ítems del menú: la barra se lee como una sola "salida de consola" -->
+                        <TextBlock Text="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoDato}"
                                    FontWeight="Bold" Foreground="{StaticResource TextoBrush}"/>
-                        <TextBlock Text="optimizador · windows" FontFamily="{StaticResource FuenteMono}" FontSize="10"
-                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        <TextBlock Text="optimizador de windows" FontFamily="{StaticResource FuenteMono}"
+                                   FontSize="{StaticResource TamanoEtiqueta}" Foreground="{StaticResource TextoSecundarioBrush}"/>
                     </StackPanel>
                 </StackPanel>
             </ui:NavigationView.PaneHeader>
 
-            <!-- Pie de la barra: estado de los cambios, Deshacer todo y el hardware del equipo.
-                 Los textos se rellenan desde MainWindow.xaml.cs con datos reales -->
+            <!-- Pie de la barra: estado de los cambios, Deshacer todo y el panel "host" con el hardware.
+                 Los textos se rellenan desde MainWindow.xaml.cs con datos reales.
+                 (La firma del autor ya está en la barra de título y en Ajustes: aquí no se repite) -->
             <ui:NavigationView.PaneFooter>
                 <StackPanel Margin="14,0,14,14">
-                    <TextBlock Text="SYS.STATUS" Style="{StaticResource EtiquetaEstilo}" Margin="4,0,0,6"/>
-                    <StackPanel Orientation="Horizontal" Margin="4,0,0,4">
-                        <ui:SymbolIcon x:Name="IconoCambios" Symbol="CheckmarkCircle20" FontSize="14"
-                                       Foreground="{StaticResource ExitoBrush}" Margin="0,0,6,0"/>
-                        <TextBlock x:Name="TxtCambios" Style="{StaticResource EtiquetaEstilo}" FontSize="12"
-                                   VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,2">
+                        <!-- Cuadradito morado = hay cambios de Ghost Mode puestos en Windows -->
+                        <Rectangle x:Name="IconoCambios" Width="6" Height="6" Margin="0,0,8,0" VerticalAlignment="Center"
+                                   Fill="{StaticResource AcentoBrush}"/>
+                        <TextBlock x:Name="TxtCambios" Style="{StaticResource EtiquetaEstilo}" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Appearance="Transparent" = botón sin fondo, como un enlace.
                          "__" = un "_" visible: con uno solo, WPF lo toma como tecla de acceso y no lo muestra -->
                     <ui:Button x:Name="BtnDeshacerTodo" Content="[ deshacer__todo ]" Appearance="Transparent"
-                               FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                               FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
                                Padding="4,6" Click="BtnDeshacerTodo_Click"/>
 
-                    <!-- Línea separadora -->
-                    <Border Height="1" Background="{StaticResource BordeBrush}" Margin="0,10"/>
-
-                    <TextBlock x:Name="TxtEquipo" Text="HOST" Style="{StaticResource EtiquetaEstilo}" FontSize="10"
-                               Margin="4,0,0,4"/>
-                    <TextBlock x:Name="TxtHardware" Text="leyendo hardware..." Style="{StaticResource EtiquetaEstilo}"
-                               TextWrapping="Wrap" Margin="4,0,0,0"/>
-
-                    <!-- Firma del autor: discreta; morada al pasar el ratón, abre su GitHub -->
-                    <Button Content="&gt; dev: @Exoticdevelopment" Tag="https://github.com/Exoticdevelopment"
-                            Style="{StaticResource EnlaceEstilo}" Margin="4,10,0,0" Click="Enlace_Click"
-                            ToolTip="github.com/Exoticdevelopment"/>
+                    <!-- Panel "host": Windows y hardware, una línea por dato como una salida de consola.
+                         Background = el gris de la barra lateral, para que el título corte bien la línea del borde -->
+                    <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="host" Margin="0,10,0,0"
+                                            Background="{StaticResource TarjetaBrush}" Padding="10,14,10,10">
+                        <StackPanel>
+                            <TextBlock x:Name="TxtEquipo" Text="windows" Style="{StaticResource EtiquetaEstilo}"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock x:Name="TxtHardware" Text="leyendo hardware..." Style="{StaticResource EtiquetaEstilo}"
+                                       TextWrapping="Wrap" Margin="0,4,0,0" LineHeight="16"/>
+                        </StackPanel>
+                    </HeaderedContentControl>
                 </StackPanel>
             </ui:NavigationView.PaneFooter>
 

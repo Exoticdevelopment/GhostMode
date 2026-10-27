@@ -124,29 +124,20 @@ namespace OptimizadorPC
         {
             DatosEquipo equipo = await InfoSistema.ObtenerAsync();
 
-            TxtEquipo.Text = $"HOST · {equipo.Windows.ToUpper()}";
+            TxtEquipo.Text = equipo.Windows.ToLower();
 
             // Solo mostramos lo que se pudo leer: nada de datos inventados
             var partes = new List<string>();
             if (equipo.RamGb != null)
             {
-                partes.Add($"RAM {equipo.RamGb} GB");
+                partes.Add($"ram {equipo.RamGb} GB");
             }
             if (equipo.Nucleos != null)
             {
-                partes.Add($"CPU {equipo.Nucleos} núcleos");
+                partes.Add($"cpu {equipo.Nucleos} núcleos");
             }
-            // string.Join = unir las partes con " · " entre medio
-            TxtHardware.Text = partes.Count > 0 ? string.Join(" · ", partes) : "hardware no disponible";
-        }
-
-        // Enlaces del pie (la URL va en el Tag del botón)
-        private void Enlace_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is FrameworkElement { Tag: string url })
-            {
-                Enlaces.Abrir(url);
-            }
+            // string.Join = unir las partes; "\n" = salto de línea: un dato por línea, como en una consola
+            TxtHardware.Text = partes.Count > 0 ? string.Join("\n", partes) : "hardware no disponible";
         }
 
         private async void BtnDeshacerTodo_Click(object sender, RoutedEventArgs e) => await DeshacerTodoAsync();
