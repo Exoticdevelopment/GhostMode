@@ -89,7 +89,8 @@
 
     <Style x:Key="PanelEstilo" TargetType="HeaderedContentControl">
         <Setter Property="Background" Value="{StaticResource FondoBrush}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BordeBrush}"/>
+        <!-- Dynamic: gris con Ghost Mode apagado, morado encendido (Servicios/TemaGhost.cs) -->
+        <Setter Property="BorderBrush" Value="{DynamicResource MarcoBrush}"/>
         <Setter Property="Padding" Value="16,18,16,14"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="IsTabStop" Value="False"/>

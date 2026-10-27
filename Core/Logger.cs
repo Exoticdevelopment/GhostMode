@@ -3,7 +3,7 @@ using System.IO;
 
 namespace OptimizadorPC.Core
 {
-    // Una línea del log ya escrita: hora, nivel ("INFO", "AVISO", "ERROR") y mensaje
+    // Una línea del log ya escrita: hora, nivel ("INFO", "OK", "AVISO", "ERROR") y mensaje
     public record LineaLog(DateTime Hora, string Nivel, string Mensaje);
 
     // static = no hace falta crearla con "new", se usa directo: Logger.Info("...")
@@ -46,8 +46,11 @@ namespace OptimizadorPC.Core
             }
         }
 
-        // Los tres tipos de mensaje. Todos usan el mismo método Escribir()
+        // Los tipos de mensaje. Todos usan el mismo método Escribir()
         public static void Info(string mensaje) => Escribir("INFO", mensaje);
+
+        // Un cambio que terminó bien ("aplicada: Plan de energía"). El panel de log lo pinta en verde
+        public static void Ok(string mensaje) => Escribir("OK", mensaje);
 
         public static void Aviso(string mensaje) => Escribir("AVISO", mensaje);
 

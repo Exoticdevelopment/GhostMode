@@ -30,7 +30,8 @@
             <ui:TitleBar Title="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12">
                 <ui:TitleBar.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
-                        <TextBlock Text="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12"
+                        <!-- "ghost_mode" apagado; "ghost_mode: ACTIVE" en morado encendido (MainWindow.xaml.cs) -->
+                        <TextBlock x:Name="TxtTitulo" Text="ghost_mode" FontFamily="{StaticResource FuenteMono}" FontSize="12"
                                    Foreground="{StaticResource TextoBrush}"/>
                         <TextBlock Text="by Exoticdevelopment" FontFamily="{StaticResource FuenteMono}"
                                    FontSize="{StaticResource TamanoEtiqueta}" Margin="10,1,0,0"

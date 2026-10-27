@@ -91,7 +91,8 @@ namespace OptimizadorPC.Servicios
             }
         }
 
-        // Aplica una a una; si una falla, la anota y sigue con las demás. Devuelve las que fallaron
+        // Aplica una a una; si una falla, la anota y sigue con las demás. Devuelve las que fallaron.
+        // Cada paso deja su línea en el log según ocurre: el panel de log lo muestra en vivo
         private static async Task<List<IOptimizacion>> AplicarListaAsync(IEnumerable<IOptimizacion> lista)
         {
             var fallidas = new List<IOptimizacion>();
@@ -102,10 +103,14 @@ namespace OptimizadorPC.Servicios
                     // Task.Run = trabajar en segundo plano para que la ventana no se congele
                     await Task.Run(() =>
                     {
-                        if (!optimizacion.EstaActiva())   // ya aplicada: nada que hacer
+                        if (optimizacion.EstaActiva())   // ya aplicada: nada que hacer
                         {
-                            optimizacion.Aplicar();
+                            Logger.Info($"Ya estaba activa: {optimizacion.Nombre}");
+                            return;
                         }
+                        Logger.Info($"Aplicando {optimizacion.Nombre}...");
+                        optimizacion.Aplicar();
+                        Logger.Ok($"Aplicada: {optimizacion.Nombre}");
                     });
                 }
                 catch (Exception ex)
@@ -133,7 +138,9 @@ namespace OptimizadorPC.Servicios
 
                     try
                     {
+                        Logger.Info($"Revirtiendo {optimizacion.Nombre}...");
                         await Task.Run(optimizacion.Revertir);
+                        Logger.Ok($"Revertida: {optimizacion.Nombre}");
                     }
                     catch (Exception ex)
                     {

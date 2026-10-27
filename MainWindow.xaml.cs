@@ -47,6 +47,8 @@ namespace OptimizadorPC
                 Navegacion.Navigate(typeof(InicioPagina));   // empezar en Inicio
                 MarcarSeleccion();   // por si la primera navegación no lanza SelectionChanged
                 ActualizarPie();
+                MostrarTitulo();
+                LeerEstadoGhost();
                 await MostrarHardwareAsync();
             };
 
@@ -67,9 +69,14 @@ namespace OptimizadorPC
             // Cada vez que se aplique o revierta algo (desde cualquier pantalla), refrescar el pie.
             // Al cerrar la ventana nos "desuscribimos" para no dejar el aviso colgado.
             AplicadorOptimizaciones.EstadoCambiado += ActualizarPie;
+            // Y el aspecto de Ghost Mode (banner, bordes, barra de título) según lo que de verdad hay en Windows
+            AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstadoGhost;
+            TemaGhost.Cambiado += MostrarTitulo;
             Closed += (s, e) =>
             {
                 AplicadorOptimizaciones.EstadoCambiado -= ActualizarPie;
+                AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstadoGhost;
+                TemaGhost.Cambiado -= MostrarTitulo;
                 Avisos.Presentador = null;   // sin ventana, los avisos salen desde la bandeja
             };
         }
@@ -162,6 +169,29 @@ namespace OptimizadorPC
             TxtCambios.Text = hayCambios ? "cambios_guardados" : "sin_cambios";
             IconoCambios.Visibility = hayCambios ? Visibility.Visible : Visibility.Collapsed;
             BtnDeshacerTodo.IsEnabled = hayCambios;
+        }
+
+        // ===== Ghost Mode encendido / apagado =====
+
+        private int lecturaGhost = 0;   // si llegan varios avisos seguidos, solo cuenta la última lectura
+
+        // El aviso puede llegar desde un hilo en segundo plano (Modo Gaming): se pasa al de la interfaz
+        private void AlCambiarEstadoGhost() => Dispatcher.BeginInvoke(LeerEstadoGhost);
+
+        private async void LeerEstadoGhost()
+        {
+            int esta = ++lecturaGhost;
+            bool activo = await Task.Run(InterruptorGhost.EstaActivo);
+            if (esta == lecturaGhost)
+            {
+                TemaGhost.Aplicar(activo);
+            }
+        }
+
+        private void MostrarTitulo()
+        {
+            TxtTitulo.Text = TemaGhost.Activo ? "ghost_mode: ACTIVE" : "ghost_mode";
+            TxtTitulo.SetResourceReference(ForegroundProperty, TemaGhost.Activo ? "AcentoBrilloBrush" : "TextoBrush");
         }
 
         private async Task MostrarHardwareAsync()

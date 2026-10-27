@@ -75,6 +75,9 @@ namespace OptimizadorPC
             // Si no, usaría el color de acento que el usuario tenga en Windows.
             ApplicationAccentColorManager.Apply(Color.FromRgb(0x8B, 0x5C, 0xF6), ApplicationTheme.Dark);
 
+            // Los colores que cambian con Ghost Mode encendido/apagado (banner y bordes de los paneles)
+            TemaGhost.Registrar(this);
+
             // Una sola copia de Ghost Mode a la vez (dos vigilando juegos y pausando apps se pisarían).
             // Si ya hay una abierta (p. ej. en la bandeja), se le pide que se muestre y esta se cierra
             instanciaUnica = new Mutex(true, @"Local\GhostMode-Exoticdevelopment", out bool soyLaPrimera);

@@ -1,11 +1,11 @@
 <!-- Banner de Inicio: "GHOST" en arte ASCII (estilo ANSI Shadow) con "mode" pequeño al lado.
-     Gris #2A2A2A con Ghost Mode apagado y morado #8B5CF6 encendido (el color lo pone quien lo usa con Foreground).
+     Gris #2A2A2A con Ghost Mode apagado y morado #8B5CF6 encendido: BannerBrush, que anima Servicios/TemaGhost.cs.
      Dos versiones: la grande y una compacta de 2 líneas. BannerGhost.xaml.cs elige cuál cabe en el ancho disponible.
      Es texto puro: cero imágenes, cero efectos. -->
 <UserControl x:Class="OptimizadorPC.Componentes.BannerGhost"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Foreground="{StaticResource BannerApagadoBrush}" Focusable="False" IsTabStop="False">
+             Foreground="{DynamicResource BannerBrush}" Focusable="False" IsTabStop="False">
 
     <UserControl.Resources>
         <!-- LineHeight = tamaño de letra: los bloques █ de una línea tocan los de la siguiente y la palabra

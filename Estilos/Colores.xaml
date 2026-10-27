@@ -44,6 +44,11 @@
     <SolidColorBrush x:Key="AcentoBrilloBrush" Color="{StaticResource AcentoBrilloColor}"/>
     <SolidColorBrush x:Key="AcentoFondoBrush" Color="{StaticResource AcentoFondoColor}"/>
     <SolidColorBrush x:Key="BannerApagadoBrush" Color="{StaticResource BannerApagadoColor}"/>
+
+    <!-- Los que cambian con Ghost Mode (gris apagado, morado encendido). Se usan SIEMPRE con {DynamicResource}:
+         Servicios/TemaGhost.cs los reemplaza al iniciar la app por pinceles que anima. Estos son el valor apagado -->
+    <SolidColorBrush x:Key="MarcoBrush" Color="{StaticResource BordeColor}"/>    <!-- borde de los paneles -->
+    <SolidColorBrush x:Key="BannerBrush" Color="{StaticResource BannerApagadoColor}"/>
     <SolidColorBrush x:Key="ExitoBrush" Color="{StaticResource ExitoColor}"/>
     <SolidColorBrush x:Key="AvisoBrush" Color="{StaticResource AvisoColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>

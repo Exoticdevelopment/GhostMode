@@ -53,11 +53,12 @@ namespace OptimizadorPC.Componentes
 
         private void Agregar(LineaLog linea)
         {
-            // Cada nivel con su color: INFO gris, AVISO ámbar, ERROR rojo
+            // Cada nivel con su color: INFO gris, OK verde, AVISO ámbar, ERROR rojo
             string color = linea.Nivel switch
             {
                 "ERROR" => "ErrorBrush",
                 "AVISO" => "AvisoBrush",
+                "OK" => "ExitoBrush",
                 _ => "TextoSecundarioBrush"
             };
             // PadRight(6) = rellenar con espacios hasta 6 letras: los mensajes quedan alineados
