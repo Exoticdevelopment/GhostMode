@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lo usa siempre "dotnet test" (RunSettingsFilePath en el .csproj).
+     Cada ejecución deja en TestResults\ un informe .trx con fecha y hora: el resultado de cada prueba y, de las
+     que fallan, el error y la traza. Junto a Infra\Bitacora.cs (bitacora-*.log, mismo sitio) sirve para cazar
+     una prueba intermitente aunque solo falle una vez entre muchas -->
+<RunSettings>
+  <RunConfiguration>
+    <!-- Relativo a este archivo: tests\OptimizadorPC.Pruebas\TestResults (ignorado por git) -->
+    <ResultsDirectory>.\TestResults</ResultsDirectory>
+  </RunConfiguration>
+  <LoggerRunSettings>
+    <Loggers>
+      <!-- LogFilePrefix = un archivo nuevo por ejecución (pruebas_<fecha y hora>.trx), sin pisar los anteriores -->
+      <Logger friendlyName="trx">
+        <Configuration>
+          <LogFilePrefix>pruebas</LogFilePrefix>
+        </Configuration>
+      </Logger>
+    </Loggers>
+  </LoggerRunSettings>
+</RunSettings>

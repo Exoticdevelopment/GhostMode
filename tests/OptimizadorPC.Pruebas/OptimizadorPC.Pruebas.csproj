@@ -9,6 +9,8 @@
     <IsPackable>false</IsPackable>
     <!-- MonitorRecursos usa DispatcherTimer (WPF) -->
     <UseWPF>true</UseWPF>
+    <!-- Informe .trx de cada ejecución en TestResults\ (ver el archivo) -->
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\pruebas.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>
