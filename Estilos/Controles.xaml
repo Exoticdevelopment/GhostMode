@@ -80,6 +80,100 @@
         <Setter Property="Padding" Value="16,14"/>
     </Style>
 
+    <!-- ===== Panel: el marco "de terminal" de toda la app =====
+         Como en btop/htop: un borde de 1 px sobre negro con el título INCRUSTADO en la línea de arriba,
+         y opcionalmente un dato a la derecha (Tag):   ┌─ cpu ────────── 12 hilos ─┐
+         HeaderedContentControl = un control con dos huecos: Header (el título) y Content (lo de dentro).
+         Uso:  <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="cpu" Tag="12 hilos"> ... </HeaderedContentControl>
+         El fondo del título es el mismo que el del panel (negro): así "corta" la línea del borde. -->
+
+    <Style x:Key="PanelEstilo" TargetType="HeaderedContentControl">
+        <Setter Property="Background" Value="{StaticResource FondoBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BordeBrush}"/>
+        <Setter Property="Padding" Value="16,18,16,14"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="HeaderedContentControl">
+                    <Grid>
+                        <!-- El marco empieza 7 px más abajo: la mitad de la altura del título, para que la línea lo cruce por el medio -->
+                        <Border Margin="0,7,0,0" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1" CornerRadius="2" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+
+                        <!-- Título a la izquierda. Binding (y no TemplateBinding) porque Header es un "object"
+                             y Text espera texto: Binding sí sabe convertirlo -->
+                        <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" Padding="6,0"
+                                Background="{TemplateBinding Background}">
+                            <TextBlock Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"
+                                       FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoEtiqueta}"
+                                       Foreground="{StaticResource TextoBrush}"/>
+                        </Border>
+
+                        <!-- Dato a la derecha (Tag). Si no hay Tag, no se dibuja -->
+                        <Border x:Name="CajaDato" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,10,0" Padding="6,0"
+                                Background="{TemplateBinding Background}">
+                            <TextBlock Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                                       FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoEtiqueta}"
+                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Tag" Value="{x:Null}">
+                            <Setter TargetName="CajaDato" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===== Casilla de consola: "[ ] nombre" / "[x] nombre" =====
+         Reemplaza la casilla redondeada de WPF-UI. Lleva corchetes porque se puede pulsar -->
+
+    <Style x:Key="CasillaEstilo" TargetType="CheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="{StaticResource TamanoTexto}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <!-- Fondo transparente: toda la zona recibe el clic, no solo las letras -->
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <TextBlock x:Name="Marca" Text="[ ]" Foreground="{TemplateBinding Foreground}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ContentPresenter x:Name="Texto" Margin="8,0,0,0" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <!-- Sin texto (Content vacío): sin hueco a la derecha de la marca -->
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter TargetName="Texto" Property="Margin" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Marca" Property="Foreground" Value="{StaticResource TextoBrush}"/>
+                        </Trigger>
+                        <!-- Marcada: "[x]" en morado claro (morado sobre negro: se lee bien) -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Marca" Property="Text" Value="[x]"/>
+                            <Setter TargetName="Marca" Property="Foreground" Value="{StaticResource AcentoBrilloBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Marca" Property="TextDecorations" Value="Underline"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===== Pastilla: "ALTO", "SEGURO"... Solo borde, sin relleno ===== -->
 
     <Style x:Key="PastillaEstilo" TargetType="Border">
