@@ -1,5 +1,5 @@
 <!-- Página FiveM: estado de la instalación, aviso de disco duro, GPU dedicada (reversible), limpieza de caché,
-     diagnóstico de gráficos y la guía «¿es el servidor?».
+     diagnóstico de gráficos, texturas de autos (str_maxVehicleTextureRes) y la guía «¿es el servidor?».
      Todos los textos con x:Name se rellenan desde el código con datos reales -->
 <Page x:Class="OptimizadorPC.Paginas.FiveMPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -122,6 +122,35 @@
                     </ItemsControl>
                     <TextBlock Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Text="* Ghost Mode no cambia los gráficos del juego: cámbialos en Ajustes › Gráficos dentro de FiveM."/>
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- ===== Texturas de autos (paso 4 del plan): str_maxVehicleTextureRes. Ghost Mode NO lo cambia ni edita
+                 fivem.cfg: muestra el comando para la consola F8 y el valor guardado (solo lectura) ===== -->
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="texturas de autos" Tag="consola f8"
+                                    Margin="0,16,0,0" Padding="20,22,20,16">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource ExplicacionEstilo}" Foreground="{StaticResource TextoBrush}"
+                               Text="¿Texturas borrosas, la «ciudad derretida»? Los servidores cargan autos propios que llenan la memoria. FiveM trae un ajuste oficial para esto: str_maxVehicleTextureRes limita la resolución de las texturas de los autos (por defecto 1024). Bajarlo a 512 reduce la memoria usada a cambio de algo de calidad en los autos. Sirve sobre todo con 6 GB de VRAM o menos y en servidores con muchos autos añadidos."/>
+
+                    <TextBlock Text="en el juego, abre la consola con F8 y pega:" Style="{StaticResource EtiquetaEstilo}" Margin="0,14,0,6"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Static fivem:TexturasAutos.ComandoRecomendado}" Style="{StaticResource DatoEstilo}"
+                                   Foreground="{StaticResource AcentoBrilloBrush}" VerticalAlignment="Center"/>
+                        <Button Content="[ copiar ]" Tag="{x:Static fivem:TexturasAutos.ComandoRecomendado}" Style="{StaticResource EnlaceEstilo}"
+                                Margin="14,0,0,0" VerticalAlignment="Center" Click="Copiar_Click"/>
+                    </StackPanel>
+
+                    <TextBlock Text="para volver al valor por defecto:" Style="{StaticResource EtiquetaEstilo}" Margin="0,12,0,6"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Static fivem:TexturasAutos.ComandoPorDefecto}" Style="{StaticResource DatoEstilo}"
+                                   VerticalAlignment="Center"/>
+                        <Button Content="[ copiar ]" Tag="{x:Static fivem:TexturasAutos.ComandoPorDefecto}" Style="{StaticResource EnlaceEstilo}"
+                                Margin="14,0,0,0" VerticalAlignment="Center" Click="Copiar_Click"/>
+                    </StackPanel>
+
+                    <!-- Lo que FiveM tiene guardado ahora en fivem.cfg (lo pone el código) -->
+                    <TextBlock x:Name="TxtValorTexturas" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,14,0,0"/>
                 </StackPanel>
             </HeaderedContentControl>
 

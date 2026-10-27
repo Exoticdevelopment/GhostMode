@@ -37,7 +37,7 @@ namespace OptimizadorPC.Paginas
             Loaded += async (s, e) =>
             {
                 AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstado;
-                await Task.WhenAll(RefrescarAsync(), MostrarDiagnosticoGraficosAsync(), MostrarDiscoAsync());
+                await Task.WhenAll(RefrescarAsync(), MostrarDiagnosticoGraficosAsync(), MostrarDiscoAsync(), MostrarTexturasAutosAsync());
             };
             Unloaded += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstado;
         }
@@ -51,6 +51,18 @@ namespace OptimizadorPC.Paginas
             await gpu.LeerEstadoRealAsync();
             BtnBuscar.IsEnabled = true;
             Mostrar();
+        }
+
+        // Solo lectura: el str_maxVehicleTextureRes que FiveM tiene guardado en fivem.cfg
+        private async Task MostrarTexturasAutosAsync()
+        {
+            int? valor = await Task.Run(() => TexturasAutos.LeerValor(TexturasAutos.ArchivoCfg));
+            TxtValorTexturas.Text = valor switch
+            {
+                null => "* fivem.cfg no tiene este ajuste todavía: FiveM lo guarda al cerrarse, después de abrirlo una vez.",
+                int v when v == TexturasAutos.PorDefecto => $"* valor guardado en fivem.cfg: {v} (el de por defecto)",
+                int v => $"* valor guardado en fivem.cfg: {v}"
+            };
         }
 
         // Solo lectura: ¿FiveM o GTA V en un disco duro? (paso 7 del plan de docs/Investigacion-FiveM.pdf)
@@ -198,7 +210,8 @@ namespace OptimizadorPC.Paginas
         }
 
         // "Volver a buscar" también revisa el disco: FiveM o GTA V pueden haberse instalado o movido
-        private async void BtnBuscar_Click(object sender, RoutedEventArgs e) => await Task.WhenAll(RefrescarAsync(), MostrarDiscoAsync());
+        private async void BtnBuscar_Click(object sender, RoutedEventArgs e) =>
+            await Task.WhenAll(RefrescarAsync(), MostrarDiscoAsync(), MostrarTexturasAutosAsync());
 
         // "Deshacer todo" de la barra lateral también revierte la GPU de FiveM
         private async void AlCambiarEstado()
