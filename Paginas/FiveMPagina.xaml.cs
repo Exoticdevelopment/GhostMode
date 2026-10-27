@@ -37,7 +37,7 @@ namespace OptimizadorPC.Paginas
             Loaded += async (s, e) =>
             {
                 AplicadorOptimizaciones.EstadoCambiado += AlCambiarEstado;
-                await Task.WhenAll(RefrescarAsync(), MostrarDiagnosticoGraficosAsync());
+                await Task.WhenAll(RefrescarAsync(), MostrarDiagnosticoGraficosAsync(), MostrarDiscoAsync());
             };
             Unloaded += (s, e) => AplicadorOptimizaciones.EstadoCambiado -= AlCambiarEstado;
         }
@@ -51,6 +51,28 @@ namespace OptimizadorPC.Paginas
             await gpu.LeerEstadoRealAsync();
             BtnBuscar.IsEnabled = true;
             Mostrar();
+        }
+
+        // Solo lectura: ¿FiveM o GTA V en un disco duro? (paso 7 del plan de docs/Investigacion-FiveM.pdf)
+        private async Task MostrarDiscoAsync()
+        {
+            try
+            {
+                List<UbicacionEnDisco> ubicaciones = await Task.Run(DiscoJuego.Revisar);
+                foreach (UbicacionEnDisco u in ubicaciones)
+                {
+                    Logger.Info($"Disco: {u.Que} en {u.Unidad}: ({u.Tipo})");
+                }
+                string? aviso = DiscoJuego.TextoAviso(ubicaciones);
+                TxtAvisoDisco.Text = aviso ?? "";
+                AvisoDisco.Visibility = aviso != null ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                // Sin aviso antes que un aviso falso
+                Logger.Error("No se pudo revisar el disco de FiveM y GTA V", ex);
+                AvisoDisco.Visibility = Visibility.Collapsed;
+            }
         }
 
         // Solo lectura: equipo + settings.xml de GTA V (si existe) → recomendaciones
@@ -155,7 +177,8 @@ namespace OptimizadorPC.Paginas
 
         // ===== Botones =====
 
-        private async void BtnBuscar_Click(object sender, RoutedEventArgs e) => await RefrescarAsync();
+        // "Volver a buscar" también revisa el disco: FiveM o GTA V pueden haberse instalado o movido
+        private async void BtnBuscar_Click(object sender, RoutedEventArgs e) => await Task.WhenAll(RefrescarAsync(), MostrarDiscoAsync());
 
         // "Deshacer todo" de la barra lateral también revierte la GPU de FiveM
         private async void AlCambiarEstado()

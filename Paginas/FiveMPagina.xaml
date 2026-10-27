@@ -54,6 +54,12 @@
                            Text="FiveM está abierto. Ciérralo para limpiar la caché; la GPU dedicada se notará la próxima vez que lo abras."/>
             </Border>
 
+            <!-- Aviso ámbar: solo si FiveM o GTA V están en un disco duro (HDD). Vale aunque FiveM no esté instalado -->
+            <Border x:Name="AvisoDisco" Style="{StaticResource NotaEstilo}" BorderBrush="{StaticResource AvisoBrush}"
+                    Margin="0,12,0,0" Visibility="Collapsed">
+                <TextBlock x:Name="TxtAvisoDisco" Style="{StaticResource NotaTextoEstilo}"/>
+            </Border>
+
             <!-- ===== Los dos paneles, cada uno con su botón DENTRO y abajo a la izquierda.
                  ZonaAjustes se desactiva entera si FiveM no está instalado ===== -->
             <Grid x:Name="ZonaAjustes" Margin="0,16,0,0">

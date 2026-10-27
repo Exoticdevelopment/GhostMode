@@ -126,15 +126,22 @@ namespace OptimizadorPC.Servicios
             }
         }
 
-        // Disco donde está Windows: partición de C: → número de disco → tipo de medio (3 = HDD, 4 = SSD)
-        public static TipoDisco TipoDiscoSistema()
+        // Disco donde está Windows
+        public static TipoDisco TipoDiscoSistema() => TipoDiscoDe(Path.GetPathRoot(Environment.SystemDirectory)![0]);
+
+        // Disco de una unidad: partición con esa letra → número de disco → tipo de medio.
+        // Lo usan también FiveM y GTA V (Optimizaciones/FiveM/DiscoJuego.cs). Si algo no se puede leer, Desconocido
+        public static TipoDisco TipoDiscoDe(char letra)
         {
+            if (!char.IsAsciiLetter(letra))
+            {
+                return TipoDisco.Desconocido;   // (además, la letra va dentro de la consulta: solo A-Z)
+            }
             try
             {
-                char letra = Path.GetPathRoot(Environment.SystemDirectory)![0];
                 var ambito = new ManagementScope(@"\\.\root\Microsoft\Windows\Storage");
                 using var particiones = new ManagementObjectSearcher(ambito,
-                    new ObjectQuery($"SELECT DiskNumber FROM MSFT_Partition WHERE DriveLetter = '{letra}'"));
+                    new ObjectQuery($"SELECT DiskNumber FROM MSFT_Partition WHERE DriveLetter = '{char.ToUpperInvariant(letra)}'"));
                 uint? disco = particiones.Get().Cast<ManagementObject>().Select(p => (uint?)Convert.ToUInt32(p["DiskNumber"])).FirstOrDefault();
                 if (disco == null)
                 {
@@ -142,21 +149,27 @@ namespace OptimizadorPC.Servicios
                 }
 
                 using var discos = new ManagementObjectSearcher(ambito,
-                    new ObjectQuery($"SELECT MediaType FROM MSFT_PhysicalDisk WHERE DeviceId = '{disco}'"));
-                int tipo = discos.Get().Cast<ManagementObject>().Select(d => Convert.ToInt32(d["MediaType"])).FirstOrDefault();
-                return tipo switch
-                {
-                    3 => TipoDisco.Hdd,
-                    4 => TipoDisco.Ssd,
-                    _ => TipoDisco.Desconocido
-                };
+                    new ObjectQuery($"SELECT MediaType, BusType FROM MSFT_PhysicalDisk WHERE DeviceId = '{disco}'"));
+                ManagementObject? fisico = discos.Get().Cast<ManagementObject>().FirstOrDefault();
+                return fisico == null
+                    ? TipoDisco.Desconocido   // p. ej. un volumen de Espacios de almacenamiento
+                    : ClasificarDisco(Convert.ToInt32(fisico["MediaType"]), Convert.ToInt32(fisico["BusType"]));
             }
             catch (Exception ex)
             {
-                Logger.Error("Diagnóstico: no se pudo leer el tipo de disco", ex);
+                Logger.Error($"Diagnóstico: no se pudo leer el tipo de disco de {letra}:", ex);
                 return TipoDisco.Desconocido;
             }
         }
+
+        // MSFT_PhysicalDisk.MediaType: 3 = HDD, 4 = SSD, 5 = SCM (memoria persistente, más rápida que un SSD).
+        // BusType 17 = NVMe: siempre es un SSD, aunque Windows no rellene MediaType
+        public static TipoDisco ClasificarDisco(int mediaType, int busType) => mediaType switch
+        {
+            3 => TipoDisco.Hdd,
+            4 or 5 => TipoDisco.Ssd,
+            _ => busType == 17 ? TipoDisco.Ssd : TipoDisco.Desconocido
+        };
 
         public static (double? LibreGb, double? TotalGb) EspacioSistema()
         {
