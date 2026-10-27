@@ -59,7 +59,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="&gt; red" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <componentes:PromptTerminal Comando="net"/>
                     <TextBlock Text="Una conexión estable, sin ajustes agresivos ni promesas imposibles."
                                Style="{StaticResource SubtituloPaginaEstilo}"/>
                 </StackPanel>

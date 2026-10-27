@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;   // ObservableCollection: lista que avisa
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using OptimizadorPC.Core;               // Logger, LineaLog
 
 namespace OptimizadorPC.Componentes
@@ -32,12 +31,12 @@ namespace OptimizadorPC.Componentes
                 }
                 ActualizarVacio();
                 Logger.NuevaLinea += AlNuevaLinea;
-                IniciarParpadeo();
+                Parpadeo.Iniciar(CursorLog);
             };
             Unloaded += (s, e) =>
             {
                 Logger.NuevaLinea -= AlNuevaLinea;
-                CursorLog.BeginAnimation(OpacityProperty, null);   // null = quitar la animación: cero consumo
+                Parpadeo.Detener(CursorLog);
             };
         }
 
@@ -72,21 +71,5 @@ namespace OptimizadorPC.Componentes
 
         private void ActualizarVacio() =>
             TxtVacio.Visibility = lineas.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-
-        // Cursor "_": visible medio segundo, invisible medio segundo, para siempre.
-        // Fotogramas "Discrete" = salta de un valor a otro sin fundido, y DesiredFrameRate = 2
-        // le dice a WPF que basta con redibujar 2 veces por segundo
-        private void IniciarParpadeo()
-        {
-            var parpadeo = new DoubleAnimationUsingKeyFrames
-            {
-                Duration = TimeSpan.FromSeconds(1),
-                RepeatBehavior = RepeatBehavior.Forever
-            };
-            parpadeo.KeyFrames.Add(new DiscreteDoubleKeyFrame(1, KeyTime.FromTimeSpan(TimeSpan.Zero)));
-            parpadeo.KeyFrames.Add(new DiscreteDoubleKeyFrame(0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.5))));
-            Timeline.SetDesiredFrameRate(parpadeo, 2);
-            CursorLog.BeginAnimation(OpacityProperty, parpadeo);
-        }
     }
 }

@@ -1,5 +1,5 @@
 <!-- Panel "log" tipo terminal: las últimas 8 líneas del Logger en vivo y un cursor "_" morado que parpadea.
-     El parpadeo es la ÚNICA animación de la app: saltos discretos (visible/invisible), sin fundidos.
+     El parpadeo (Componentes/Parpadeo.cs) son saltos discretos (visible/invisible), sin fundidos.
      El marco es el PanelEstilo de Controles.xaml: título "log" en el borde y el comando a la derecha. -->
 <UserControl x:Class="OptimizadorPC.Componentes.PanelLog"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

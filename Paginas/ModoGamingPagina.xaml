@@ -25,7 +25,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="&gt; modo_gaming" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <componentes:PromptTerminal Comando="gaming"/>
                     <TextBlock Text="Ghost Mode se activa solo al abrir un juego y se deshace al cerrarlo."
                                Style="{StaticResource SubtituloPaginaEstilo}"/>
                 </StackPanel>

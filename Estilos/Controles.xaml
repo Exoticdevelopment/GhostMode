@@ -30,7 +30,7 @@
 
     <!-- ===== Textos ===== -->
 
-    <!-- Título de página tipo comando: "> inicio" -->
+    <!-- Título tipo comando de la bienvenida: "> hola". Las páginas usan Componentes/PromptTerminal -->
     <Style x:Key="TituloPaginaEstilo" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
         <Setter Property="FontSize" Value="{StaticResource TamanoTitulo}"/>

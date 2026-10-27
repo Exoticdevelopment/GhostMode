@@ -38,7 +38,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="&gt; inicio_windows" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <componentes:PromptTerminal Comando="startup"/>
                     <TextBlock Text="Un arranque más ligero empieza con menos programas." Style="{StaticResource SubtituloPaginaEstilo}"/>
                 </StackPanel>
                 <ui:Button x:Name="BtnActualizar" Grid.Column="1" Content="[ actualizar ]" VerticalAlignment="Top"

@@ -22,7 +22,7 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36,28,36,32">
-            <TextBlock Text="&gt; ajustes" Style="{StaticResource TituloPaginaEstilo}"/>
+            <componentes:PromptTerminal Comando="config"/>
             <TextBlock Text="Arranque, atajo de teclado e información de la aplicación." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
             <!-- ===== General ===== -->

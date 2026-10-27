@@ -1,0 +1,16 @@
+<!-- Título de página como línea de terminal:  exotic@ghost:~$ status_
+     El usuario es el de Windows en minúsculas; el comando, el de cada pantalla (Comando="...").
+     El cursor "_" morado parpadea mientras la página está a la vista. -->
+<UserControl x:Class="OptimizadorPC.Componentes.PromptTerminal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False" IsTabStop="False">
+
+    <!-- Un TextBlock con Runs: todo en la misma línea base, cada trozo con su color -->
+    <TextBlock FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTitulo}" TextTrimming="CharacterEllipsis">
+        <Run x:Name="RunUsuario" Foreground="{StaticResource TextoSecundarioBrush}"/><Run
+             Text=":~$ " Foreground="{StaticResource TextoSecundarioBrush}"/><Run
+             x:Name="RunComando" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/><Run
+             x:Name="RunCursor" Text="_" FontWeight="Bold" Foreground="{StaticResource AcentoBrush}"/>
+    </TextBlock>
+</UserControl>
