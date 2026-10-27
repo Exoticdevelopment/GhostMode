@@ -18,7 +18,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="monitor"/>
-                    <TextBlock Text="Uso del equipo en los últimos 60 segundos." Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="# uso del equipo · últimos 60 s" Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <ui:Button x:Name="BtnPausar" Grid.Column="1" Content="[ pausar ]" VerticalAlignment="Top"
                            Style="{StaticResource BotonSecundarioEstilo}" Click="BtnPausar_Click"/>

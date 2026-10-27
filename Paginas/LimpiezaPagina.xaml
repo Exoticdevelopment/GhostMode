@@ -18,7 +18,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="clean"/>
-                    <TextBlock Text="Recupera espacio sin tocar tus archivos personales." Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="# recupera espacio sin tocar tus archivos personales" Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <ui:Button x:Name="BtnAnalizar" Grid.Column="1" Content="[ analizar ]" VerticalAlignment="Top"
                            Style="{StaticResource BotonSecundarioEstilo}" Click="BtnAnalizar_Click"/>

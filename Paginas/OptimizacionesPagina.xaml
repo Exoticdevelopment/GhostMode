@@ -53,7 +53,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="optimize"/>
-                    <TextBlock x:Name="TxtSubtitulo" Text="Leyendo hardware…" Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock x:Name="TxtSubtitulo" Text="# leyendo hardware..." Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <!-- El texto ("[ aplicar +2 −1 ]") lo pone el código: +N se activan, −N se desactivan -->
                 <ui:Button x:Name="BtnAplicar" Grid.Column="1" Content="[ sin cambios ]" IsEnabled="False"

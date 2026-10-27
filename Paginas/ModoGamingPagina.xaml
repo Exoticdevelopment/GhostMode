@@ -26,8 +26,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="gaming"/>
-                    <TextBlock Text="Ghost Mode se activa solo al abrir un juego y se deshace al cerrarlo."
-                               Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="# se activa al abrir un juego · se deshace al cerrarlo"
+                               Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <ui:Button x:Name="BtnAgregar" Grid.Column="1" Content="[ agregar juego ]" VerticalAlignment="Top"
                            Style="{StaticResource BotonPrincipalEstilo}" Click="BtnAgregar_Click"/>

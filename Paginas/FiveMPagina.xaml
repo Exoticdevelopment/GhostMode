@@ -18,7 +18,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="fivem"/>
-                    <TextBlock Text="Ajustes para jugar en servidores de FiveM." Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="# ajustes para jugar en servidores de fivem" Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <ui:Button x:Name="BtnBuscar" Grid.Column="1" Content="[ volver a buscar ]" VerticalAlignment="Top"
                            Style="{StaticResource BotonSecundarioEstilo}" Click="BtnBuscar_Click"/>

@@ -75,7 +75,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36,28,36,32">
             <componentes:PromptTerminal Comando="status"/>
-            <TextBlock Text="Uso de recursos en vivo y acceso directo a Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
+            <TextBlock Text="# recursos en vivo · ghost_mode" Style="{StaticResource ComentarioEstilo}"/>
 
             <!-- ===== 0. Banner: el estado de Ghost Mode se ve de lejos, por el color ===== -->
             <componentes:BannerGhost x:Name="Banner" Margin="0,18,0,0"/>

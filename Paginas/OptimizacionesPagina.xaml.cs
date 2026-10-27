@@ -69,11 +69,11 @@ namespace OptimizadorPC.Paginas
 
             if (equipo.RamGb != null && equipo.Nucleos != null)
             {
-                TxtSubtitulo.Text = $"Ajustes pensados para {equipo.RamGb} GB de RAM y una CPU de {equipo.Nucleos} núcleos.";
+                TxtSubtitulo.Text = $"# pensado para {equipo.RamGb} GB de ram · cpu de {equipo.Nucleos} núcleos";
             }
             else
             {
-                TxtSubtitulo.Text = "Ajustes pensados para equipos con pocos recursos.";
+                TxtSubtitulo.Text = "# pensado para equipos con pocos recursos";
             }
         }
 

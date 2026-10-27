@@ -60,8 +60,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <componentes:PromptTerminal Comando="net"/>
-                    <TextBlock Text="Una conexión estable, sin ajustes agresivos ni promesas imposibles."
-                               Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="# conexión estable · sin ajustes agresivos ni promesas imposibles"
+                               Style="{StaticResource ComentarioEstilo}"/>
                 </StackPanel>
                 <Border x:Name="PastillaConexion" Grid.Column="1" Style="{StaticResource PastillaEstilo}" Margin="0"
                         VerticalAlignment="Top">

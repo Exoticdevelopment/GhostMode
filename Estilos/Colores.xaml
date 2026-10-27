@@ -54,6 +54,9 @@
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
     <SolidColorBrush x:Key="TextoBrush" Color="{StaticResource TextoColor}"/>
     <SolidColorBrush x:Key="TextoSecundarioBrush" Color="{StaticResource TextoSecundarioColor}"/>
+    <!-- Comentarios de consola bajo el prompt ("# recursos en vivo"): más tenue que el secundario porque
+         acompañan, no informan de nada urgente. #6B6B76 sobre negro puro = 3,9:1; por eso van a 13 px, no a 11 -->
+    <SolidColorBrush x:Key="ComentarioBrush" Color="#6B6B76"/>
 
     <!-- Nombres de la paleta anterior, para que las pantallas aún no rediseñadas sigan funcionando:
          "Activo" = estado OK (verde) y "TextoTenue" = el gris secundario -->

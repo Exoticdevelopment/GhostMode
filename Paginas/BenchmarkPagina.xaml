@@ -21,7 +21,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36,28,36,32">
             <componentes:PromptTerminal Comando="bench"/>
-            <TextBlock Text="Mide los FPS de tu juego antes y después de Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
+            <TextBlock Text="# fps de tu juego antes y después de ghost_mode" Style="{StaticResource ComentarioEstilo}"/>
 
             <!-- ===== Paso 1: elegir el juego (la numeración vale: es una secuencia real) ===== -->
             <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="1. elige el juego" Margin="0,20,0,0">

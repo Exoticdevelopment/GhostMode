@@ -47,6 +47,15 @@
         <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
     </Style>
 
+    <!-- Comentario de consola bajo el prompt de cada página: "# recursos en vivo · ghost_mode" -->
+    <Style x:Key="ComentarioEstilo" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+        <Setter Property="FontSize" Value="{StaticResource TamanoTexto}"/>
+        <Setter Property="Margin" Value="0,6,0,0"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Foreground" Value="{StaticResource ComentarioBrush}"/>
+    </Style>
+
     <!-- Etiquetas de consola en mayúsculas: "[ CPU ]", "SYS.STATUS"... -->
     <Style x:Key="EtiquetaEstilo" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
