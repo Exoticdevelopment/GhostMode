@@ -7,7 +7,21 @@ namespace OptimizadorPC.Componentes
     // si no (ventana estrecha), la compacta. Nunca se corta ni se escala: el arte ASCII escalado se deforma
     public partial class BannerGhost : UserControl
     {
-        private double anchoGrande = 0;   // lo que mide la versión grande (se calcula una vez)
+        // Lo que mide la versión grande. Es igual para todos los banners: se calcula una vez.
+        // Lo usa también MainWindow para abrir con un ancho en el que quepa
+        private static double anchoGrande = 0;
+
+        public static double AnchoGrande
+        {
+            get
+            {
+                if (anchoGrande == 0)
+                {
+                    new BannerGhost().MedirGrande();
+                }
+                return anchoGrande;
+            }
+        }
 
         public BannerGhost()
         {
@@ -15,13 +29,18 @@ namespace OptimizadorPC.Componentes
             SizeChanged += (s, e) => ElegirVersion(e.NewSize.Width);
         }
 
+        // Measure con espacio infinito = "¿cuánto mides si nadie te limita?"
+        private void MedirGrande()
+        {
+            Grande.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            anchoGrande = Grande.DesiredSize.Width;
+        }
+
         private void ElegirVersion(double disponible)
         {
             if (anchoGrande == 0)
             {
-                // Measure con espacio infinito = "¿cuánto mides si nadie te limita?"
-                Grande.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-                anchoGrande = Grande.DesiredSize.Width;
+                MedirGrande();
             }
             bool cabe = disponible >= anchoGrande;
             Grande.Visibility = cabe ? Visibility.Visible : Visibility.Collapsed;

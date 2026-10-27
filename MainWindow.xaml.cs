@@ -22,6 +22,7 @@ namespace OptimizadorPC
         public MainWindow()
         {
             InitializeComponent();
+            AjustarTamanoInicial();
 
             // Decirle a Avisos dónde mostrar los toasts
             Avisos.Presentador = PresentadorAvisos;
@@ -79,6 +80,22 @@ namespace OptimizadorPC
                 TemaGhost.Cambiado -= MostrarTitulo;
                 Avisos.Presentador = null;   // sin ventana, los avisos salen desde la bandeja
             };
+        }
+
+        // Ancho = el del XAML o, si no alcanza, el que necesita el banner grande de Inicio:
+        // barra lateral + márgenes de la página + barra de desplazamiento + bordes + banner.
+        // Y nunca más grande que la pantalla (WorkArea = la pantalla sin la barra de tareas, en píxeles de WPF),
+        // ni siquiera el mínimo: en una pantalla pequeña con escalado al 150 % caben unos 900 px
+        private void AjustarTamanoInicial()
+        {
+            const double MargenesPagina = 36 * 2, Desplazamiento = 18, Bordes = 24;
+            Rect pantalla = SystemParameters.WorkArea;
+            double necesario = Navegacion.OpenPaneLength + MargenesPagina + Desplazamiento + Bordes + BannerGhost.AnchoGrande;
+
+            MinWidth = Math.Min(MinWidth, pantalla.Width);
+            MinHeight = Math.Min(MinHeight, pantalla.Height);
+            Width = Math.Min(Math.Max(Width, necesario), pantalla.Width);
+            Height = Math.Min(Height, pantalla.Height);
         }
 
         // Encima de todo menos la barra de título (la ventana se puede mover y cerrar mientras tanto).
