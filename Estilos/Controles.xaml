@@ -5,7 +5,8 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-                    xmlns:componentes="clr-namespace:OptimizadorPC.Componentes">
+                    xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
     <!-- Traemos la paleta aquí también para que los estilos encuentren los colores -->
     <ResourceDictionary.MergedDictionaries>
@@ -18,12 +19,21 @@
     <!-- Solo para textos largos de explicación -->
     <FontFamily x:Key="FuenteTexto">Segoe UI</FontFamily>
 
+    <!-- Escala de tamaños: SOLO estos cinco. Cada salto es claro (≈ ×1,25 a ×1,5), así la jerarquía
+         se ve sin necesidad de negritas ni colores. sys:Double = un número decimal guardado como recurso.
+         Uso: FontSize="{StaticResource TamanoDato}" -->
+    <sys:Double x:Key="TamanoEtiqueta">11</sys:Double>   <!-- etiquetas, títulos de panel, notas -->
+    <sys:Double x:Key="TamanoTexto">13</sys:Double>      <!-- texto normal, datos de tabla, botones -->
+    <sys:Double x:Key="TamanoDato">16</sys:Double>       <!-- nombres de ajustes, valores destacados -->
+    <sys:Double x:Key="TamanoTitulo">24</sys:Double>     <!-- título de página, valores de los medidores -->
+    <sys:Double x:Key="TamanoHeroe">36</sys:Double>      <!-- el número más importante de una pantalla -->
+
     <!-- ===== Textos ===== -->
 
     <!-- Título de página tipo comando: "> inicio" -->
     <Style x:Key="TituloPaginaEstilo" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
-        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="FontSize" Value="{StaticResource TamanoTitulo}"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
     </Style>
@@ -59,7 +69,8 @@
         <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
     </Style>
 
-    <!-- ===== Tarjeta: superficie #0A0A0A, borde de 1 px, esquinas de 2 px ===== -->
+    <!-- ===== Tarjeta: superficie #0A0A0A, borde de 1 px, esquinas de 2 px =====
+         Sin efecto al pasar el ratón: una tarjeta no se puede pulsar, y si reacciona parece que sí -->
 
     <Style x:Key="TarjetaEstilo" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource TarjetaBrush}"/>
@@ -67,12 +78,6 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Padding" Value="16,14"/>
-        <Style.Triggers>
-            <!-- Al pasar el ratón, el borde se aclara un poco -->
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource BordeHoverBrush}"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <!-- ===== Pastilla: "ALTO", "SEGURO"... Solo borde, sin relleno ===== -->

@@ -1,14 +1,22 @@
 <!-- Paleta "terminal": el NEGRO manda y el morado de la pantera (Assets/ghostmode.ico) es solo un acento.
      Se define UNA vez aquí y se usa en todas partes con {StaticResource NombreBrush}.
-     Color = el color "puro"; Brush = la "pintura" que usan fondos y textos. -->
+     Color = el color "puro"; Brush = la "pintura" que usan fondos y textos.
+
+     Reglas de uso (para que cada color SIGNIFIQUE algo):
+       morado = Ghost Mode encendido, lo elegido y la acción principal (y los datos "con Ghost Mode")
+       verde  = SOLO un resultado OK (aplicado, conectado, mejoró). Nunca de adorno en iconos o avisos
+       ámbar / rojo = aviso / error
+       [ corchetes ] = SOLO en botones: si algo va entre corchetes, se puede pulsar -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Superficies -->
     <Color x:Key="FondoColor">#000000</Color>         <!-- fondo de la ventana: negro puro -->
     <Color x:Key="TarjetaColor">#0A0A0A</Color>       <!-- tarjetas, barra lateral, paneles -->
-    <Color x:Key="BordeColor">#1A1A1A</Color>         <!-- bordes de 1 px y separadores -->
-    <Color x:Key="BordeHoverColor">#2A2A2A</Color>    <!-- borde al pasar el ratón -->
+    <!-- Bordes: son la ESTRUCTURA de la interfaz (paneles tipo btop), así que tienen que verse.
+         #1A1A1A sobre #0A0A0A daba 1,1:1 y en muchas pantallas desaparecía -->
+    <Color x:Key="BordeColor">#262626</Color>         <!-- bordes de 1 px y separadores -->
+    <Color x:Key="BordeHoverColor">#3F3F46</Color>    <!-- borde de controles al pasar el ratón -->
 
     <!-- Acento morado: aparece POCO (botón principal, elemento seleccionado, interruptores activos, cursor del log) -->
     <Color x:Key="AcentoColor">#8B5CF6</Color>
@@ -22,7 +30,9 @@
 
     <!-- Textos -->
     <Color x:Key="TextoColor">#E4E4E7</Color>           <!-- principal: títulos, valores -->
-    <Color x:Key="TextoSecundarioColor">#6B6B76</Color> <!-- secundario: etiquetas, descripciones -->
+    <!-- Secundario: etiquetas, descripciones. #8A8A94 sobre #0A0A0A = 5,8:1 (el mínimo legible, AA, es 4,5:1;
+         el gris anterior #6B6B76 daba 3,8:1 y a 11 px costaba leerlo) -->
+    <Color x:Key="TextoSecundarioColor">#8A8A94</Color>
 
     <SolidColorBrush x:Key="FondoBrush" Color="{StaticResource FondoColor}"/>
     <SolidColorBrush x:Key="TarjetaBrush" Color="{StaticResource TarjetaColor}"/>
