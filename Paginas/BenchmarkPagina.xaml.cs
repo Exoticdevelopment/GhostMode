@@ -245,12 +245,11 @@ namespace OptimizadorPC.Paginas
             TarjetaResultado.Visibility = Visibility.Visible;
 
             TxtResJuego.Text = vm.Juego;
-            TxtResFecha.Text = $"{vm.Fecha} · {EjecutorBenchmark.SegundosPorMedicion} s por medición · " +
+            TxtResFecha.Text = $"{vm.Fecha}, {EjecutorBenchmark.SegundosPorMedicion} s por medición, " +
                                $"{r.Antes.Frames + r.Despues.Frames} frames medidos";
-            TxtResMejora.Text = $"{vm.TextoMejora} FPS promedio";
-            // TryFindResource = buscar un color de Colores.xaml por su nombre
-            PastillaMejora.Background = (Brush)TryFindResource(vm.Mejoro ? "ActivoSuaveBrush" : "AvisoSuaveBrush");
-            TxtResMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ActivoBrush" : "AvisoBrush");
+            TxtResMejora.Text = vm.TextoMejora;   // la etiqueta "fps promedio" ya está debajo, en el XAML
+            // TryFindResource = buscar un color de Colores.xaml por su nombre. Verde = mejoró (resultado OK)
+            TxtResMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ExitoBrush" : "AvisoBrush");
 
             // Las 4 barras comparten escala: la más alta llena la barra
             double maximo = new[] { r.Antes.FpsPromedio, r.Despues.FpsPromedio, r.Antes.Fps1Low, r.Despues.Fps1Low }.Max();
@@ -265,7 +264,7 @@ namespace OptimizadorPC.Paginas
 
             GraficaFps.MostrarSeries(r.Despues.FpsPorSegundo, r.Antes.FpsPorSegundo);
             double techo = r.Antes.FpsPorSegundo.Concat(r.Despues.FpsPorSegundo).DefaultIfEmpty(0).Max();
-            TxtEscala.Text = $"Máximo: {BenchmarkVM.Fps(techo)} FPS en un segundo · cada punto es un segundo";
+            TxtEscala.Text = $"máximo: {BenchmarkVM.Fps(techo)} FPS en un segundo; cada punto es un segundo";
 
             TxtResOptimizaciones.Text = $"Optimizaciones aplicadas entre las dos mediciones: {vm.TextoOptimizaciones}.";
         }

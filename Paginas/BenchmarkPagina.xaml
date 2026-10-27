@@ -8,93 +8,86 @@
       Title="Benchmark">
 
     <Page.Resources>
-        <!-- Título de cada tarjeta numerada -->
-        <Style x:Key="TituloTarjetaEstilo" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
-        </Style>
-        <Style x:Key="TextoAyudaEstilo" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Foreground" Value="{StaticResource TextoSecundarioBrush}"/>
+        <!-- Texto de ayuda dentro de los paneles (Segoe: frases) -->
+        <Style x:Key="TextoAyudaEstilo" TargetType="TextBlock" BasedOn="{StaticResource ExplicacionEstilo}"/>
+
+        <!-- Fila de la comparación: "antes" / "después" -->
+        <Style x:Key="FilaEtiquetaEstilo" TargetType="TextBlock" BasedOn="{StaticResource EtiquetaEstilo}">
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="44,36,44,36">
-            <TextBlock Text="Benchmark" Style="{StaticResource TituloPaginaEstilo}"/>
+        <StackPanel Margin="36,28,36,32">
+            <TextBlock Text="&gt; benchmark" Style="{StaticResource TituloPaginaEstilo}"/>
             <TextBlock Text="Mide los FPS de tu juego antes y después de Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
-            <!-- ===== 1. Elegir el juego ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,24,0,0">
+            <!-- ===== Paso 1: elegir el juego (la numeración vale: es una secuencia real) ===== -->
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="1. elige el juego" Margin="0,20,0,0">
                 <StackPanel>
-                    <TextBlock Text="1. Elige el juego" Style="{StaticResource TituloTarjetaEstilo}"/>
                     <TextBlock Text="Abre el juego antes y entra en una partida. Aquí aparecen los programas con ventana abierta."
-                               Style="{StaticResource TextoAyudaEstilo}" Margin="0,6,0,12"/>
+                               Style="{StaticResource TextoAyudaEstilo}" Margin="0,0,0,12"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ComboBox x:Name="ListaProcesos" SelectionChanged="ListaProcesos_SelectionChanged"/>
-                        <ui:Button x:Name="BtnRefrescar" Grid.Column="1" Content="Actualizar" Margin="12,0,0,0"
-                                   Style="{StaticResource BotonSecundarioEstilo}" Click="BtnRefrescar_Click">
-                            <ui:Button.Icon>
-                                <ui:SymbolIcon Symbol="ArrowSync20"/>
-                            </ui:Button.Icon>
-                        </ui:Button>
+                        <ComboBox x:Name="ListaProcesos" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
+                                  SelectionChanged="ListaProcesos_SelectionChanged"/>
+                        <ui:Button x:Name="BtnRefrescar" Grid.Column="1" Content="[ actualizar ]" Margin="12,0,0,0"
+                                   Style="{StaticResource BotonSecundarioEstilo}" Click="BtnRefrescar_Click"/>
                     </Grid>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
-            <!-- ===== 2. Medir ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0">
+            <!-- ===== Paso 2: medir ===== -->
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="2. mide" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="2. Mide" Style="{StaticResource TituloTarjetaEstilo}"/>
                     <!-- Qué va a pasar: se rellena con las optimizaciones reales que faltan -->
-                    <TextBlock x:Name="TxtPlan" Style="{StaticResource TextoAyudaEstilo}" Margin="0,6,0,0"/>
-                    <TextBlock x:Name="TxtPresentMon" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"
-                               Foreground="{StaticResource TextoTenueBrush}"/>
+                    <TextBlock x:Name="TxtPlan" Style="{StaticResource TextoAyudaEstilo}"/>
+                    <TextBlock x:Name="TxtPresentMon" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,8,0,0"/>
 
                     <!-- Progreso: solo se ve mientras mide -->
                     <StackPanel x:Name="PanelProgreso" Margin="0,16,0,0" Visibility="Collapsed">
                         <Grid>
-                            <TextBlock x:Name="TxtEtapa" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource AvisoBrush}"/>
-                            <TextBlock x:Name="TxtRestante" HorizontalAlignment="Right" FontSize="13"
+                            <TextBlock x:Name="TxtEtapa" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"
+                                       Foreground="{StaticResource AvisoBrush}"/>
+                            <TextBlock x:Name="TxtRestante" HorizontalAlignment="Right" Style="{StaticResource DatoEstilo}"
                                        Foreground="{StaticResource TextoSecundarioBrush}"/>
                         </Grid>
                         <ProgressBar x:Name="BarraProgreso" Style="{StaticResource BarraRecursoEstilo}" Margin="0,10,0,0"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                        <ui:Button x:Name="BtnIniciar" Content="Iniciar benchmark" IsEnabled="False"
-                                   Style="{StaticResource BotonPrincipalEstilo}" Click="BtnIniciar_Click">
-                            <ui:Button.Icon>
-                                <ui:SymbolIcon Symbol="Play20"/>
-                            </ui:Button.Icon>
-                        </ui:Button>
-                        <ui:Button x:Name="BtnCancelar" Content="Cancelar" Margin="12,0,0,0" Visibility="Collapsed"
+                        <ui:Button x:Name="BtnIniciar" Content="[ iniciar benchmark ]" IsEnabled="False"
+                                   Style="{StaticResource BotonPrincipalEstilo}" Click="BtnIniciar_Click"/>
+                        <ui:Button x:Name="BtnCancelar" Content="[ cancelar ]" Margin="12,0,0,0" Visibility="Collapsed"
                                    Style="{StaticResource BotonSecundarioEstilo}" Click="BtnCancelar_Click"/>
                     </StackPanel>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
             <!-- ===== Resultado (el último o el elegido en el historial) ===== -->
-            <Border x:Name="TarjetaResultado" Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Visibility="Collapsed">
+            <HeaderedContentControl x:Name="TarjetaResultado" Style="{StaticResource PanelEstilo}" Header="resultado"
+                                    Margin="0,16,0,0" Visibility="Collapsed">
                 <StackPanel>
+                    <!-- Juego y fecha a la izquierda; la mejora, el número de esta pantalla, a la derecha -->
                     <Grid>
-                        <StackPanel>
-                            <TextBlock x:Name="TxtResJuego" Style="{StaticResource TituloTarjetaEstilo}"/>
-                            <TextBlock x:Name="TxtResFecha" FontSize="12" Margin="0,4,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
+                        <StackPanel VerticalAlignment="Bottom">
+                            <TextBlock x:Name="TxtResJuego" Style="{StaticResource DatoEstilo}" FontSize="{StaticResource TamanoDato}"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock x:Name="TxtResFecha" Style="{StaticResource EtiquetaEstilo}" Margin="0,4,0,0" TextWrapping="Wrap"/>
                         </StackPanel>
-                        <Border x:Name="PastillaMejora" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Right"
-                                VerticalAlignment="Top" Margin="0">
-                            <TextBlock x:Name="TxtResMejora" Style="{StaticResource PastillaTextoEstilo}"/>
-                        </Border>
+                        <StackPanel HorizontalAlignment="Right">
+                            <!-- Verde si mejoró (resultado OK), ámbar si no: lo pone el código -->
+                            <TextBlock x:Name="TxtResMejora" Style="{StaticResource DatoEstilo}" FontSize="{StaticResource TamanoHeroe}"
+                                       FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                            <TextBlock Text="fps promedio" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Right"/>
+                        </StackPanel>
                     </Grid>
 
-                    <!-- Barras: FPS promedio y 1% low, antes (gris) y después (verde) -->
+                    <!-- Barras: FPS promedio y 1% low. Antes = gris; después (con Ghost Mode) = morado -->
                     <Grid Margin="0,18,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="110"/>
@@ -109,72 +102,79 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.RowSpan="2" Text="FPS promedio" Style="{StaticResource TextoAyudaEstilo}" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="Antes" FontSize="12" Foreground="{StaticResource TextoTenueBrush}" Margin="0,4"/>
+                        <TextBlock Grid.RowSpan="2" Text="fps promedio" Style="{StaticResource DatoEstilo}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="antes" Style="{StaticResource FilaEtiquetaEstilo}"/>
                         <ProgressBar x:Name="BarraPromAntes" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}"
-                                     Foreground="{StaticResource TextoTenueBrush}" Height="6"/>
-                        <TextBlock x:Name="TxtPromAntes" Grid.Column="3" FontSize="13" Margin="12,4,0,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Después" FontSize="12" Foreground="{StaticResource TextoTenueBrush}" Margin="0,4"/>
-                        <ProgressBar x:Name="BarraPromDespues" Grid.Row="1" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}" Height="6"/>
-                        <TextBlock x:Name="TxtPromDespues" Grid.Row="1" Grid.Column="3" FontSize="13" FontWeight="SemiBold" Margin="12,4,0,4"
-                                   Foreground="{StaticResource ActivoBrush}"/>
+                                     Foreground="{StaticResource TextoSecundarioBrush}" Height="6"/>
+                        <TextBlock x:Name="TxtPromAntes" Grid.Column="3" Style="{StaticResource DatoEstilo}" Margin="12,4,0,4"
+                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="después" Style="{StaticResource FilaEtiquetaEstilo}"/>
+                        <ProgressBar x:Name="BarraPromDespues" Grid.Row="1" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}"
+                                     Foreground="{StaticResource AcentoBrush}" Height="6"/>
+                        <TextBlock x:Name="TxtPromDespues" Grid.Row="1" Grid.Column="3" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"
+                                   Margin="12,4,0,4" Foreground="{StaticResource AcentoBrilloBrush}"/>
 
-                        <TextBlock Grid.Row="2" Grid.RowSpan="2" Text="1% low" Style="{StaticResource TextoAyudaEstilo}"
+                        <TextBlock Grid.Row="2" Grid.RowSpan="2" Text="1% low" Style="{StaticResource DatoEstilo}"
                                    VerticalAlignment="Center" Margin="0,10,0,0"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" Text="Antes" FontSize="12" Foreground="{StaticResource TextoTenueBrush}" Margin="0,14,0,4"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="antes" Style="{StaticResource FilaEtiquetaEstilo}" Margin="0,14,0,4"/>
                         <ProgressBar x:Name="BarraLowAntes" Grid.Row="2" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}"
-                                     Foreground="{StaticResource TextoTenueBrush}" Height="6" Margin="0,10,0,0"/>
-                        <TextBlock x:Name="TxtLowAntes" Grid.Row="2" Grid.Column="3" FontSize="13" Margin="12,14,0,4" Foreground="{StaticResource TextoSecundarioBrush}"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" Text="Después" FontSize="12" Foreground="{StaticResource TextoTenueBrush}" Margin="0,4"/>
-                        <ProgressBar x:Name="BarraLowDespues" Grid.Row="3" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}" Height="6"/>
-                        <TextBlock x:Name="TxtLowDespues" Grid.Row="3" Grid.Column="3" FontSize="13" FontWeight="SemiBold" Margin="12,4,0,4"
-                                   Foreground="{StaticResource ActivoBrush}"/>
+                                     Foreground="{StaticResource TextoSecundarioBrush}" Height="6" Margin="0,10,0,0"/>
+                        <TextBlock x:Name="TxtLowAntes" Grid.Row="2" Grid.Column="3" Style="{StaticResource DatoEstilo}" Margin="12,14,0,4"
+                                   Foreground="{StaticResource TextoSecundarioBrush}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="después" Style="{StaticResource FilaEtiquetaEstilo}"/>
+                        <ProgressBar x:Name="BarraLowDespues" Grid.Row="3" Grid.Column="2" Style="{StaticResource BarraRecursoEstilo}"
+                                     Foreground="{StaticResource AcentoBrush}" Height="6"/>
+                        <TextBlock x:Name="TxtLowDespues" Grid.Row="3" Grid.Column="3" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"
+                                   Margin="12,4,0,4" Foreground="{StaticResource AcentoBrilloBrush}"/>
                     </Grid>
 
                     <!-- FPS de cada segundo de las dos mediciones -->
-                    <Grid Margin="0,20,0,8">
-                        <TextBlock Text="FPS por segundo" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
+                    <Grid Margin="0,22,0,8">
+                        <TextBlock Text="fps por segundo" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Rectangle Width="12" Height="3" Fill="{StaticResource TextoTenueBrush}" VerticalAlignment="Center"/>
-                            <TextBlock Text="Antes" FontSize="12" Margin="6,0,14,0" Foreground="{StaticResource TextoSecundarioBrush}"/>
-                            <Rectangle Width="12" Height="3" Fill="{StaticResource ActivoBrush}" VerticalAlignment="Center"/>
-                            <TextBlock Text="Con Ghost Mode" FontSize="12" Margin="6,0,0,0" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                            <Rectangle Width="12" Height="2" Fill="{StaticResource TextoSecundarioBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="antes" Style="{StaticResource EtiquetaEstilo}" Margin="6,0,14,0"/>
+                            <Rectangle Width="12" Height="2" Fill="{StaticResource AcentoBrush}" VerticalAlignment="Center"/>
+                            <TextBlock Text="con ghost_mode" Style="{StaticResource EtiquetaEstilo}" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Grid>
                     <!-- Maximo="0" = el techo se calcula solo con el mayor valor -->
                     <componentes:GraficaLinea x:Name="GraficaFps" Height="120" Maximo="0"
-                                              Trazo="{StaticResource ActivoBrush}" TrazoSecundario="{StaticResource TextoTenueBrush}"
+                                              Trazo="{StaticResource AcentoBrush}" TrazoSecundario="{StaticResource TextoSecundarioBrush}"
                                               Lineas="{StaticResource BordeBrush}"/>
-                    <TextBlock x:Name="TxtEscala" FontSize="11" Margin="0,6,0,0" Foreground="{StaticResource TextoTenueBrush}"/>
+                    <TextBlock x:Name="TxtEscala" Style="{StaticResource EtiquetaEstilo}" Margin="0,6,0,0"/>
 
-                    <TextBlock x:Name="TxtResOptimizaciones" FontSize="12" TextWrapping="Wrap" Margin="0,14,0,0"
-                               Foreground="{StaticResource TextoTenueBrush}"/>
+                    <TextBlock x:Name="TxtResOptimizaciones" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,14,0,0"/>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
             <!-- ===== Historial ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="historial" Tag="clic en una fila para verla arriba"
+                                    Margin="0,16,0,0" Padding="0,12,0,4">
                 <StackPanel>
-                    <Grid Margin="20,16">
-                        <TextBlock Text="Historial" Style="{StaticResource TituloTarjetaEstilo}"/>
-                        <TextBlock Text="Clic en una fila para verla arriba" HorizontalAlignment="Right" FontSize="12"
-                                   Foreground="{StaticResource TextoTenueBrush}"/>
-                    </Grid>
-                    <ItemsControl x:Name="ListaHistorial">
+                    <ItemsControl x:Name="ListaHistorial" AlternationCount="1000">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <!-- Un botón sin aspecto de botón: toda la fila es clicable -->
+                                <!-- Un botón sin aspecto de botón: toda la fila es clicable (por eso SÍ reacciona al ratón).
+                                     La primera fila no lleva línea arriba (AlternationIndex = 0) -->
                                 <Button Click="FilaHistorial_Click" Cursor="Hand" Background="Transparent" BorderThickness="0"
                                         Padding="0" HorizontalContentAlignment="Stretch">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="Fondo" Background="Transparent" BorderBrush="{StaticResource BordeBrush}"
-                                                    BorderThickness="0,1,0,0" Padding="20,12">
+                                                    BorderThickness="0,1,0,0" Padding="16,10">
                                                 <ContentPresenter/>
                                             </Border>
                                             <ControlTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding (ItemsControl.AlternationIndex),
+                                                             RelativeSource={RelativeSource AncestorType=ContentPresenter}}" Value="0">
+                                                    <Setter TargetName="Fondo" Property="BorderThickness" Value="0"/>
+                                                </DataTrigger>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Fondo" Property="Background" Value="{StaticResource BordeBrush}"/>
+                                                    <Setter TargetName="Fondo" Property="Background" Value="{StaticResource TarjetaBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                                    <Setter TargetName="Fondo" Property="Background" Value="{StaticResource TarjetaBrush}"/>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -187,26 +187,29 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel>
-                                            <TextBlock Text="{Binding Juego}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap"
-                                                       Foreground="{StaticResource TextoBrush}"/>
-                                            <TextBlock Text="{Binding Fecha}" FontSize="11" Foreground="{StaticResource TextoTenueBrush}"/>
+                                            <TextBlock Text="{Binding Juego}" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Fecha}" Style="{StaticResource EtiquetaEstilo}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Promedio" FontSize="11" Foreground="{StaticResource TextoTenueBrush}"/>
-                                            <TextBlock Text="{Binding TextoPromedio}" FontSize="13" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                            <TextBlock Text="promedio" Style="{StaticResource EtiquetaEstilo}"/>
+                                            <TextBlock Text="{Binding TextoPromedio}" Style="{StaticResource DatoEstilo}"
+                                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
                                         </StackPanel>
                                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                            <TextBlock Text="1% low" FontSize="11" Foreground="{StaticResource TextoTenueBrush}"/>
-                                            <TextBlock Text="{Binding Texto1Low}" FontSize="13" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                                            <TextBlock Text="1% low" Style="{StaticResource EtiquetaEstilo}"/>
+                                            <TextBlock Text="{Binding Texto1Low}" Style="{StaticResource DatoEstilo}"
+                                                       Foreground="{StaticResource TextoSecundarioBrush}"/>
                                         </StackPanel>
-                                        <TextBlock Grid.Column="3" Text="{Binding TextoMejora}" FontSize="14" FontWeight="SemiBold"
+                                        <!-- Verde si mejoró (resultado OK), ámbar si no -->
+                                        <TextBlock Grid.Column="3" Text="{Binding TextoMejora}" FontWeight="SemiBold"
                                                    VerticalAlignment="Center" Margin="12,0,0,0">
                                             <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource DatoEstilo}">
                                                     <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Mejoro}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource ActivoBrush}"/>
+                                                            <Setter Property="Foreground" Value="{StaticResource ExitoBrush}"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -217,10 +220,10 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <TextBlock x:Name="TxtSinHistorial" Text="Todavía no hay benchmarks guardados." FontSize="13"
-                               Margin="20,4,20,18" Foreground="{StaticResource TextoSecundarioBrush}"/>
+                    <TextBlock x:Name="TxtSinHistorial" Text="&gt; sin benchmarks guardados todavía" Style="{StaticResource DatoEstilo}"
+                               Foreground="{StaticResource TextoSecundarioBrush}" Margin="16,4,16,14"/>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
         </StackPanel>
     </ScrollViewer>
 </Page>

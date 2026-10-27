@@ -8,52 +8,45 @@
       Title="Monitor">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="44,36,44,36">
+        <StackPanel Margin="36,28,36,32">
 
-            <!-- Encabezado: título a la izquierda, Pausar a la derecha -->
+            <!-- Encabezado: título a la izquierda, pausar a la derecha -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Monitor" Style="{StaticResource TituloPaginaEstilo}"/>
-                    <TextBlock Text="Telemetría en tiempo real · Últimos 60 segundos" Style="{StaticResource SubtituloPaginaEstilo}"/>
+                    <TextBlock Text="&gt; monitor" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <TextBlock Text="Uso del equipo en los últimos 60 segundos." Style="{StaticResource SubtituloPaginaEstilo}"/>
                 </StackPanel>
-                <ui:Button x:Name="BtnPausar" Grid.Column="1" Content="Pausar" VerticalAlignment="Top"
-                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnPausar_Click">
-                    <ui:Button.Icon>
-                        <ui:SymbolIcon x:Name="IconoPausar" Symbol="Pause20"/>
-                    </ui:Button.Icon>
-                </ui:Button>
+                <ui:Button x:Name="BtnPausar" Grid.Column="1" Content="[ pausar ]" VerticalAlignment="Top"
+                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnPausar_Click"/>
             </Grid>
 
-            <!-- "En vivo · Cada 1 s" y el procesador -->
-            <Grid Margin="0,18,0,14">
-                <Border x:Name="PastillaVivo" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Left"
-                        Background="{StaticResource ActivoSuaveBrush}">
-                    <TextBlock x:Name="TxtVivo" Text="En vivo · Cada 1 s" Style="{StaticResource PastillaTextoEstilo}"
-                               Foreground="{StaticResource ActivoBrush}"/>
-                </Border>
-                <TextBlock x:Name="TxtProcesador" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="12"
-                           Foreground="{StaticResource TextoSecundarioBrush}"/>
+            <!-- "en vivo, cada 1 s" y el procesador -->
+            <Grid Margin="0,18,0,4">
+                <StackPanel Orientation="Horizontal">
+                    <!-- Cuadradito: claro = midiendo, gris = en pausa -->
+                    <Rectangle x:Name="PuntoVivo" Width="6" Height="6" VerticalAlignment="Center" Margin="0,0,8,0"
+                               Fill="{StaticResource TextoBrush}"/>
+                    <TextBlock x:Name="TxtVivo" Text="en vivo, cada 1 s" Style="{StaticResource EtiquetaEstilo}"
+                               Foreground="{StaticResource TextoBrush}"/>
+                </StackPanel>
+                <TextBlock x:Name="TxtProcesador" HorizontalAlignment="Right" VerticalAlignment="Center"
+                           Style="{StaticResource EtiquetaEstilo}"/>
             </Grid>
 
-            <!-- Las 4 tarjetas en 2 × 2. Los márgenes negativos compensan el hueco de la última columna/fila -->
-            <UniformGrid Columns="2" Margin="0,0,-16,-16">
-                <componentes:TarjetaGrafica x:Name="TarjetaCpu" Titulo="CPU" Icono="DeveloperBoard20"
-                                            EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
-                <componentes:TarjetaGrafica x:Name="TarjetaRam" Titulo="RAM" Icono="Ram20"
-                                            EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
-                <componentes:TarjetaGrafica x:Name="TarjetaGpu" Titulo="GPU" Icono="Video20"
-                                            EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
-                <componentes:TarjetaGrafica x:Name="TarjetaDisco" Titulo="Disco" Icono="HardDrive20"
-                                            EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
+            <!-- Los 4 paneles en 2 × 2. Los márgenes negativos compensan el hueco de la última columna/fila -->
+            <UniformGrid Columns="2" Margin="0,8,-16,-16">
+                <componentes:TarjetaGrafica x:Name="TarjetaCpu" Titulo="cpu" EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
+                <componentes:TarjetaGrafica x:Name="TarjetaRam" Titulo="ram" EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
+                <componentes:TarjetaGrafica x:Name="TarjetaGpu" Titulo="gpu" EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
+                <componentes:TarjetaGrafica x:Name="TarjetaDisco" Titulo="disco" EtiquetaMaximo="100 %" Margin="0,0,16,16"/>
             </UniformGrid>
 
             <!-- Temperatura de la GPU (NVML, solo NVIDIA), a lo ancho: el techo de la gráfica es 100 °C -->
-            <componentes:TarjetaGrafica x:Name="TarjetaTemp" Titulo="Temp · GPU" Icono="Temperature20"
-                                        EtiquetaMaximo="100 °C" Valor="N/D" Margin="0,16,0,0"/>
+            <componentes:TarjetaGrafica x:Name="TarjetaTemp" Titulo="temp gpu" EtiquetaMaximo="100 °C" Valor="N/D" Margin="0,16,0,0"/>
 
             <!-- Pie: consumo de la propia app y estado de los sensores -->
             <Grid Margin="0,20,0,0">
@@ -61,9 +54,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock x:Name="TxtConsumo" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource TextoTenueBrush}"/>
-                <TextBlock x:Name="TxtSensores" Grid.Column="1" FontSize="12" Margin="16,0,0,0"
-                           Foreground="{StaticResource TextoTenueBrush}"/>
+                <TextBlock x:Name="TxtConsumo" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap"/>
+                <TextBlock x:Name="TxtSensores" Grid.Column="1" Style="{StaticResource EtiquetaEstilo}" Margin="16,0,0,0"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>
