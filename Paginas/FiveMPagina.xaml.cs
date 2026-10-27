@@ -64,8 +64,8 @@ namespace OptimizadorPC.Paginas
                 int hilos = Environment.ProcessorCount;
 
                 string grafica = equipo.Gpu == null ? "gráfica no detectada"
-                    : equipo.VramGb is double v ? $"{equipo.Gpu} · {v.ToString("0.#", es)} GB VRAM" : equipo.Gpu;
-                TxtEquipoGraficos.Text = $"{grafica} · RAM {equipo.RamGb?.ToString() ?? "?"} GB · CPU {hilos} hilos";
+                    : equipo.VramGb is double v ? $"{equipo.Gpu}, {v.ToString("0.#", es)} GB VRAM" : equipo.Gpu;
+                TxtEquipoGraficos.Text = $"{grafica}, RAM {equipo.RamGb?.ToString() ?? "?"} GB, CPU {hilos} hilos";
                 TxtSettingsGta.Text = juego != null
                     ? "Ajustes leídos del settings.xml de GTA V. Ojo: FiveM podría no estar usando ese archivo en su versión actual."
                     : "No hay settings.xml de GTA V: recomendaciones solo según el equipo.";
@@ -113,16 +113,16 @@ namespace OptimizadorPC.Paginas
         {
             bool instalado = datos.Exe != null;
 
-            TxtEstado.Text = instalado ? "FiveM detectado" : "FiveM no encontrado";
+            TxtEstado.Text = instalado ? "> fivem detectado" : "> fivem no encontrado";
             TxtRuta.Text = instalado
                 ? Path.GetDirectoryName(datos.Exe)
-                : "Instálalo desde fivem.net y pulsa «Volver a buscar».";
+                : "Instálalo desde fivem.net y pulsa «[ volver a buscar ]».";
 
             PastillaAbierto.Visibility = instalado ? Visibility.Visible : Visibility.Collapsed;
-            TxtAbierto.Text = datos.Abierto ? "Abierto" : "Cerrado";
+            TxtAbierto.Text = datos.Abierto ? "abierto" : "cerrado";
             // TryFindResource = buscar un color de Colores.xaml por su nombre
             TxtAbierto.Foreground = (Brush)TryFindResource(datos.Abierto ? "AvisoBrush" : "TextoSecundarioBrush");
-            PastillaAbierto.Background = (Brush)TryFindResource(datos.Abierto ? "AvisoSuaveBrush" : "BordeBrush");
+            PastillaAbierto.BorderBrush = (Brush)TryFindResource(datos.Abierto ? "AvisoBrush" : "BordeHoverBrush");
             AvisoAbierto.Visibility = datos.Abierto ? Visibility.Visible : Visibility.Collapsed;
 
             // Sin FiveM, las tarjetas se ven apagadas y no responden
@@ -147,7 +147,7 @@ namespace OptimizadorPC.Paginas
         {
             bool instalado = datos.Exe != null;
 
-            BtnAplicarGpu.Content = !gpu.TieneCambioPendiente ? "Sin cambios" : gpu.Deseada ? "Aplicar" : "Quitar";
+            BtnAplicarGpu.Content = !gpu.TieneCambioPendiente ? "[ sin cambios ]" : gpu.Deseada ? "[ aplicar ]" : "[ quitar ]";
             BtnAplicarGpu.IsEnabled = instalado && gpu.TieneCambioPendiente && !trabajando;
 
             BtnLimpiar.IsEnabled = instalado && !datos.Abierto && !trabajando && datos.BytesCache > 0;
@@ -238,7 +238,7 @@ namespace OptimizadorPC.Paginas
 
             string exe = datos.Exe;
             trabajando = true;
-            BtnLimpiar.Content = "Limpiando…";
+            BtnLimpiar.Content = "[ limpiando… ]";
             ActualizarBotones();
             try
             {
@@ -257,7 +257,7 @@ namespace OptimizadorPC.Paginas
             finally
             {
                 trabajando = false;
-                BtnLimpiar.Content = "Limpiar caché";
+                BtnLimpiar.Content = "[ limpiar caché ]";
                 await RefrescarAsync();   // volver a medir: el tamaño que se ve es el real
             }
         }

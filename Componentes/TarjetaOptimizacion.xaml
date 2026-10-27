@@ -1,75 +1,74 @@
 <!-- Tarjeta de una optimización: nombre + interruptor, descripción e "impacto / riesgo".
      (En la pantalla Optimizaciones se usa la variante en fila: FilaOptimizacion)
+     Sin marco propio: quien la usa la mete en un panel (FiveM: panel "gpu", con su botón dentro).
      Su DataContext es un OptimizacionVM: por eso {Binding Nombre} encuentra el nombre. -->
 <UserControl x:Class="OptimizadorPC.Componentes.TarjetaOptimizacion"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:componentes="clr-namespace:OptimizadorPC.Componentes">
 
-    <Border Style="{StaticResource TarjetaEstilo}">
-        <StackPanel>
-            <!-- Fila de arriba: nombre a la izquierda, interruptor a la derecha -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+    <StackPanel>
+        <!-- Fila de arriba: nombre a la izquierda, interruptor a la derecha -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <TextBlock Text="{Binding Nombre}" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
-                           FontWeight="SemiBold" TextWrapping="Wrap"
-                           Foreground="{StaticResource TextoBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+            <TextBlock Text="{Binding Nombre}" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
+                       FontWeight="SemiBold" TextWrapping="Wrap"
+                       Foreground="{StaticResource TextoBrush}" VerticalAlignment="Center" Margin="0,0,12,0"/>
 
-                <!-- Mode=TwoWay en IsChecked: al pulsar, el cambio vuelve al VM (Deseada) -->
-                <componentes:InterruptorEstado Grid.Column="1" VerticalAlignment="Top"
-                                               IsChecked="{Binding Deseada, Mode=TwoWay}"
-                                               Estado="{Binding Estado}"
-                                               ToolTip="{Binding Nombre}"/>
-            </Grid>
+            <!-- Mode=TwoWay en IsChecked: al pulsar, el cambio vuelve al VM (Deseada) -->
+            <componentes:InterruptorEstado Grid.Column="1" VerticalAlignment="Top"
+                                           IsChecked="{Binding Deseada, Mode=TwoWay}"
+                                           Estado="{Binding Estado}"
+                                           ToolTip="{Binding Nombre}"/>
+        </Grid>
 
-            <TextBlock Text="{Binding Descripcion}" Style="{StaticResource ExplicacionEstilo}" Margin="0,8,0,12"/>
+        <TextBlock Text="{Binding Descripcion}" Style="{StaticResource ExplicacionEstilo}" Margin="0,8,0,12"/>
 
-            <!-- Impacto y riesgo como datos de texto (igual que en FilaOptimizacion).
-                 Los DataTrigger cambian el color según el VM: impacto alto = claro, riesgo moderado = ámbar -->
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding TextoImpacto}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ImpactoAlto}" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-                <TextBlock Text="{Binding TextoRiesgo}">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding EsModerado}" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </StackPanel>
-
-            <!-- Solo se ve si el último intento falló -->
-            <TextBlock Text="! no se pudo aplicar. Pulsa «aplicar» para reintentar." FontFamily="{StaticResource FuenteMono}"
-                       FontSize="{StaticResource TamanoEtiqueta}" TextWrapping="Wrap" Margin="0,10,0,0"
-                       Foreground="{StaticResource ErrorBrush}">
+        <!-- Impacto y riesgo como datos de texto (igual que en FilaOptimizacion).
+             Los DataTrigger cambian el color según el VM: impacto alto = claro, riesgo moderado = ámbar -->
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding TextoImpacto}">
                 <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Estado}" Value="Error">
-                                <Setter Property="Visibility" Value="Visible"/>
+                            <DataTrigger Binding="{Binding ImpactoAlto}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <TextBlock Text="{Binding TextoRiesgo}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding EsModerado}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
         </StackPanel>
-    </Border>
+
+        <!-- Solo se ve si el último intento falló -->
+        <TextBlock Text="! no se pudo aplicar. Pulsa «aplicar» para reintentar." FontFamily="{StaticResource FuenteMono}"
+                   FontSize="{StaticResource TamanoEtiqueta}" TextWrapping="Wrap" Margin="0,10,0,0"
+                   Foreground="{StaticResource ErrorBrush}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Estado}" Value="Error">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+    </StackPanel>
 </UserControl>
