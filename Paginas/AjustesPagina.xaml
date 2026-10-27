@@ -1,4 +1,5 @@
-<!-- Página Ajustes: [ GENERAL ] (inicio con Windows, atajo global, bienvenida) y [ ACERCA DE ] (nombre,
+<!-- Página Ajustes: paneles "general" (inicio con Windows, atajo global, bienvenida), "diagnóstico",
+     "solución de problemas" y "acerca de" (nombre,
      versión leída del ensamblado, autor, enlaces y licencia). Los textos con x:Name los rellena AjustesPagina.xaml.cs -->
 <Page x:Class="OptimizadorPC.Paginas.AjustesPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -25,11 +26,8 @@
             <TextBlock Text="Arranque, atajo de teclado e información de la aplicación." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
             <!-- ===== General ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,20,0,0" Padding="0">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="general" Margin="0,20,0,0" Padding="0,8,0,0">
                 <StackPanel>
-                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
-                        <TextBlock Text="[ GENERAL ]" Style="{StaticResource EtiquetaEstilo}"/>
-                    </Border>
 
                     <!-- Iniciar con Windows -->
                     <Grid Margin="16,14,16,14">
@@ -38,8 +36,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,16,0">
-                            <TextBlock Text="Iniciar con Windows (minimizado)" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Iniciar con Windows (minimizado)" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                             <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
                                        Text="Se abre en la bandeja al iniciar sesión, para que Modo Gaming vigile tus juegos. Usa el Programador de tareas con privilegios elevados: no pide permiso de administrador en cada arranque. Al apagarlo se borra la tarea."/>
                         </StackPanel>
@@ -50,8 +47,7 @@
                     <!-- Atajo global -->
                     <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="16,14">
                         <StackPanel>
-                            <TextBlock Text="Atajo para activar/desactivar Ghost Mode" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Atajo para activar/desactivar Ghost Mode" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                             <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,10"
                                        Text="Funciona desde cualquier sitio, también dentro del juego. Haz clic en el cuadro y pulsa la combinación (con Ctrl, Alt o Win)."/>
                             <StackPanel Orientation="Horizontal">
@@ -71,8 +67,7 @@
                     <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,1,0,0" Padding="16,14">
                         <Grid>
                             <StackPanel Margin="0,0,180,0">
-                                <TextBlock Text="Bienvenida y diagnóstico" FontSize="14" FontWeight="SemiBold"
-                                           Foreground="{StaticResource TextoBrush}"/>
+                                <TextBlock Text="Bienvenida y diagnóstico" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                                 <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
                                            Text="Vuelve a ver los 3 pasos y el diagnóstico rápido de tu equipo."/>
                             </StackPanel>
@@ -81,18 +76,14 @@
                         </Grid>
                     </Border>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
             <!-- ===== Diagnóstico para enviar ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="diagnóstico" Margin="0,16,0,0" Padding="0,8,0,0">
                 <StackPanel>
-                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
-                        <TextBlock Text="[ DIAGNÓSTICO ]" Style="{StaticResource EtiquetaEstilo}"/>
-                    </Border>
                     <Grid Margin="16,14">
                         <StackPanel Margin="0,0,220,0">
-                            <TextBlock Text="Exportar diagnóstico" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Exportar diagnóstico" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                             <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
                                        Text="Crea un .zip con el log, los cambios guardados, la configuración y un resumen del equipo, para enviarlo si algo falla. Sin datos personales: se quitan tu usuario, el nombre del equipo y las IP de tu red."/>
                         </StackPanel>
@@ -101,22 +92,18 @@
                                    Click="BtnExportar_Click"/>
                     </Grid>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
             <!-- ===== Solución de problemas: cosas que arreglan fallos concretos, NO dan rendimiento ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="solución de problemas" Margin="0,16,0,0" Padding="0,8,0,0">
                 <StackPanel>
-                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
-                        <TextBlock Text="[ SOLUCIÓN DE PROBLEMAS ]" Style="{StaticResource EtiquetaEstilo}"/>
-                    </Border>
                     <Grid Margin="16,14">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Margin="0,0,16,0">
-                            <TextBlock Text="Desactivar MPO (parpadeos de pantalla)" FontSize="14" FontWeight="SemiBold"
-                                       Foreground="{StaticResource TextoBrush}"/>
+                            <TextBlock Text="Desactivar MPO (parpadeos de pantalla)" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
                             <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"
                                        Text="Solo si ves parpadeos o tirones en el escritorio, en ventanas o en el navegador. NO da FPS. Es el arreglo que publicó NVIDIA para algunos drivers; en Windows 11 reciente puede no tener efecto. Afecta a todo el sistema y necesita reiniciar Windows. Se deshace aquí o con «Deshacer todo»."/>
                             <TextBlock x:Name="TxtMpo" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0" TextWrapping="Wrap"/>
@@ -125,13 +112,10 @@
                                                        Click="IntMpo_Click"/>
                     </Grid>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="0">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="acerca de" Margin="0,16,0,0" Padding="0,8,0,0">
                 <StackPanel>
-                    <Border BorderBrush="{StaticResource BordeBrush}" BorderThickness="0,0,0,1" Padding="16,8">
-                        <TextBlock Text="[ ACERCA DE ]" Style="{StaticResource EtiquetaEstilo}"/>
-                    </Border>
 
                     <Grid Margin="16,10,16,14">
                         <Grid.ColumnDefinitions>
@@ -171,7 +155,7 @@
                         <TextBlock Grid.Row="5" Grid.Column="1" Text="MIT" Style="{StaticResource ValorEstilo}"/>
                     </Grid>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
         </StackPanel>
     </ScrollViewer>
 </Page>

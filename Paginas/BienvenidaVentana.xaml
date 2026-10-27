@@ -18,7 +18,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ui:TitleBar Title="ghost_mode · bienvenida" FontFamily="{StaticResource FuenteMono}" FontSize="12"
+            <ui:TitleBar Title="ghost_mode: bienvenida" FontFamily="{StaticResource FuenteMono}" FontSize="12"
                          ShowMaximize="False" ShowMinimize="False"/>
 
             <!-- Los tres pasos: solo uno visible a la vez -->
