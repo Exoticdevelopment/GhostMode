@@ -26,11 +26,11 @@ namespace OptimizadorPC.ModelosVista
         public Categoria Categoria => Optimizacion.Categoria;
         public Riesgo Riesgo => Optimizacion.Riesgo;
 
-        // Textos y colores de las pastillas
-        public string TextoImpacto => $"Impacto {Optimizacion.Impacto}";   // "Impacto Alto"
-        public bool ImpactoAlto => Optimizacion.Impacto == Impacto.Alto;   // pastilla verde
-        public string TextoRiesgo => Optimizacion.Riesgo.ToString();       // "Seguro" o "Moderado"
-        public bool EsModerado => Optimizacion.Riesgo == Riesgo.Moderado;  // pastilla naranja
+        // Textos y colores de los datos "impacto alto  riesgo seguro" (en minúsculas, como una salida de consola)
+        public string TextoImpacto => $"impacto {Optimizacion.Impacto.ToString().ToLower()}";   // "impacto alto"
+        public bool ImpactoAlto => Optimizacion.Impacto == Impacto.Alto;                        // texto más claro
+        public string TextoRiesgo => $"riesgo {Optimizacion.Riesgo.ToString().ToLower()}";      // "riesgo seguro"
+        public bool EsModerado => Optimizacion.Riesgo == Riesgo.Moderado;                       // texto ámbar
 
         // Lo que el usuario quiere (posición del interruptor).
         // NotifyPropertyChangedFor = al cambiar, avisar también que cambió TieneCambioPendiente

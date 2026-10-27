@@ -83,12 +83,20 @@ namespace OptimizadorPC.Paginas
             List<OptimizacionVM> visibles = Visibles();
             int pendientes = todas.Count(vm => vm.TieneCambioPendiente);
 
-            BtnAplicar.Content = pendientes switch
+            // Como un "diff": +N = se van a activar, −N = se van a desactivar. Solo se muestra lo que no es cero
+            int activar = todas.Count(vm => vm.TieneCambioPendiente && vm.Deseada);
+            int desactivar = pendientes - activar;
+            var partes = new List<string>();
+            if (activar > 0)
             {
-                0 => "Sin cambios",
-                1 => "Aplicar 1 cambio",
-                _ => $"Aplicar {pendientes} cambios"
-            };
+                partes.Add($"+{activar}");
+            }
+            if (desactivar > 0)
+            {
+                partes.Add($"−{desactivar}");
+            }
+            BtnAplicar.Content = pendientes == 0 ? "[ sin cambios ]" : $"[ aplicar {string.Join(" ", partes)} ]";
+            BtnAplicar.ToolTip = pendientes == 0 ? null : $"{activar} para activar, {desactivar} para desactivar";
             BtnAplicar.IsEnabled = pendientes > 0 && !aplicando;
 
             TxtSeleccionados.Text = $"{visibles.Count(vm => vm.Deseada)} de {visibles.Count} seleccionados";

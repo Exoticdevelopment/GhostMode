@@ -1,0 +1,71 @@
+<!-- Una optimización en forma de FILA, para la lista de la pantalla Optimizaciones:
+       nombre y descripción a la izquierda | "impacto alto  riesgo seguro" | interruptor
+     Es la variante de TarjetaOptimizacion (que sigue usándose en FiveM): mismo DataContext (un OptimizacionVM)
+     y los mismos {Binding}, así que la lógica no cambia. Sin marco propio: las filas van dentro de un panel. -->
+<UserControl x:Class="OptimizadorPC.Componentes.FilaOptimizacion"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:componentes="clr-namespace:OptimizadorPC.Componentes">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>      <!-- nombre + descripción -->
+            <ColumnDefinition Width="Auto"/>   <!-- impacto y riesgo -->
+            <ColumnDefinition Width="Auto"/>   <!-- interruptor -->
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Margin="0,0,20,0" VerticalAlignment="Center">
+            <TextBlock Text="{Binding Nombre}" FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}"
+                       FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"/>
+            <TextBlock Text="{Binding Descripcion}" Style="{StaticResource ExplicacionEstilo}" Margin="0,4,0,0"/>
+
+            <!-- Solo se ve si el último intento falló -->
+            <TextBlock Text="! no se pudo aplicar. Pulsa «aplicar» para reintentar."
+                       TextWrapping="Wrap" Margin="0,6,0,0" Foreground="{StaticResource ErrorBrush}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource EtiquetaEstilo}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Estado}" Value="Error">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Impacto y riesgo como datos de texto (sin pastillas). Ancho fijo: así quedan en columna fila tras fila.
+             Impacto alto = texto claro; riesgo moderado = ámbar (lo único que hay que vigilar) -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="{Binding TextoImpacto}" Width="96">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ImpactoAlto}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource TextoBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <TextBlock Text="{Binding TextoRiesgo}" Width="110">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource MetaEstilo}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding EsModerado}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource AvisoBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Mode=TwoWay en IsChecked: al pulsar, el cambio vuelve al VM (Deseada) -->
+        <componentes:InterruptorEstado Grid.Column="2" VerticalAlignment="Center"
+                                       IsChecked="{Binding Deseada, Mode=TwoWay}"
+                                       Estado="{Binding Estado}"
+                                       ToolTip="{Binding Nombre}"/>
+    </Grid>
+</UserControl>

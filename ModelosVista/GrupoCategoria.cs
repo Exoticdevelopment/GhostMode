@@ -7,14 +7,14 @@ namespace OptimizadorPC.ModelosVista
     // record = clase pequeña que solo guarda datos (se crea con new GrupoCategoria(...))
     public record GrupoCategoria(string Nombre, SymbolRegular Icono, IReadOnlyList<OptimizacionVM> Optimizaciones)
     {
-        // El texto bonito de cada categoría (el enum va sin tildes)
+        // El texto de cada categoría (el enum va sin tildes). En minúsculas: es el título de su panel
         public static string NombreDe(Categoria categoria) => categoria switch
         {
-            Categoria.Energia => "Energía",
-            Categoria.Graficos => "Gráficos",
-            Categoria.Sistema => "Sistema",
-            Categoria.Entrada => "Entrada (mouse)",
-            _ => categoria.ToString()   // _ = "cualquier otro caso" (por si se agrega una nueva)
+            Categoria.Energia => "energía",
+            Categoria.Graficos => "gráficos",
+            Categoria.Sistema => "sistema",
+            Categoria.Entrada => "entrada (mouse)",
+            _ => categoria.ToString().ToLower()   // _ = "cualquier otro caso" (por si se agrega una nueva)
         };
 
         public static SymbolRegular IconoDe(Categoria categoria) => categoria switch
