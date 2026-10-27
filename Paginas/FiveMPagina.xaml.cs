@@ -177,6 +177,26 @@ namespace OptimizadorPC.Paginas
 
         // ===== Botones =====
 
+        // "[ copiar ]" de la guía "¿es el servidor?": el comando va en Tag
+        private void Copiar_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement { Tag: string comando })
+            {
+                return;
+            }
+            try
+            {
+                Clipboard.SetText(comando);
+                Avisos.Info($"Copiado: {comando}", "Pégalo en la consola de FiveM (F8) con Ctrl+V.");
+            }
+            catch (System.Runtime.InteropServices.COMException ex)
+            {
+                // Otro programa tiene el portapapeles abierto en este momento
+                Logger.Aviso($"No se pudo copiar al portapapeles: {ex.Message}");
+                Avisos.Error("No se pudo copiar", "Otro programa está usando el portapapeles. Inténtalo de nuevo.");
+            }
+        }
+
         // "Volver a buscar" también revisa el disco: FiveM o GTA V pueden haberse instalado o movido
         private async void BtnBuscar_Click(object sender, RoutedEventArgs e) => await Task.WhenAll(RefrescarAsync(), MostrarDiscoAsync());
 

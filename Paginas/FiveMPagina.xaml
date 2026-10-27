@@ -1,10 +1,12 @@
-<!-- Página FiveM: estado de la instalación, GPU dedicada (reversible) y limpieza de caché.
+<!-- Página FiveM: estado de la instalación, aviso de disco duro, GPU dedicada (reversible), limpieza de caché,
+     diagnóstico de gráficos y la guía «¿es el servidor?».
      Todos los textos con x:Name se rellenan desde el código con datos reales -->
 <Page x:Class="OptimizadorPC.Paginas.FiveMPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:componentes="clr-namespace:OptimizadorPC.Componentes"
+      xmlns:fivem="clr-namespace:OptimizadorPC.Optimizaciones.FiveM"
       Title="FiveM">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -120,6 +122,80 @@
                     </ItemsControl>
                     <TextBlock Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,6,0,0"
                                Text="* Ghost Mode no cambia los gráficos del juego: cámbialos en Ajustes › Gráficos dentro de FiveM."/>
+                </StackPanel>
+            </HeaderedContentControl>
+
+            <!-- ===== ¿Es el servidor? (paso 8 del plan de docs/Investigacion-FiveM.pdf). Solo una guía: Ghost Mode no
+                 ejecuta nada en FiveM. Los pasos van numerados porque son una secuencia real ===== -->
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="¿es el servidor?" Tag="consola f8"
+                                    Margin="0,16,0,0" Padding="20,22,20,16">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource ExplicacionEstilo}" Foreground="{StaticResource TextoBrush}"
+                               Text="A veces el culpable no es tu PC. Cada script del servidor que corre en tu cliente suma tiempo de CPU a cada frame. Si en total suman varios milisegundos, el presupuesto de 16,7 ms para 60 FPS se va en scripts antes de dibujar nada, y ningún optimizador lo arregla."/>
+                    <TextBlock Text="tiempo de cpu = trabajo del juego + suma del tiempo de cada script" Style="{StaticResource DatoEstilo}"
+                               TextWrapping="Wrap" Margin="0,10,0,0"/>
+
+                    <TextBlock Text="cómo saberlo, con las herramientas oficiales de fivem:" Style="{StaticResource EtiquetaEstilo}" Margin="0,16,0,8"/>
+
+                    <!-- 1. cl_drawperf -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="1." Style="{StaticResource DatoEstilo}"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Foreground="{StaticResource TextoBrush}"
+                                       Text="En el juego, abre la consola con F8 y escribe este comando. Muestra FPS, ping, pérdida de paquetes, uso de CPU y GPU, y temperatura de la GPU."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <TextBlock Text="{x:Static fivem:GuiaServidor.Drawperf}" Style="{StaticResource DatoEstilo}"
+                                           Foreground="{StaticResource AcentoBrilloBrush}" VerticalAlignment="Center"/>
+                                <Button Content="[ copiar ]" Tag="{x:Static fivem:GuiaServidor.Drawperf}" Style="{StaticResource EnlaceEstilo}"
+                                        Margin="14,0,0,0" VerticalAlignment="Center" Click="Copiar_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 2. comparar con un servidor de prueba -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="2." Style="{StaticResource DatoEstilo}"/>
+                        <TextBlock Grid.Column="1" Style="{StaticResource ExplicacionEstilo}" Foreground="{StaticResource TextoBrush}"
+                                   Text="Compara esa lectura en tu servidor y en un servidor de prueba de FiveM.net. Si en el de prueba vas bien y en el tuyo no, el problema es el servidor. Para que la comparación valga: misma ruta, misma hora del día y al menos 60 s en cada uno."/>
+                    </Grid>
+
+                    <!-- 3. resmon -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="3." Style="{StaticResource DatoEstilo}"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Style="{StaticResource ExplicacionEstilo}" Foreground="{StaticResource TextoBrush}"
+                                       Text="Para ver qué scripts pesan, resmon muestra CPU y memoria por recurso. Pide modo desarrollador: añade lo segundo al final del destino del acceso directo de FiveM."/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <TextBlock Text="{x:Static fivem:GuiaServidor.Resmon}" Style="{StaticResource DatoEstilo}"
+                                           Foreground="{StaticResource AcentoBrilloBrush}" VerticalAlignment="Center"/>
+                                <Button Content="[ copiar ]" Tag="{x:Static fivem:GuiaServidor.Resmon}" Style="{StaticResource EnlaceEstilo}"
+                                        Margin="14,0,0,0" VerticalAlignment="Center" Click="Copiar_Click"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <TextBlock Text="{x:Static fivem:GuiaServidor.ModoDesarrollador}" Style="{StaticResource DatoEstilo}"
+                                           Foreground="{StaticResource AcentoBrilloBrush}" VerticalAlignment="Center"/>
+                                <Button Content="[ copiar ]" Tag="{x:Static fivem:GuiaServidor.ModoDesarrollador}" Style="{StaticResource EnlaceEstilo}"
+                                        Margin="14,0,0,0" VerticalAlignment="Center" Click="Copiar_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Style="{StaticResource NotaEstilo}" Margin="0,16,0,0">
+                        <TextBlock Style="{StaticResource NotaTextoEstilo}"
+                                   Text="Cuidado al leer resmon: el tiempo de un recurso no es un valor de FPS, y no hay un umbral universal de «malo». Compara antes y después con la misma secuencia, y no saques conclusiones de una sola captura."/>
+                    </Border>
                 </StackPanel>
             </HeaderedContentControl>
         </StackPanel>
