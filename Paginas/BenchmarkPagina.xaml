@@ -1,4 +1,4 @@
-<!-- Página Benchmark: mide los FPS de un juego 60 s sin optimizar, aplica Ghost Mode y mide otros 60 s.
+<!-- Página Benchmark: diagnóstico CPU/GPU (2 × 30 s, con y sin resolución mínima) y benchmark: mide los FPS de un juego 60 s sin optimizar, aplica Ghost Mode y mide otros 60 s.
      Los números salen de PresentMon (Intel, MIT), que se descarga la primera vez. -->
 <Page x:Class="OptimizadorPC.Paginas.BenchmarkPagina"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -40,6 +40,10 @@
                     </Grid>
                 </StackPanel>
             </HeaderedContentControl>
+
+            <!-- ===== Diagnóstico CPU/GPU: con el mismo juego del paso 1. Va antes del benchmark porque
+                 dice dónde actuar (paso 1 del plan de docs/Investigacion-FiveM.pdf) ===== -->
+            <componentes:PanelDiagnosticoCuello x:Name="Diagnostico" Margin="0,16,0,0"/>
 
             <!-- ===== Paso 2: medir ===== -->
             <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="2. mide" Margin="0,16,0,0">

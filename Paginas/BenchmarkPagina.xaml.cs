@@ -38,6 +38,8 @@ namespace OptimizadorPC.Paginas
         {
             InitializeComponent();
             reloj.Tick += (s, e) => ActualizarCuentaAtras();
+            // Mientras el diagnóstico CPU/GPU mide, el benchmark espera (y al revés): PresentMon mide uno a la vez
+            Diagnostico.EnMarchaCambiado += ActualizarBotones;
 
             Loaded += async (s, e) =>
             {
@@ -108,9 +110,14 @@ namespace OptimizadorPC.Paginas
         private void ActualizarBotones()
         {
             bool enMarcha = cancelar != null;
-            BtnIniciar.IsEnabled = !enMarcha && ListaProcesos.SelectedItem != null && pendientes.Count > 0;
-            BtnRefrescar.IsEnabled = !enMarcha;
-            ListaProcesos.IsEnabled = !enMarcha;
+            bool diagnosticando = Diagnostico.EnMarcha;
+            BtnIniciar.IsEnabled = !enMarcha && !diagnosticando && ListaProcesos.SelectedItem != null && pendientes.Count > 0;
+            BtnRefrescar.IsEnabled = !enMarcha && !diagnosticando;
+            ListaProcesos.IsEnabled = !enMarcha && !diagnosticando;
+
+            var juego = ListaProcesos.SelectedItem as ProcesoJuego;
+            Diagnostico.ElegirJuego(juego?.Id, juego?.Nombre);
+            Diagnostico.Bloqueado = enMarcha;
             BtnCancelar.Visibility = enMarcha ? Visibility.Visible : Visibility.Collapsed;
             PanelProgreso.Visibility = enMarcha ? Visibility.Visible : Visibility.Collapsed;
         }
