@@ -98,7 +98,8 @@
                             <TextBlock x:Name="TxtEstado" Text="&gt; ghost_mode: ..." Margin="10,0,0,0"
                                        Style="{StaticResource DatoEstilo}" FontSize="{StaticResource TamanoDato}" FontWeight="SemiBold"/>
                         </StackPanel>
-                        <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,8,0,16"
+                        <!-- Apagado: esta explicación. Encendido: el código la cambia por un comentario de consola -->
+                        <TextBlock x:Name="TxtExplicacion" Style="{StaticResource ExplicacionEstilo}" Margin="0,8,0,16"
                                    Text="Aplica de una vez las optimizaciones de riesgo bajo. Todas se pueden deshacer."/>
 
                         <!-- El brillo morado: el ÚNICO efecto de la app (un DropShadowEffect pequeño y sin desplazamiento).
@@ -115,17 +116,34 @@
                         <TextBlock x:Name="TxtBotonGhostDetalle" Style="{StaticResource EtiquetaEstilo}" Margin="0,8,0,0"/>
                     </StackPanel>
 
-                    <!-- Derecha: qué pasa al activar (todo dato real), separado por una línea vertical -->
+                    <!-- Derecha, separada por una línea vertical (todo dato real):
+                           apagado   → "al activar:" y qué pasará
+                           encendido → "activo:" y las optimizaciones que de verdad están aplicadas en Windows -->
                     <Border Grid.Column="1" BorderBrush="{StaticResource BordeBrush}" BorderThickness="1,0,0,0"
                             Padding="20,0,0,0" Width="250">
-                        <StackPanel>
-                            <TextBlock Text="al activar:" Style="{StaticResource EtiquetaEstilo}"/>
-                            <TextBlock x:Name="TxtCuantasSeguras" Style="{StaticResource LineaListaEstilo}" Margin="0,10,0,0"/>
-                            <TextBlock Text="+ punto de restauración previo" Style="{StaticResource LineaListaEstilo}"/>
-                            <TextBlock Text="+ cambios reversibles" Style="{StaticResource LineaListaEstilo}"/>
-                            <TextBlock Text="* se pide confirmación antes de aplicar" Style="{StaticResource EtiquetaEstilo}"
-                                       TextWrapping="Wrap" Margin="0,12,0,0"/>
-                        </StackPanel>
+                        <Grid>
+                            <StackPanel x:Name="PanelAlActivar">
+                                <TextBlock Text="al activar:" Style="{StaticResource EtiquetaEstilo}"/>
+                                <TextBlock x:Name="TxtCuantasSeguras" Style="{StaticResource LineaListaEstilo}" Margin="0,10,0,0"/>
+                                <TextBlock Text="+ punto de restauración previo" Style="{StaticResource LineaListaEstilo}"/>
+                                <TextBlock Text="+ cambios reversibles" Style="{StaticResource LineaListaEstilo}"/>
+                                <TextBlock Text="* se pide confirmación antes de aplicar" Style="{StaticResource EtiquetaEstilo}"
+                                           TextWrapping="Wrap" Margin="0,12,0,0"/>
+                            </StackPanel>
+                            <StackPanel x:Name="PanelActivas" Visibility="Collapsed">
+                                <TextBlock Text="activo:" Style="{StaticResource EtiquetaEstilo}"/>
+                                <!-- Una línea "+ nombre" por optimización aplicada (InicioPagina.xaml.cs) -->
+                                <ItemsControl x:Name="ListaActivas" Margin="0,4,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat='+ {0}'}" Style="{StaticResource LineaListaEstilo}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="* se deshacen con el botón o con «deshacer todo»" Style="{StaticResource EtiquetaEstilo}"
+                                           TextWrapping="Wrap" Margin="0,12,0,0"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
             </HeaderedContentControl>

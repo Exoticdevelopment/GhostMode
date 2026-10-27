@@ -20,6 +20,7 @@ namespace OptimizadorPC.Paginas
         private readonly MonitorRecursos monitor = new();
         private DatosEquipo? equipo;      // hardware fijo (núcleos, GHz, RAM instalada, nombre de la GPU)
         private bool ghostActivo = false; // ¿están aplicadas todas las seguras?
+        private List<IOptimizacion> activas = []; // las seguras que están aplicadas en Windows ahora mismo
         private bool trabajando = false;  // aplicando o revirtiendo ahora mismo
         private bool avisoDiscoDado = false; // el fallo del disco C: se anota en el log una sola vez, no cada 2 s
 
@@ -187,7 +188,8 @@ namespace OptimizadorPC.Paginas
         // Ghost Mode está "ON" si TODAS las seguras están aplicadas en Windows
         private async Task LeerEstadoGhostAsync()
         {
-            ghostActivo = await Task.Run(() => Seguras.All(EstaActivaSinFallar));
+            activas = await Task.Run(() => Seguras.Where(EstaActivaSinFallar).ToList());
+            ghostActivo = activas.Count == Seguras.Count;   // = todas aplicadas
             MostrarEstadoGhost();
         }
 
@@ -217,13 +219,31 @@ namespace OptimizadorPC.Paginas
 
             // TryFindResource = buscar un color de Colores.xaml por su nombre.
             // Morado = Ghost Mode encendido (el mismo color que el botón ON); apagado, gris
-            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "AcentoBrush" : "TextoSecundarioBrush");            TxtEstado.Text = ghostActivo ? "> ghost_mode: on" : "> ghost_mode: off";
+            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "AcentoBrush" : "TextoSecundarioBrush");
+            TxtEstado.Text = ghostActivo ? "> ghost_mode: on" : "> ghost_mode: off";
             TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "AcentoBrilloBrush" : "TextoBrush");
+
+            // Encendido: comentario de consola y la lista de lo aplicado. Apagado: la explicación y qué pasará al activar
+            if (ghostActivo)
+            {
+                TxtExplicacion.Text = "# optimizaciones activas · clic para desactivar";
+                TxtExplicacion.Style = (Style)FindResource("ComentarioEstilo");
+            }
+            else
+            {
+                TxtExplicacion.Text = "Aplica de una vez las optimizaciones de riesgo bajo. Todas se pueden deshacer.";
+                TxtExplicacion.Style = (Style)FindResource("ExplicacionEstilo");
+            }
+            TxtExplicacion.Margin = new Thickness(0, 8, 0, 16);   // el estilo de comentario trae su propio margen
+            ListaActivas.ItemsSource = activas.Select(o => o.Nombre).ToList();
+            PanelActivas.Visibility = ghostActivo ? Visibility.Visible : Visibility.Collapsed;
+            PanelAlActivar.Visibility = ghostActivo ? Visibility.Collapsed : Visibility.Visible;
 
             // Tag="on" hace que el estilo del botón lo rellene de morado (InicioPagina.xaml)
             BtnGhost.Tag = ghostActivo ? "on" : "off";
             TxtBotonGhost.Text = ghostActivo ? "[ GHOST_MODE: ON ]" : "[ ACTIVAR GHOST MODE ]";
-            TxtBotonGhostDetalle.Text = ghostActivo ? "clic para desactivar" : "un clic, pide confirmación";
+            // (encendido, "clic para desactivar" ya lo dice el comentario de arriba)
+            TxtBotonGhostDetalle.Text = ghostActivo ? "pide confirmación" : "un clic, pide confirmación";
         }
 
         // Se aplicó o deshizo algo desde otra parte (Optimizaciones, "Deshacer todo")
