@@ -1,5 +1,5 @@
 <!-- Estilos compartidos por todas las pantallas. Estética "terminal": negro, bordes de 1 px,
-     esquinas de 2 px como máximo, sin sombras ni degradados, letra monoespaciada para datos.
+     esquinas de 2 px como máximo, sin sombras ni degradados (única excepción: el brillo del botón de Ghost Mode en Inicio), letra monoespaciada para datos.
      Un Style = un "molde" de propiedades. Se usa con Style="{StaticResource NombreEstilo}".
      Si un estilo no tiene x:Key, se aplica SOLO a todos los controles de ese tipo (estilo implícito). -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

@@ -101,8 +101,13 @@
                         <TextBlock Style="{StaticResource ExplicacionEstilo}" Margin="0,8,0,16"
                                    Text="Aplica de una vez las optimizaciones de riesgo bajo. Todas se pueden deshacer."/>
 
+                        <!-- El brillo morado: el ÚNICO efecto de la app (un DropShadowEffect pequeño y sin desplazamiento).
+                             Solo aquí, porque es la acción principal -->
                         <Button x:Name="BtnGhost" Style="{StaticResource BotonGhostEstilo}" Tag="off"
                                 IsEnabled="False" Click="BtnGhost_Click">
+                            <Button.Effect>
+                                <DropShadowEffect Color="{StaticResource AcentoColor}" ShadowDepth="0" BlurRadius="14" Opacity="0.6"/>
+                            </Button.Effect>
                             <TextBlock x:Name="TxtBotonGhost" Text="[ LEYENDO ESTADO... ]" FontFamily="{StaticResource FuenteMono}"
                                        FontSize="{StaticResource TamanoDato}" FontWeight="Bold"
                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
