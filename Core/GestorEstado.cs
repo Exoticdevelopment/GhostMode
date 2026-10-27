@@ -15,6 +15,10 @@ namespace OptimizadorPC.Core
         //   clave interna = qué guardamos ("guid") → valor original
         private static Dictionary<string, Dictionary<string, string?>> datos = Cargar();
 
+        // Cómo empieza la línea del log al guardar un valor original. El panel de log de Inicio la oculta
+        // (son muchas y taparían las de "Aplicando/Aplicada"); en log.txt sigue estando
+        public const string PrefijoLogOriginal = "Estado original guardado";
+
         // Al iniciar: ¿existía estado.json? ¿estaba dañado? (lo muestra la secuencia de arranque)
         public static bool ArchivoExiste => File.Exists(Archivo);
         public static bool ArchivoDanado { get; private set; }
@@ -36,7 +40,7 @@ namespace OptimizadorPC.Core
             {
                 datos[modulo][clave] = valor;
                 Persistir();
-                Logger.Info($"Estado original guardado: {modulo}.{clave} = {valor ?? "(no existía)"}");
+                Logger.Info($"{PrefijoLogOriginal}: {modulo}.{clave} = {valor ?? "(no existía)"}");
             }
         }
 

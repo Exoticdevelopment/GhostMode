@@ -24,8 +24,8 @@ namespace OptimizadorPC.Componentes
             Loaded += (s, e) =>
             {
                 lineas.Clear();
-                // TakeLast = las últimas N de la lista
-                foreach (LineaLog linea in Logger.Recientes.TakeLast(MaxLineas))
+                // TakeLast = las últimas N de la lista (de las que se muestran: el filtro va antes)
+                foreach (LineaLog linea in Logger.Recientes.Where(SeMuestra).TakeLast(MaxLineas))
                 {
                     Agregar(linea);
                 }
@@ -44,12 +44,21 @@ namespace OptimizadorPC.Componentes
         // desde el hilo de la interfaz: BeginInvoke = "haz esto en el hilo de la interfaz cuando puedas"
         private void AlNuevaLinea(LineaLog linea)
         {
+            if (!SeMuestra(linea))
+            {
+                return;
+            }
             Dispatcher.BeginInvoke(() =>
             {
                 Agregar(linea);
                 ActualizarVacio();
             });
         }
+
+        // "Estado original guardado: ..." sale varias veces por cada optimización y taparía las de
+        // "Aplicando/Aplicada". Aquí no se muestra; en log.txt sigue estando
+        private static bool SeMuestra(LineaLog linea) =>
+            !linea.Mensaje.StartsWith(GestorEstado.PrefijoLogOriginal, StringComparison.Ordinal);
 
         private void Agregar(LineaLog linea)
         {
