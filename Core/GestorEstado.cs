@@ -7,13 +7,25 @@ namespace OptimizadorPC.Core
     public static class GestorEstado
     {
         // Archivo: C:\ProgramData\OptimizadorPC\estado.json
-        // Reutilizamos la carpeta del Logger para no repetir la ruta
-        private static readonly string Archivo = Path.Combine(Logger.Carpeta, "estado.json");
+        // Reutilizamos la carpeta del Logger para no repetir la ruta.
+        // (Va antes que "datos": los campos estáticos se inician en orden y Cargar() lo necesita)
+        private static string Archivo = Path.Combine(Logger.Carpeta, "estado.json");
 
         // Los datos en memoria. Es un "diccionario de diccionarios":
         //   clave externa = Id del módulo ("plan-energia")
         //   clave interna = qué guardamos ("guid") → valor original
         private static Dictionary<string, Dictionary<string, string?>> datos = Cargar();
+
+        public static string RutaArchivo => Archivo;
+
+        // Usar otro estado.json (y leerlo). La app nunca lo llama: es para las pruebas, que trabajan con un
+        // estado.json propio en una carpeta temporal y así nunca leen ni pisan los cambios reales del usuario
+        public static void UsarArchivo(string archivo)
+        {
+            Archivo = archivo;
+            ArchivoDanado = false;
+            datos = Cargar();
+        }
 
         // Cómo empieza la línea del log al guardar un valor original. El panel de log de Inicio la oculta
         // (son muchas y taparían las de "Aplicando/Aplicada"); en log.txt sigue estando
@@ -121,7 +133,7 @@ namespace OptimizadorPC.Core
         // Escribe los datos en el archivo JSON
         private static void Persistir()
         {
-            Directory.CreateDirectory(Logger.Carpeta);
+            Directory.CreateDirectory(Path.GetDirectoryName(Archivo)!);
             var opciones = new JsonSerializerOptions { WriteIndented = true };  // JSON bonito, con saltos de línea
             File.WriteAllText(Archivo, JsonSerializer.Serialize(datos, opciones));
         }

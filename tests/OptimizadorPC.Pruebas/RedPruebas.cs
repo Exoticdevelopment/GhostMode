@@ -163,11 +163,12 @@ namespace OptimizadorPC.Pruebas
         [Fact]
         public async Task Dns_DeshacerTodoTambienDevuelveElDns()
         {
-            // «Deshacer todo» es el de verdad: si el usuario tiene Ghost Mode (u otra cosa) aplicado en este PC,
-            // también lo desharía. En ese caso la prueba no toca nada y lo dice
-            Assert.False(GestorEstado.HayCambiosPendientes,
-                "Hay cambios reales de Ghost Mode aplicados en este PC y «Deshacer todo» los desharía. " +
-                "Ejecuta esta prueba con todo deshecho.");
+            // «Deshacer todo» solo deshace lo apuntado en estado.json. Con un estado.json aislado y vacío
+            // (Infra/EstadoAislado) lo único apuntado será el DNS de esta prueba: los cambios reales del usuario
+            // (Ghost Mode activado, etc.) están en el estado.json de C:\ProgramData, que aquí no se ve
+            EstadoAislado.Nuevo();
+            Assert.True(EstadoAislado.Activo, "Las pruebas no están usando el estado.json aislado");
+            Assert.False(GestorEstado.HayCambiosPendientes);
 
             InfoAdaptador a = AdaptadorRed.Activo()!;
             Dictionary<string, string> antes = FotoRed(a.Id);

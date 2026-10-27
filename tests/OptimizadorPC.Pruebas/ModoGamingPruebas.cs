@@ -431,7 +431,7 @@ namespace OptimizadorPC.Pruebas
             {
                 Ayudas.RestaurarFoto(todos, real);
                 GestorEstado.Limpiar(GrabacionFondo.Modulo);
-                // (los originales del usuario de "game-mode" vuelven con estado.json al terminar las pruebas)
+                GestorEstado.Limpiar(new GameMode().Id);   // (estado.json aislado: los originales reales del usuario no están aquí)
             }
         }
 
@@ -443,9 +443,9 @@ namespace OptimizadorPC.Pruebas
             string carpeta = Ayudas.CarpetaTemporal();
             using var fondo = new ProcesoFalso("GhostModePruebaFondo.exe");
             AjusteRegistro[] ajustes = [.. Ayudas.AjustesDe<GameMode>(), .. Ayudas.AjustesDe<EfectosVisuales>()];
-            Dictionary<string, ValorRegistro> registroAntes = Ayudas.Foto(ajustes);
-            string planAntes = Ayudas.PlanActivo();
-            Assert.False(AplicadorOptimizaciones.GhostMode.All(o => o.EstaActiva()), "Ghost Mode ya estaba activo: la prueba no demostraría nada");
+            // Lo del usuario, tal cual: vuelve sí o sí en el finally
+            Dictionary<string, ValorRegistro> registroReal = Ayudas.Foto(ajustes);
+            string planReal = Ayudas.PlanActivo();
 
             var sesion = new SesionGaming(Path.Combine(carpeta, "modo_gaming.json"));
             sesion.Config.PrioridadAlta = true;
@@ -457,6 +457,14 @@ namespace OptimizadorPC.Pruebas
             ProcesoFalso? juego = null;
             try
             {
+                // Con Ghost Mode activado de verdad, abrir el juego no cambiaría nada y la prueba no demostraría nada:
+                // se parte de "Windows sin Ghost Mode" (otro plan, valores sin poner) solo mientras dura la prueba
+                string planAntes = Ayudas.PartirSinAltoRendimiento();
+                Ayudas.PartirSinAplicar(new GameMode(), Ayudas.AjustesDe<GameMode>());
+                Ayudas.PartirSinAplicar(new EfectosVisuales(), Ayudas.AjustesDe<EfectosVisuales>());
+                Dictionary<string, ValorRegistro> registroAntes = Ayudas.Foto(ajustes);
+                Assert.All(AplicadorOptimizaciones.GhostMode, o => Assert.False(o.EstaActiva(), o.Id));
+
                 string juegoExe = Path.Combine(Ayudas.CarpetaTemporal(), "GhostModePruebaJuego.exe");
                 File.Copy(Path.Combine(Environment.SystemDirectory, "PING.EXE"), juegoExe);
                 sesion.AgregarManual(juegoExe);   // a mano = activación automática encendida
@@ -495,11 +503,11 @@ namespace OptimizadorPC.Pruebas
                 SuspensorApps.ReanudarTodas();
                 PrioridadJuego.RestaurarTodas();
                 GestorEstado.Limpiar(SesionGaming.Modulo);
-                if (Ayudas.PlanActivo() != planAntes)
+                if (Ayudas.PlanActivo() != planReal)
                 {
-                    Ayudas.Powercfg($"/setactive {planAntes}");
+                    Ayudas.Powercfg($"/setactive {planReal}");
                 }
-                Ayudas.RestaurarFoto(ajustes, registroAntes);
+                Ayudas.RestaurarFoto(ajustes, registroReal);
                 foreach (IOptimizacion o in AplicadorOptimizaciones.GhostMode)
                 {
                     GestorEstado.Limpiar(o.Id);

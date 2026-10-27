@@ -7,19 +7,25 @@ namespace OptimizadorPC.Pruebas
     [Collection("Sistema")]
     public class OptimizacionesSistemaPruebas
     {
-        private const string AltoRendimiento = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c";
+        private const string AltoRendimiento = Ayudas.AltoRendimiento;
 
         [Fact]
         public void PlanEnergia_AplicaAltoRendimientoYRevierteAlPlanOriginal()
         {
             var plan = new PlanEnergia();
-            string original = Ayudas.PlanActivo();
-            List<string> planesAntes = Ayudas.Planes();
-            Assert.NotEqual(AltoRendimiento, original);   // si ya estaba, la prueba no demostraría nada
+            string planReal = Ayudas.PlanActivo();   // el del usuario: vuelve sí o sí en el finally
             GestorEstado.Limpiar(plan.Id);
 
             try
             {
+                // Si el usuario ya tiene Alto rendimiento (p. ej. Ghost Mode activado), se parte de otro plan:
+                // si no, aplicar no cambiaría nada y la prueba no demostraría nada
+                string original = Ayudas.PartirSinAltoRendimiento();
+                Assert.NotEqual(AltoRendimiento, original);
+                // La lista, desde el punto de partida: en algunos equipos Alto rendimiento es un plan oculto
+                // que powercfg /list solo enseña mientras está activo
+                List<string> planesAntes = Ayudas.Planes();
+
                 Assert.False(plan.EstaActiva());
 
                 plan.Aplicar();
@@ -39,9 +45,9 @@ namespace OptimizadorPC.Pruebas
             }
             finally
             {
-                if (Ayudas.PlanActivo() != original)
+                if (Ayudas.PlanActivo() != planReal)
                 {
-                    Ayudas.Powercfg($"/setactive {original}");
+                    Ayudas.Powercfg($"/setactive {planReal}");
                 }
                 GestorEstado.Limpiar(plan.Id);
             }
@@ -57,11 +63,15 @@ namespace OptimizadorPC.Pruebas
         // Foto del registro → Aplicar → cada valor es el de la app → Revertir → todo igual que la foto
         private static void ProbarRegistro(IOptimizacion modulo, AjusteRegistro[] ajustes)
         {
-            Dictionary<string, ValorRegistro> antes = Ayudas.Foto(ajustes);
+            Dictionary<string, ValorRegistro> real = Ayudas.Foto(ajustes);   // la del usuario: vuelve en el finally
             GestorEstado.Limpiar(modulo.Id);
 
             try
             {
+                // Con la optimización ya puesta (Ghost Mode activado), se parte de "sin aplicar"
+                Ayudas.PartirSinAplicar(modulo, ajustes);
+                Dictionary<string, ValorRegistro> antes = Ayudas.Foto(ajustes);
+
                 modulo.Aplicar();
 
                 foreach (var a in ajustes)
@@ -81,7 +91,7 @@ namespace OptimizadorPC.Pruebas
             }
             finally
             {
-                Ayudas.RestaurarFoto(ajustes, antes);
+                Ayudas.RestaurarFoto(ajustes, real);
                 GestorEstado.Limpiar(modulo.Id);
             }
         }
