@@ -1,29 +1,34 @@
-<!-- Medidor de un recurso (CPU, RAM, GPU...): etiqueta de consola, valor grande, barra de 2 px y dato secundario.
+<!-- Medidor de un recurso (CPU, RAM, GPU...): etiqueta, valor grande, barra de texto "||||||······" y dato secundario.
+     No tiene marco propio: los medidores van juntos dentro de un panel (InicioPagina), como la cabecera de htop.
      x:Name="Raiz" = nombre del propio control, para enlazar con sus propiedades: {Binding X, ElementName=Raiz}
-     (La propiedad Icono sigue existiendo pero no se dibuja: la etiqueta "[ CPU ]" ya dice qué es) -->
+     (La propiedad Icono sigue existiendo pero no se dibuja: la etiqueta ya dice qué es) -->
 <UserControl x:Class="OptimizadorPC.Componentes.MedidorRecurso"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="Raiz">
 
-    <Border Style="{StaticResource TarjetaEstilo}">
-        <StackPanel>
-            <TextBlock Text="{Binding Etiqueta, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"/>
+    <StackPanel>
+        <TextBlock Text="{Binding Etiqueta, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"/>
 
-            <!-- Viewbox con StretchDirection="DownOnly" = si el texto no cabe a lo ancho, lo encoge
-                 (nunca lo agranda). Así "6,8 / 16 GB" no se corta en ventanas estrechas -->
-            <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" Height="34" Margin="0,8,0,10">
-                <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontFamily="{StaticResource FuenteMono}"
-                           FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
-            </Viewbox>
+        <!-- Viewbox con StretchDirection="DownOnly" = si el texto no cabe a lo ancho, lo encoge
+             (nunca lo agranda). Así "6,8 / 16 GB" no se corta en ventanas estrechas -->
+        <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" Height="32" Margin="0,4,0,4">
+            <TextBlock Text="{Binding Valor, ElementName=Raiz}" FontFamily="{StaticResource FuenteMono}"
+                       FontSize="{StaticResource TamanoTitulo}" FontWeight="SemiBold" Foreground="{StaticResource TextoBrush}"/>
+        </Viewbox>
 
-            <!-- ColorBarra sin poner (null) = el color normal de la barra -->
-            <ProgressBar Style="{StaticResource BarraRecursoEstilo}" Value="{Binding Porcentaje, ElementName=Raiz}"
-                         Foreground="{Binding ColorBarra, ElementName=Raiz, TargetNullValue={StaticResource TextoBrush}}"/>
+        <!-- La barra es TEXTO: 20 celdas, "|" las llenas y "·" las vacías (las escribe MedidorRecurso.xaml.cs).
+             Dos Run = dos trozos de la misma línea, cada uno con su color.
+             ColorBarra sin poner (null) = el color normal del texto -->
+        <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left">
+            <TextBlock FontFamily="{StaticResource FuenteMono}" FontSize="{StaticResource TamanoTexto}">
+                <Run x:Name="RunLleno" Foreground="{Binding ColorBarra, ElementName=Raiz, TargetNullValue={StaticResource TextoBrush}}"/><Run
+                     x:Name="RunVacio" Foreground="{StaticResource BordeHoverBrush}"/>
+            </TextBlock>
+        </Viewbox>
 
-            <!-- Hasta dos líneas (MinHeight = sitio para las dos, así las 4 tarjetas quedan alineadas) -->
-            <TextBlock Text="{Binding Detalle, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"
-                       Margin="0,10,0,0" TextWrapping="Wrap" MinHeight="30"/>
-        </StackPanel>
-    </Border>
+        <!-- Hasta dos líneas (MinHeight = sitio para las dos, así los 4 medidores quedan alineados) -->
+        <TextBlock Text="{Binding Detalle, ElementName=Raiz}" Style="{StaticResource EtiquetaEstilo}"
+                   Margin="0,6,0,0" TextWrapping="Wrap" MinHeight="30"/>
+    </StackPanel>
 </UserControl>

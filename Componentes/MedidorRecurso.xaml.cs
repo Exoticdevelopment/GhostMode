@@ -9,9 +9,22 @@ namespace OptimizadorPC.Componentes
     // Cada propiedad es una DependencyProperty para poder escribirla en XAML o cambiarla desde código.
     public partial class MedidorRecurso : UserControl
     {
+        // Cuántas celdas tiene la barra de texto: 20 = cada celda vale un 5 %
+        private const int Celdas = 20;
+
         public MedidorRecurso()
         {
             InitializeComponent();
+            DibujarBarra();
+        }
+
+        // Escribe la barra: tantas "|" como toque según Porcentaje, y "·" en el resto.
+        // new string('|', 7) = "|||||||"
+        private void DibujarBarra()
+        {
+            int llenas = (int)Math.Round(Math.Clamp(Porcentaje, 0, 100) / 100 * Celdas);
+            RunLleno.Text = new string('|', llenas);
+            RunVacio.Text = new string('·', Celdas - llenas);
         }
 
         // "CPU", "RAM"...
@@ -46,7 +59,9 @@ namespace OptimizadorPC.Componentes
 
         // Relleno de la barra, de 0 a 100
         public static readonly DependencyProperty PorcentajeProperty =
-            DependencyProperty.Register(nameof(Porcentaje), typeof(double), typeof(MedidorRecurso), new PropertyMetadata(0.0));
+            DependencyProperty.Register(nameof(Porcentaje), typeof(double), typeof(MedidorRecurso),
+                                        // El segundo dato = qué hacer cuando cambia: volver a dibujar la barra
+                                        new PropertyMetadata(0.0, (d, e) => ((MedidorRecurso)d).DibujarBarra()));
 
         public double Porcentaje
         {

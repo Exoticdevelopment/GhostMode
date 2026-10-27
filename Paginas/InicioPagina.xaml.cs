@@ -1,3 +1,4 @@
+using System.IO;   // DriveInfo: espacio libre del disco
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -20,6 +21,7 @@ namespace OptimizadorPC.Paginas
         private DatosEquipo? equipo;      // hardware fijo (núcleos, GHz, RAM instalada, nombre de la GPU)
         private bool ghostActivo = false; // ¿están aplicadas todas las seguras?
         private bool trabajando = false;  // aplicando o revirtiendo ahora mismo
+        private bool avisoDiscoDado = false; // el fallo del disco C: se anota en el log una sola vez, no cada 2 s
 
         public InicioPagina()
         {
@@ -67,7 +69,7 @@ namespace OptimizadorPC.Paginas
                 // "F2" = dos decimales; InfoSistema.Es = con coma, como en español: "2,40 GHz"
                 cpu.Add($"{equipo.Ghz.Value.ToString("F2", InfoSistema.Es)} GHz");
             }
-            MedCpu.Detalle = string.Join(" · ", cpu);
+            MedCpu.Detalle = string.Join(", ", cpu);
 
             MedGpu.Detalle = equipo.Gpu ?? "GPU no detectada";
         }
@@ -88,7 +90,7 @@ namespace OptimizadorPC.Paginas
                     : (m.RamUsadaGb.Value + m.RamLibreGb.Value).ToString("F1", es);
                 MedRam.Valor = $"{m.RamUsadaGb.Value.ToString("F1", es)} / {total} GB";
                 MedRam.Porcentaje = m.RamPorcentaje.Value;
-                MedRam.Detalle = $"{m.RamPorcentaje.Value.ToString("F0", es)} % en uso · {m.RamLibreGb.Value.ToString("F1", es)} GB libres";
+                MedRam.Detalle = $"{m.RamPorcentaje.Value.ToString("F0", es)} % en uso, {m.RamLibreGb.Value.ToString("F1", es)} GB libres";
             }
             else
             {
@@ -112,8 +114,40 @@ namespace OptimizadorPC.Paginas
             {
                 MedTemp.Valor = "N/D";
                 MedTemp.Porcentaje = 0;
-                MedTemp.Detalle = "Windows no expone el sensor sin drivers extra";
+                MedTemp.Detalle = "sin sensor: solo GPU NVIDIA (NVML)";
                 MedTemp.ColorBarra = null;
+            }
+
+            MostrarDiscoC();
+        }
+
+        // Línea de abajo de la franja: espacio libre del disco C:. Es una llamada barata a Windows
+        // (GetDiskFreeSpaceEx), así que se puede leer con cada muestra
+        private void MostrarDiscoC()
+        {
+            try
+            {
+                var disco = new DriveInfo("C");
+                if (!disco.IsReady)
+                {
+                    TxtDiscoC.Text = "disco c:  no disponible";
+                    return;
+                }
+                long libre = disco.AvailableFreeSpace;
+                long total = disco.TotalSize;
+                double porcentaje = total > 0 ? 100.0 * libre / total : 0;
+                TxtDiscoC.Text = $"disco c:  {Formato.Tamano(libre)} libres de {Formato.Tamano(total)} " +
+                                 $"({porcentaje.ToString("F0", InfoSistema.Es)} % libre)";
+            }
+            catch (Exception ex)
+            {
+                // Sin disco C: o sin permiso: se dice, no se inventa un número
+                TxtDiscoC.Text = "disco c:  no se pudo leer";
+                if (!avisoDiscoDado)
+                {
+                    Logger.Aviso($"No se pudo leer el espacio libre de C: ({ex.Message})");
+                    avisoDiscoDado = true;
+                }
             }
         }
 
@@ -127,7 +161,8 @@ namespace OptimizadorPC.Paginas
 
             PanelSinBenchmark.Visibility = hay ? Visibility.Collapsed : Visibility.Visible;
             PanelConBenchmark.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
-            PastillaBenchmark.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
+            // Tag = el dato de arriba a la derecha del panel; null = no se dibuja
+            PanelPuntuacion.Tag = hay ? "último benchmark" : null;
             TxtBenchmarkDetalle.Visibility = hay ? Visibility.Visible : Visibility.Collapsed;
             if (ultimo == null)
             {
@@ -137,14 +172,14 @@ namespace OptimizadorPC.Paginas
             var vm = new BenchmarkVM(ultimo);
             TxtMejora.Text = vm.TextoMejora;
             // Si empeoró, en naranja: se muestra tal cual, sin maquillar
-            TxtMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ExitoBrush" : "AvisoBrush");
+            TxtMejora.Foreground = (Brush)TryFindResource(vm.Mejoro ? "ExitoBrush" : "AvisoBrush");   // verde = resultado OK
 
             double maximo = Math.Max(ultimo.Antes.FpsPromedio, ultimo.Despues.FpsPromedio);
             BarraAntes.Value = 100 * ultimo.Antes.FpsPromedio / maximo;
             BarraDespues.Value = 100 * ultimo.Despues.FpsPromedio / maximo;
             TxtAntes.Text = $"{BenchmarkVM.Fps(ultimo.Antes.FpsPromedio)} FPS";
             TxtDespues.Text = $"{BenchmarkVM.Fps(ultimo.Despues.FpsPromedio)} FPS";
-            TxtBenchmarkDetalle.Text = $"{vm.Juego} · {vm.Fecha} · 1% low {vm.Texto1Low}";
+            TxtBenchmarkDetalle.Text = $"{vm.Juego}, {vm.Fecha}, 1% low {vm.Texto1Low}";
         }
 
         // ===== Ghost Mode =====
@@ -181,15 +216,15 @@ namespace OptimizadorPC.Paginas
             }
 
             // TryFindResource = buscar un color de Colores.xaml por su nombre.
-            // Verde solo para el estado OK ("ON"); apagado, gris
-            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "ExitoBrush" : "TextoSecundarioBrush");
-            TxtEstado.Text = ghostActivo ? "> GHOST_MODE: ON" : "> GHOST_MODE: OFF";
-            TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "ExitoBrush" : "TextoBrush");
+            // Morado = Ghost Mode encendido (el mismo color que el botón ON); apagado, gris
+            PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "AcentoBrush" : "TextoSecundarioBrush");
+            TxtEstado.Text = ghostActivo ? "> ghost_mode: on" : "> ghost_mode: off";
+            TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "AcentoBrilloBrush" : "TextoBrush");
 
             // Tag="on" hace que el estilo del botón lo rellene de morado (InicioPagina.xaml)
             BtnGhost.Tag = ghostActivo ? "on" : "off";
             TxtBotonGhost.Text = ghostActivo ? "[ GHOST_MODE: ON ]" : "[ ACTIVAR GHOST MODE ]";
-            TxtBotonGhostDetalle.Text = ghostActivo ? "clic para desactivar" : "un clic · pide confirmación";
+            TxtBotonGhostDetalle.Text = ghostActivo ? "clic para desactivar" : "un clic, pide confirmación";
         }
 
         // Se aplicó o deshizo algo desde otra parte (Optimizaciones, "Deshacer todo")
