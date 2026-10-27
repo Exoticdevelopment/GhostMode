@@ -50,7 +50,7 @@
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="44,36,44,36">
+        <StackPanel Margin="36,28,36,32">
 
             <!-- Encabezado: título y pastilla de conexión -->
             <Grid>
@@ -59,7 +59,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Red" Style="{StaticResource TituloPaginaEstilo}"/>
+                    <TextBlock Text="&gt; red" Style="{StaticResource TituloPaginaEstilo}"/>
                     <TextBlock Text="Una conexión estable, sin ajustes agresivos ni promesas imposibles."
                                Style="{StaticResource SubtituloPaginaEstilo}"/>
                 </StackPanel>
@@ -69,63 +69,62 @@
                 </Border>
             </Grid>
 
-            <!-- ===== DNS ===== -->
-            <Grid Margin="0,26,0,10">
-                <TextBlock Text="[ SERVIDOR DNS ]" Style="{StaticResource EtiquetaEstilo}" VerticalAlignment="Center"/>
-                <ui:Button x:Name="BtnMedir" Content="[ medir latencia ]" HorizontalAlignment="Right"
-                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnMedir_Click"/>
-            </Grid>
+            <!-- ===== DNS, en el panel "servidor dns" ===== -->
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="servidor dns" Margin="0,20,0,0">
+                <StackPanel>
+                    <ui:Button x:Name="BtnMedir" Content="[ medir latencia ]" HorizontalAlignment="Right" Margin="0,0,0,12"
+                               Style="{StaticResource BotonSecundarioEstilo}" Click="BtnMedir_Click"/>
 
-            <ItemsControl x:Name="ListaDns" Margin="0,0,-12,0">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="1"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <RadioButton Style="{StaticResource TarjetaDnsEstilo}" Margin="0,0,12,0"
-                                     IsChecked="{Binding Seleccionado, Mode=TwoWay}">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Nombre}" FontSize="14" FontWeight="SemiBold"
-                                           Foreground="{StaticResource TextoBrush}"/>
-                                <TextBlock Text="{Binding TextoDirecciones}" Style="{StaticResource EtiquetaEstilo}"
-                                           Margin="0,6,0,0" TextWrapping="Wrap"/>
-                                <TextBlock Text="{Binding Latencia}" Style="{StaticResource DatoEstilo}" FontSize="20"
-                                           FontWeight="SemiBold" Margin="0,12,0,0"/>
-                                <WrapPanel Margin="0,8,0,0">
-                                    <Border Style="{StaticResource PastillaEstilo}" Visibility="{Binding VisibleActivo}"
-                                            BorderBrush="{StaticResource ActivoBrush}" Margin="0,0,6,0">
-                                        <TextBlock Text="activo" Style="{StaticResource PastillaTextoEstilo}"
-                                                   Foreground="{StaticResource ActivoBrush}"/>
-                                    </Border>
-                                    <Border Style="{StaticResource PastillaEstilo}" Visibility="{Binding VisibleRecomendado}"
-                                            BorderBrush="{StaticResource AcentoBrush}" Margin="0">
-                                        <TextBlock Text="el más rápido" Style="{StaticResource PastillaTextoEstilo}"
-                                                   Foreground="{StaticResource AcentoBrilloBrush}"/>
-                                    </Border>
-                                </WrapPanel>
-                            </StackPanel>
-                        </RadioButton>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <ItemsControl x:Name="ListaDns" Margin="0,0,-12,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <RadioButton Style="{StaticResource TarjetaDnsEstilo}" Margin="0,0,12,0"
+                                             IsChecked="{Binding Seleccionado, Mode=TwoWay}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Nombre}" Style="{StaticResource DatoEstilo}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding TextoDirecciones}" Style="{StaticResource EtiquetaEstilo}"
+                                                   Margin="0,6,0,0" TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding Latencia}" Style="{StaticResource DatoEstilo}" FontSize="{StaticResource TamanoTitulo}"
+                                                   FontWeight="SemiBold" Margin="0,12,0,0"/>
+                                        <WrapPanel Margin="0,8,0,0">
+                                            <Border Style="{StaticResource PastillaEstilo}" Visibility="{Binding VisibleActivo}"
+                                                    BorderBrush="{StaticResource ActivoBrush}" Margin="0,0,6,0">
+                                                <TextBlock Text="activo" Style="{StaticResource PastillaTextoEstilo}"
+                                                           Foreground="{StaticResource ActivoBrush}"/>
+                                            </Border>
+                                            <Border Style="{StaticResource PastillaEstilo}" Visibility="{Binding VisibleRecomendado}"
+                                                    BorderBrush="{StaticResource AcentoBrush}" Margin="0">
+                                                <TextBlock Text="el más rápido" Style="{StaticResource PastillaTextoEstilo}"
+                                                           Foreground="{StaticResource AcentoBrilloBrush}"/>
+                                            </Border>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </RadioButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-            <!-- Recomendación con los datos medidos + botones -->
-            <TextBlock x:Name="TxtRecomendacion" Style="{StaticResource ExplicacionEstilo}" Margin="0,12,0,0"
-                       Text="Pulsa «[ medir latencia ]» para comparar los servidores desde tu conexión."/>
-            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                <ui:Button x:Name="BtnAplicar" Content="[ aplicar dns ]" Style="{StaticResource BotonPrincipalEstilo}"
-                           Click="BtnAplicar_Click"/>
-                <ui:Button x:Name="BtnLimpiarCache" Content="[ limpiar caché dns ]" Margin="10,0,0,0"
-                           Style="{StaticResource BotonSecundarioEstilo}" Click="BtnLimpiarCache_Click"/>
-            </StackPanel>
+                    <!-- Recomendación con los datos medidos + botones -->
+                    <TextBlock x:Name="TxtRecomendacion" Style="{StaticResource ExplicacionEstilo}" Margin="0,12,0,0"
+                               Text="Pulsa «[ medir latencia ]» para comparar los servidores desde tu conexión."/>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <ui:Button x:Name="BtnAplicar" Content="[ aplicar dns ]" Style="{StaticResource BotonPrincipalEstilo}"
+                                   Click="BtnAplicar_Click"/>
+                        <ui:Button x:Name="BtnLimpiarCache" Content="[ limpiar caché dns ]" Margin="10,0,0,0"
+                                   Style="{StaticResource BotonSecundarioEstilo}" Click="BtnLimpiarCache_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </HeaderedContentControl>
 
             <!-- ===== Ping en vivo ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,24,0,0" Padding="20,16">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="ping en vivo" Margin="0,16,0,0" Padding="20,22,20,16">
                 <StackPanel>
-                    <TextBlock Text="[ PING EN VIVO ]" Style="{StaticResource EtiquetaEstilo}"/>
-                    <TextBlock x:Name="TxtDestino" Style="{StaticResource EtiquetaEstilo}" Margin="0,6,0,0"/>
+                    <TextBlock x:Name="TxtDestino" Style="{StaticResource EtiquetaEstilo}"/>
 
                     <Grid Margin="0,14,0,0">
                         <Grid.ColumnDefinitions>
@@ -135,7 +134,7 @@
 
                         <!-- Izquierda: promedio, pérdida y detalle -->
                         <StackPanel>
-                            <TextBlock x:Name="TxtPromedio" Text="— ms" Style="{StaticResource DatoEstilo}" FontSize="30"
+                            <TextBlock x:Name="TxtPromedio" Text="— ms" Style="{StaticResource DatoEstilo}" FontSize="{StaticResource TamanoHeroe}"
                                        FontWeight="SemiBold"/>
                             <TextBlock Text="latencia media" Style="{StaticResource EtiquetaEstilo}" Margin="0,2,0,0"/>
                             <Border x:Name="PastillaPerdida" Style="{StaticResource PastillaEstilo}" HorizontalAlignment="Left"
@@ -151,11 +150,11 @@
                             <TextBlock x:Name="TxtTecho" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Right"
                                        Margin="0,0,0,6"/>
                             <componentes:GraficaLinea x:Name="GraficaPing" Height="110" Maximo="0"
-                                                      Trazo="{StaticResource ActivoBrush}" Lineas="{StaticResource BordeBrush}"/>
-                            <Grid Margin="0,8,0,0">
-                                <TextBlock Text="−60 s" FontSize="11" Foreground="{StaticResource TextoTenueBrush}"/>
-                                <TextBlock Text="−30 s" FontSize="11" HorizontalAlignment="Center" Foreground="{StaticResource TextoTenueBrush}"/>
-                                <TextBlock Text="Ahora" FontSize="11" HorizontalAlignment="Right" Foreground="{StaticResource TextoTenueBrush}"/>
+                                                      Trazo="{StaticResource TextoBrush}" Lineas="{StaticResource BordeBrush}"/>
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Text="−60 s" Style="{StaticResource EtiquetaEstilo}"/>
+                                <TextBlock Text="−30 s" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="ahora" Style="{StaticResource EtiquetaEstilo}" HorizontalAlignment="Right"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -196,15 +195,14 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <TextBlock x:Name="TxtErrorDestino" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"
+                    <TextBlock x:Name="TxtErrorDestino" Style="{StaticResource EtiquetaEstilo}" TextWrapping="Wrap" Margin="0,8,0,0"
                                Foreground="{StaticResource AvisoBrush}" Visibility="Collapsed"/>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
             <!-- ===== Adaptador ===== -->
-            <Border Style="{StaticResource TarjetaEstilo}" Margin="0,16,0,0" Padding="20,16">
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="adaptador" Margin="0,16,0,0" Padding="20,20,20,16">
                 <StackPanel>
-                    <TextBlock Text="[ ADAPTADOR ]" Style="{StaticResource EtiquetaEstilo}" Margin="0,0,0,8"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -229,28 +227,19 @@
                         <TextBlock x:Name="TxtDnsActual" Grid.Row="4" Grid.Column="1" Text="—" Style="{StaticResource ValorFilaEstilo}"/>
                     </Grid>
 
-                    <!-- Consejo honesto, solo con WiFi -->
-                    <Border x:Name="ConsejoWifi" Margin="0,12,0,0" Padding="12,10" CornerRadius="2"
-                            Background="{StaticResource AvisoSuaveBrush}" Visibility="Collapsed">
-                        <TextBlock FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource TextoBrush}"
+                    <!-- Consejo honesto, solo con WiFi (nota ámbar: algo que vigilar) -->
+                    <Border x:Name="ConsejoWifi" Margin="0,12,0,0" Style="{StaticResource NotaEstilo}"
+                            BorderBrush="{StaticResource AvisoBrush}" Visibility="Collapsed">
+                        <TextBlock Style="{StaticResource NotaTextoEstilo}"
                                    Text="&gt; consejo: el cable reduce el ping y los picos. El WiFi comparte el aire con otras redes y las paredes o el microondas le hacen perder paquetes; ningún ajuste de software lo iguala."/>
                     </Border>
                 </StackPanel>
-            </Border>
+            </HeaderedContentControl>
 
-            <!-- ===== Aviso verde de abajo ===== -->
-            <Border Margin="0,16,0,0" Padding="16,12" CornerRadius="2" Background="{StaticResource ActivoSuaveBrush}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:SymbolIcon Symbol="ShieldCheckmark20" FontSize="18" VerticalAlignment="Top"
-                                   Foreground="{StaticResource ActivoBrush}"/>
-                    <TextBlock Grid.Column="1" Margin="10,0,0,0" FontSize="13" TextWrapping="Wrap"
-                               Foreground="{StaticResource TextoBrush}"
-                               Text="Cambiar el DNS puede agilizar la resolución de nombres (abrir webs, encontrar un servidor); no aumenta la velocidad contratada ni baja el ping dentro del juego. Se deshace desde «Deshacer todo»."/>
-                </Grid>
+            <!-- ===== Nota de abajo (información: gris, sin color) ===== -->
+            <Border Style="{StaticResource NotaEstilo}" Margin="0,20,0,0">
+                <TextBlock Style="{StaticResource NotaTextoEstilo}"
+                           Text="Cambiar el DNS puede agilizar la resolución de nombres (abrir webs, encontrar un servidor); no aumenta la velocidad contratada ni baja el ping dentro del juego. Se deshace desde «Deshacer todo»."/>
             </Border>
         </StackPanel>
     </ScrollViewer>

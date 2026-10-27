@@ -49,15 +49,15 @@ namespace OptimizadorPC.Paginas
         private void MostrarAdaptador()
         {
             bool conectado = adaptador != null;
-            TxtConexion.Text = conectado ? $"{adaptador!.TextoTipo} · conectado" : "sin conexión";
+            TxtConexion.Text = conectado ? $"{adaptador!.TextoTipo}, conectado" : "sin conexión";
             TxtConexion.SetResourceReference(TextBlock.ForegroundProperty, conectado ? "ActivoBrush" : "AvisoBrush");
             PastillaConexion.SetResourceReference(Border.BorderBrushProperty, conectado ? "ActivoBrush" : "AvisoBrush");
 
-            TxtAdaptador.Text = conectado ? $"{adaptador!.Nombre} · {adaptador.Descripcion}" : "—";
+            TxtAdaptador.Text = conectado ? $"{adaptador!.Nombre} ({adaptador.Descripcion})" : "—";
             TxtTipo.Text = adaptador?.TextoTipo ?? "—";
             TxtIp.Text = adaptador?.IpLocal ?? "—";
             TxtVelocidad.Text = adaptador?.TextoVelocidad ?? "—";
-            TxtDnsActual.Text = adaptador is { Dns.Count: > 0 } ? string.Join(" · ", adaptador.Dns) : "—";
+            TxtDnsActual.Text = adaptador is { Dns.Count: > 0 } ? string.Join(", ", adaptador.Dns) : "—";
             ConsejoWifi.Visibility = adaptador?.EsWifi == true ? Visibility.Visible : Visibility.Collapsed;
 
             BtnAplicar.IsEnabled = conectado;
@@ -232,14 +232,14 @@ namespace OptimizadorPC.Paginas
 
             TxtDetallePing.Text = e.Promedio == null
                 ? "El servidor no responde al ping (algunos lo bloquean)."
-                : $"máx. {e.Maximo!.Value.ToString("F0", es)} ms · mín. {e.Minimo!.Value.ToString("F0", es)} ms\n" +
-                  $"jitter {(e.Jitter ?? 0).ToString("F0", es)} ms · {e.Enviados} muestras";
+                : $"máx. {e.Maximo!.Value.ToString("F0", es)} ms, mín. {e.Minimo!.Value.ToString("F0", es)} ms\n" +
+                  $"jitter {(e.Jitter ?? 0).ToString("F0", es)} ms, {e.Enviados} muestras";
             // Techo de la gráfica: el máximo con un 10 % de aire (lo mismo que calcula GraficaLinea)
             TxtTecho.Text = e.Maximo != null ? $"{(e.Maximo.Value * 1.1).ToString("F0", es)} ms" : "";
         }
 
         private void MostrarDestino() =>
-            TxtDestino.Text = $"destino: {ping.Destino} · cada 1 s · últimos {PingEnVivo.Capacidad} s";
+            TxtDestino.Text = $"destino: {ping.Destino}, cada 1 s, últimos {PingEnVivo.Capacidad} s";
 
         private void BtnPingServidor_Click(object sender, RoutedEventArgs e) => CambiarDestino(TxtServidor.Text);
 
