@@ -6,7 +6,6 @@ using OptimizadorPC.Core;
 using OptimizadorPC.Limpieza;
 using OptimizadorPC.ModelosVista;
 using OptimizadorPC.Servicios;
-using Wpf.Ui.Controls;   // SymbolRegular
 // Alias: WPF y WPF-UI tienen los dos una clase "MessageBox". Así dejamos claro cuál usamos
 using MessageBoxUi = Wpf.Ui.Controls.MessageBox;
 using MessageBoxResultUi = Wpf.Ui.Controls.MessageBoxResult;
@@ -42,7 +41,7 @@ namespace OptimizadorPC.Paginas
 
         // ===== Mostrar =====
 
-        // "Unidad C: · 42,8 GB libres de 237 GB" con la barra de lo usado. Datos de Windows, al momento
+        // "unidad c:  42,8 GB libres de 237 GB" con la barra de lo usado. Datos de Windows, al momento
         private void MostrarDisco()
         {
             try
@@ -52,14 +51,14 @@ namespace OptimizadorPC.Paginas
                 double libresGb = disco.AvailableFreeSpace / 1073741824.0;   // 1 GB = 1024³ bytes
                 double totalGb = disco.TotalSize / 1073741824.0;
 
-                TxtDisco.Text = $"Unidad {disco.Name.TrimEnd('\\')} · {libresGb.ToString("F1", InfoSistema.Es)} GB libres " +
+                TxtDisco.Text = $"unidad {disco.Name.TrimEnd('\\').ToLower()}  {libresGb.ToString("F1", InfoSistema.Es)} GB libres " +
                                 $"de {totalGb.ToString("F0", InfoSistema.Es)} GB";
                 BarraDisco.Value = (1 - libresGb / totalGb) * 100;
             }
             catch (Exception ex)
             {
                 Logger.Error("No se pudo leer el espacio del disco", ex);
-                TxtDisco.Text = "Espacio del disco no disponible";
+                TxtDisco.Text = "espacio del disco no disponible";
                 BarraDisco.Value = 0;
             }
         }
@@ -69,7 +68,8 @@ namespace OptimizadorPC.Paginas
             List<CategoriaLimpiezaVM> marcadas = categorias.Where(vm => vm.Seleccionada).ToList();
             long totalMarcado = marcadas.Sum(vm => vm.Bytes ?? 0);   // ?? 0 = si no se midió, cuenta como 0
 
-            TxtCuantas.Text = $"{marcadas.Count} de {categorias.Count} categorías";
+            // Tag = el dato de arriba a la derecha del panel "categorías"
+            PanelCategorias.Tag = $"{marcadas.Count} de {categorias.Count} marcadas";
 
             if (analizado)
             {
@@ -86,15 +86,13 @@ namespace OptimizadorPC.Paginas
             BtnLimpiar.IsEnabled = !trabajando && analizado && totalMarcado > 0;
         }
 
-        // Icono, color y texto del estado del análisis
-        private void MostrarEstado(string texto, SymbolRegular icono, string color, bool conHora)
+        // Color del cuadradito y texto del estado del análisis; con hora, "a las 14:32" arriba a la derecha del panel
+        private void MostrarEstado(string texto, string color, bool conHora)
         {
             TxtAnalisis.Text = texto;
-            IconoAnalisis.Symbol = icono;
             // TryFindResource = buscar un color de Colores.xaml por su nombre
-            IconoAnalisis.Foreground = (Brush)TryFindResource(color);
-            PastillaHora.Visibility = conHora ? Visibility.Visible : Visibility.Collapsed;
-            TxtHora.Text = $"A las {DateTime.Now:HH:mm}";
+            IconoAnalisis.Fill = (Brush)TryFindResource(color);
+            PanelResumen.Tag = conHora ? $"a las {DateTime.Now:HH:mm}" : null;
         }
 
         // ===== Analizar =====
@@ -104,7 +102,7 @@ namespace OptimizadorPC.Paginas
         private async Task AnalizarAsync()
         {
             trabajando = true;
-            MostrarEstado("Analizando…", SymbolRegular.ScanDash20, "AvisoBrush", false);
+            MostrarEstado("analizando…", "AvisoBrush", false);
             foreach (var vm in categorias)
             {
                 vm.Midiendo = true;
@@ -116,11 +114,10 @@ namespace OptimizadorPC.Paginas
 
             trabajando = false;
             analizado = true;
-            BtnAnalizar.Content = "Analizar de nuevo";
+            BtnAnalizar.Content = "[ analizar de nuevo ]";
             bool algunaFallo = categorias.Any(vm => vm.Bytes == null);
-            MostrarEstado(algunaFallo ? "Análisis completado con avisos" : "Análisis completado",
-                          algunaFallo ? SymbolRegular.Warning20 : SymbolRegular.CheckmarkCircle20,
-                          algunaFallo ? "AvisoBrush" : "ActivoBrush", true);
+            MostrarEstado(algunaFallo ? "análisis completado con avisos" : "análisis completado",
+                          algunaFallo ? "AvisoBrush" : "ExitoBrush", true);
             MostrarDisco();
             ActualizarResumen();
         }
@@ -169,8 +166,8 @@ namespace OptimizadorPC.Paginas
             }
 
             trabajando = true;
-            BtnLimpiar.Content = "Limpiando…";
-            MostrarEstado("Limpiando…", SymbolRegular.Broom20, "AvisoBrush", false);
+            BtnLimpiar.Content = "[ limpiando… ]";
+            MostrarEstado("limpiando…", "AvisoBrush", false);
             ActualizarResumen();
 
             Logger.Info($"Limpieza: {string.Join(", ", aLimpiar.Select(vm => vm.Categoria.Id))}");
@@ -192,7 +189,7 @@ namespace OptimizadorPC.Paginas
                 vm.Midiendo = false;
             }
 
-            BtnLimpiar.Content = "Limpiar seleccionados";
+            BtnLimpiar.Content = "[ limpiar seleccionados ]";
             trabajando = false;
             InformarResultado(resultado, fallidas);
 
