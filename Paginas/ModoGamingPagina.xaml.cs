@@ -67,21 +67,21 @@ namespace OptimizadorPC.Paginas
             MostrarEstado();
         }
 
-        // "> vigilando 2 juegos · cada 2 s"  o  "> ghost_mode activo: FiveM" (verde)
+        // "> vigilando 2 juegos, cada 2 s"  o  "> ghost_mode activo: FiveM" (morado: es Ghost Mode encendido)
         private void MostrarEstado()
         {
             bool activa = Sesion.Activa;
-            string pintura = activa ? "ActivoBrush" : "TextoSecundarioBrush";
+            string pintura = activa ? "AcentoBrilloBrush" : "TextoSecundarioBrush";
             int vigilados = Sesion.Vigilados;
 
             TxtEstado.Text = activa
                 ? $"> ghost_mode activo: {Sesion.JuegoActivo!.Nombre}"
                 : vigilados == 0
                     ? "> en espera: activa la autoactivación de algún juego"
-                    : $"> vigilando {vigilados} {(vigilados == 1 ? "juego" : "juegos")} · cada {SesionGaming.Intervalo.TotalSeconds:0} s";
+                    : $"> vigilando {vigilados} {(vigilados == 1 ? "juego" : "juegos")}, cada {SesionGaming.Intervalo.TotalSeconds:0} s";
             TxtEstado.SetResourceReference(TextBlock.ForegroundProperty, pintura);
             PuntoEstado.SetResourceReference(Shape.FillProperty, pintura);
-            PastillaEstado.SetResourceReference(Border.BorderBrushProperty, activa ? "ActivoBrush" : "BordeHoverBrush");
+            PastillaEstado.SetResourceReference(Border.BorderBrushProperty, activa ? "AcentoBrush" : "BordeHoverBrush");
         }
 
         private async void AlCambiarAutomatico(JuegoVM vm, bool activo)
