@@ -1,0 +1,45 @@
+<!-- Banner de Inicio: "GHOST" en arte ASCII (estilo ANSI Shadow) con "mode" pequeño al lado.
+     Gris #2A2A2A con Ghost Mode apagado y morado #8B5CF6 encendido (el color lo pone quien lo usa con Foreground).
+     Dos versiones: la grande y una compacta de 2 líneas. BannerGhost.xaml.cs elige cuál cabe en el ancho disponible.
+     Es texto puro: cero imágenes, cero efectos. -->
+<UserControl x:Class="OptimizadorPC.Componentes.BannerGhost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{StaticResource BannerApagadoBrush}" Focusable="False" IsTabStop="False">
+
+    <UserControl.Resources>
+        <!-- LineHeight = tamaño de letra: los bloques █ de una línea tocan los de la siguiente y la palabra
+             se lee como una sola pieza. BlockLineHeight = respetar esa altura aunque la fuente pida más -->
+        <Style x:Key="ArteEstilo" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource FuenteMono}"/>
+            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"/>
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+            <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid x:Name="Contenedor" VerticalAlignment="Top">
+        <!-- Grande: 6 líneas de 43 caracteres -->
+        <StackPanel x:Name="Grande" Orientation="Horizontal" HorizontalAlignment="Left">
+            <TextBlock x:Name="ArteGrande" Style="{StaticResource ArteEstilo}" FontSize="22" LineHeight="22"
+                       xml:space="preserve"> ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗
+██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝
+██║  ███╗███████║██║   ██║███████╗   ██║
+██║   ██║██╔══██║██║   ██║╚════██║   ██║
+╚██████╔╝██║  ██║╚██████╔╝███████║   ██║
+ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   </TextBlock>
+            <!-- "mode" abajo, apoyado en la línea base del arte -->
+            <TextBlock Text="mode" Style="{StaticResource ArteEstilo}" FontSize="{StaticResource TamanoDato}"
+                       VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+        </StackPanel>
+
+        <!-- Compacta: 2 líneas con medios bloques, para ventanas estrechas -->
+        <StackPanel x:Name="Compacta" Orientation="Horizontal" HorizontalAlignment="Left" Visibility="Collapsed">
+            <TextBlock Style="{StaticResource ArteEstilo}" FontSize="22" LineHeight="22"
+                       xml:space="preserve">█▀▀ █ █ █▀█ █▀ ▀█▀
+█▄█ █▀█ █▄█ ▄█  █ </TextBlock>
+            <TextBlock Text="mode" Style="{StaticResource ArteEstilo}" FontSize="{StaticResource TamanoTexto}"
+                       VerticalAlignment="Bottom" Margin="6,0,0,2"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

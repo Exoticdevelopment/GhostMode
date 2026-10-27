@@ -1,4 +1,5 @@
 <!-- Página Inicio, estilo terminal. De arriba abajo, por importancia:
+       0. banner ASCII "GHOST mode": gris con Ghost Mode apagado, morado encendido
        1. panel "ghost_mode" con el botón grande (la acción principal de la app)
        2. panel "recursos": CPU, RAM, GPU y temperatura de la GPU en vivo, y el disco C: libre
        3. panel "log" con lo último que hizo la app
@@ -75,6 +76,9 @@
         <StackPanel Margin="36,28,36,32">
             <TextBlock Text="&gt; inicio" Style="{StaticResource TituloPaginaEstilo}"/>
             <TextBlock Text="Uso de recursos en vivo y acceso directo a Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
+
+            <!-- ===== 0. Banner: el estado de Ghost Mode se ve de lejos, por el color ===== -->
+            <componentes:BannerGhost x:Name="Banner" Margin="0,22,0,0"/>
 
             <!-- ===== 1. Ghost Mode: lo primero que se ve, porque es para lo que existe la app ===== -->
             <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="ghost_mode" Margin="0,20,0,0"

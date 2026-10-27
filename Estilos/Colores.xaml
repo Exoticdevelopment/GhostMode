@@ -22,6 +22,8 @@
     <Color x:Key="AcentoColor">#8B5CF6</Color>
     <Color x:Key="AcentoBrilloColor">#A78BFA</Color>  <!-- hover y estados activos -->
     <Color x:Key="AcentoFondoColor">#2E1065</Color>   <!-- fondo de elementos activos -->
+    <!-- Banner ASCII de Inicio con Ghost Mode apagado: presente pero en segundo plano -->
+    <Color x:Key="BannerApagadoColor">#2A2A2A</Color>
 
     <!-- Estados -->
     <Color x:Key="ExitoColor">#22C55E</Color>         <!-- verde: SOLO estados "OK" -->
@@ -41,6 +43,7 @@
     <SolidColorBrush x:Key="AcentoBrush" Color="{StaticResource AcentoColor}"/>
     <SolidColorBrush x:Key="AcentoBrilloBrush" Color="{StaticResource AcentoBrilloColor}"/>
     <SolidColorBrush x:Key="AcentoFondoBrush" Color="{StaticResource AcentoFondoColor}"/>
+    <SolidColorBrush x:Key="BannerApagadoBrush" Color="{StaticResource BannerApagadoColor}"/>
     <SolidColorBrush x:Key="ExitoBrush" Color="{StaticResource ExitoColor}"/>
     <SolidColorBrush x:Key="AvisoBrush" Color="{StaticResource AvisoColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>

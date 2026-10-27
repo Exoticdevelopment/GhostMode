@@ -218,6 +218,7 @@ namespace OptimizadorPC.Paginas
             // TryFindResource = buscar un color de Colores.xaml por su nombre.
             // Morado = Ghost Mode encendido (el mismo color que el botón ON); apagado, gris
             PuntoEstado.Fill = (Brush)TryFindResource(ghostActivo ? "AcentoBrush" : "TextoSecundarioBrush");
+            Banner.Foreground = (Brush)TryFindResource(ghostActivo ? "AcentoBrush" : "BannerApagadoBrush");
             TxtEstado.Text = ghostActivo ? "> ghost_mode: on" : "> ghost_mode: off";
             TxtEstado.Foreground = (Brush)TryFindResource(ghostActivo ? "AcentoBrilloBrush" : "TextoBrush");
 
