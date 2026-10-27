@@ -78,10 +78,10 @@
             <TextBlock Text="Uso de recursos en vivo y acceso directo a Ghost Mode." Style="{StaticResource SubtituloPaginaEstilo}"/>
 
             <!-- ===== 0. Banner: el estado de Ghost Mode se ve de lejos, por el color ===== -->
-            <componentes:BannerGhost x:Name="Banner" Margin="0,22,0,0"/>
+            <componentes:BannerGhost x:Name="Banner" Margin="0,18,0,0"/>
 
             <!-- ===== 1. Ghost Mode: lo primero que se ve, porque es para lo que existe la app ===== -->
-            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="ghost_mode" Margin="0,20,0,0"
+            <HeaderedContentControl Style="{StaticResource PanelEstilo}" Header="ghost_mode" Margin="0,16,0,0"
                                     Padding="20,22,20,18">
                 <Grid>
                     <Grid.ColumnDefinitions>
